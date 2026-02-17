@@ -122,6 +122,8 @@ Quick checklist:
 
 Grades: A (90-100), B (70-89), C (50-69), D (30-49), F (0-29).
 
+**Critical threshold check:** If any criterion from the minimum thresholds table scores below its minimum, mark it `⚠️ CRITICAL` in the report. These must be addressed in phase 4 before the file can pass.
+
 Output per file: `./CLAUDE.md — Score: XX/100 (Grade X) | Size: XX KB | Issues: [list]`
 
 ### 3. Audit
@@ -164,21 +166,22 @@ Show each change with reason and size impact before applying.
 ### 5. Apply & Verify
 
 1. Edit CLAUDE.md files using Edit tool
-2. Verify size: `wc -c` each file
-3. Verify all sections still intact
-4. **Command & path validation:**
+2. **Completeness check:** Verify all proposed changes from phase 4 were applied — list each change with ✅/❌ status
+3. Verify size: `wc -c` each file
+4. Verify all sections still intact
+5. **Command & path validation:**
    - Run 2-3 commands documented in CLAUDE.md → confirm they still work
    - Verify file paths referenced → `ls` each critical path
-5. **Retrieval & wording validation:**
+6. **Retrieval & wording validation:**
    - Check retrieval directive present (if project uses a framework)
    - Confirm wording uses explore-first framing (not absolute "MUST" directives)
    - Verify docs index points to files that exist and are retrievable
-6. **Behavior-based eval** (for framework projects with post-cutoff APIs):
+7. **Behavior-based eval** (for framework projects with post-cutoff APIs):
    - Pick 2-3 post-cutoff APIs documented in CLAUDE.md
    - Ask: "Can the agent find the right docs file for this API from the index?"
    - Verify the index entry leads to correct, readable documentation
    - If project has no post-cutoff APIs, verify novel project patterns are documented instead
-7. Re-score to confirm improvement
+8. **Re-score with per-criterion breakdown** — show before/after for each criterion, confirm all critical thresholds now pass
 
 Report: `Score: XX → XX | Fixed N stale | Added N gaps | Removed N redundant | Size: XX KB → XX KB`
 
