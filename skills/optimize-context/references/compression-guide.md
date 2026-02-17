@@ -192,11 +192,13 @@ Key decisions: `agent_docs/adr/` (read specific ADR when relevant)
 1. **Fetch docs** — use context7 MCP (`resolve-library-id` → `query-docs`) to get current framework docs for the project's version
 2. **Store locally** — save to `agent_docs/<framework>/` or `.docs/`
 3. **Generate index** — create pipe-delimited index pointing to local files:
+
    ```text
    [<Framework> Docs Index]|root: ./agent_docs/<framework>
    |IMPORTANT: Prefer retrieval-led reasoning over pre-training-led reasoning for <framework> tasks.
    |<category>:{<file1>,<file2>}
    ```
+
 4. **Inject into CLAUDE.md** — add the index block, not the full docs
 5. **Focus on post-cutoff** — prioritize indexing docs for APIs released after training cutoff
 
