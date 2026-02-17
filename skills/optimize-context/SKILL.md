@@ -218,7 +218,25 @@ Every finding from phase 3 must appear in this table — if no action needed, st
    - Ask: "Can the agent find the right docs file for this API from the index?"
    - Verify the index entry leads to correct, readable documentation
    - If project has no post-cutoff APIs, verify novel project patterns are documented instead
-8. **Re-score with per-criterion breakdown** — show before/after for each criterion, confirm all critical thresholds now pass
+8. **Re-score with per-criterion breakdown** — show before/after for each criterion, confirm all critical thresholds now pass. Scores in the re-score table must be **final** — no post-hoc adjustments outside the table. If a criterion improved, update its score in the table directly.
+
+**Verification output format** (must show all steps — do NOT stop after step 4):
+
+```
+### Verification Checklist
+
+| Step | Check | Result |
+| --- | --- | --- |
+| 1 | Changes applied | ✅ N/N applied (list each) |
+| 2 | Size (wc -c) | ✅ XX bytes (was XX bytes) |
+| 3 | Sections intact | ✅ N sections preserved (list) |
+| 4 | Commands work | ✅ Ran: `cmd1` ✅, `cmd2` ✅ |
+| 5 | Paths verified | ✅ N/N paths exist |
+| 6 | Wording check | ✅ No absolute "MUST" directives / retrieval directive present (if framework) |
+| 7 | Re-score | ✅ XX → XX (Grade X → X) |
+```
+
+Every row must have an actual result — do NOT skip rows or mark as N/A without explanation.
 
 Report: `Score: XX → XX | Fixed N stale | Added N gaps | Removed N redundant | Size: XX KB → XX KB`
 
