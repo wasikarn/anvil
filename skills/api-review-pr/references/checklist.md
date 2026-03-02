@@ -1,5 +1,7 @@
 # 12-Point Review Checklist — tathep-platform-api
 
+For ✅/❌ code examples → [examples.md](examples.md)
+
 **Severity:** 🔴 Critical (must fix) · 🟡 Important (should fix) · 🔵 Suggestion
 **Format:** `[#N Aspect] file:line — issue → fix`
 
@@ -21,7 +23,7 @@
 | # | Aspect | Check |
 |---|--------|-------|
 | 4 | **DRY & Simplicity** | No duplicated business logic — extract to Services or Helpers · No magic numbers/strings — use named constants · If logic appears 2+ times, extract it |
-| 5 | **Flatten Structure** | Early returns / guard clauses instead of deep nesting · Max 2 levels of nesting in logic blocks · Avoid `else` after `return`/`throw` |
+| 5 | **Flatten Structure** | Early returns / guard clauses instead of deep nesting · Max 1 level of nesting in logic blocks · **No nested conditions** (no `if` inside `if`) · Avoid `else` after `return`/`throw` |
 | 6 | **SOLID & Clean Architecture** | Controller: thin · UseCase: orchestration · Repository: data access only · Provider: dynamic imports via `ModulePaths.ts` (not global) · Functions do ONE thing (≤20 lines) · No side effects in pure functions |
 | 7 | **Effect-TS Usage** | Import from `App/Helpers/Effect` (branded, Option, Either, match, concurrency) · `TryCatch` from `App/Helpers/TryCatch` · Use `Effect.pipe()` for composition · `Option` for nullable values (not `null \| undefined`) |
 

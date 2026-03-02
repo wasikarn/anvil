@@ -1,5 +1,7 @@
 # 12-Point Review Checklist — tathep-website
 
+For ✅/❌ code examples → [examples.md](examples.md)
+
 **Severity:** 🔴 Critical (must fix) · 🟡 Important (should fix) · 🔵 Suggestion
 **Format:** `[#N Aspect] file:line — issue → fix`
 
@@ -21,7 +23,7 @@
 | # | Aspect | Check |
 |---|--------|-------|
 | 4 | **DRY & Simplicity** | No duplicated mapping or logic — extract to shared util · No magic numbers/strings — use named constants · If logic appears 2+ times, extract it |
-| 5 | **Flatten Structure** | Early returns / guard clauses instead of deep nesting · Max 2 levels of nesting in logic blocks · Avoid `else` after `return` |
+| 5 | **Flatten Structure** | Early returns / guard clauses instead of deep nesting · Max 1 level of nesting in logic blocks · **No nested conditions** (no `if` inside `if`) · Avoid `else` after `return` |
 | 6 | **Small Functions & SOLID** | Thin `*.page.tsx` → `PageContent` (data + UI) → module components · services extend `ApiBaseService` · Functions do ONE thing (≤20 lines) · No side effects in pure functions |
 | 7 | **Elegance** | Chakra UI props over custom CSS · Tailwind for custom · idiomatic TypeScript · No clever tricks — obvious code wins · No dead code or unused vars |
 
