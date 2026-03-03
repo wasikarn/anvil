@@ -5,7 +5,7 @@ Fixes MD060/table-column-style: ensures every table row uses
 '| cell |' format (aligned) instead of mixed compact/aligned.
 
 Correctly handles:
-  - Escaped pipes  (\|) — treated as literal content, not separators
+  - Escaped pipes  (\\|) — treated as literal content, not separators
   - Pipes inside code spans (`a | b`) — not treated as separators
 """
 import re
