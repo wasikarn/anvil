@@ -203,6 +203,41 @@ const AdList = ({ params }) => {
 }
 ```
 
+```tsx
+// ✅ Explicit variant components — no boolean prop proliferation
+function AdTable() {
+  return <AdRows />
+}
+function AdSelectModal({ onSelect }: { onSelect: (code: string) => void }) {
+  return (
+    <Modal>
+      <AdRows onSelect={onSelect} />
+    </Modal>
+  )
+}
+
+// ❌ Boolean props — each new flag doubles possible states
+function AdTable({
+  isModal,
+  isSelectable,
+  isReadOnly,
+  onSelect,
+}: Props) {
+  return (
+    <div>
+      {isModal && <ModalHeader />}
+      {isSelectable ? (
+        <SelectableAdRows onSelect={onSelect} />
+      ) : isReadOnly ? (
+        <ReadOnlyAdRows />
+      ) : (
+        <EditableAdRows />
+      )}
+    </div>
+  )
+}
+```
+
 ---
 
 ## #7 Elegance
@@ -336,6 +371,24 @@ const result = await adServiceV2.getByCode(code)
 renderAd(result.data) // crashes if isOk is false
 ```
 
+```ts
+// ✅ satisfies — validates all keys covered, no type widening
+import { AdStatus } from '@/modules/ad/types'
+
+const AD_STATUS_TEXT = {
+  active: 'กำลังใช้งาน',
+  inactive: 'ปิดใช้งาน',
+  pending: 'รอดำเนินการ',
+} satisfies Record<AdStatus, string>
+// TypeScript error if new AdStatus added but not handled ✅
+
+// ❌ as — silently accepts incomplete map; new status causes runtime undefined
+const AD_STATUS_TEXT = {
+  active: 'กำลังใช้งาน',
+  inactive: 'ปิดใช้งาน',
+} as Record<AdStatus, string>  // 'pending' missing, no error ❌
+```
+
 ---
 
 ## #11 Testability
@@ -462,4 +515,46 @@ const [fullName, setFullName] = useState('')
 useEffect(() => {
   setFullName(`${admin.firstName} ${admin.lastName}`)
 }, [admin])
+```
+
+```tsx
+// ✅ Functional setState — stable callback, no stale closure
+function AdList() {
+  const [selectedCodes, setSelectedCodes] = useState<string[]>([])
+
+  const handleSelect = useCallback((code: string) => {
+    setSelectedCodes(curr => [...curr, code])  // always latest state
+  }, [])  // stable — no deps needed
+
+  const handleDeselect = useCallback((code: string) => {
+    setSelectedCodes(curr => curr.filter(c => c !== code))
+  }, [])
+
+  return <AdTable onSelect={handleSelect} onDeselect={handleDeselect} />
+}
+
+// ❌ Direct setState — stale closure + useCallback must depend on state
+function AdList() {
+  const [selectedCodes, setSelectedCodes] = useState<string[]>([])
+
+  const handleSelect = useCallback((code: string) => {
+    setSelectedCodes([...selectedCodes, code])  // stale if deps missing
+  }, [selectedCodes])  // recreated every selection ❌
+
+  return <AdTable onSelect={handleSelect} />
+}
+```
+
+```tsx
+// ✅ Lazy initial state — expensive parse runs once on mount
+function AdFilterPanel() {
+  const [filters, setFilters] = useState(() => parseFiltersFromQuery(router.query))
+  // parseFiltersFromQuery() called once ✅
+}
+
+// ❌ Eager evaluation — runs on every render
+function AdFilterPanel() {
+  const [filters, setFilters] = useState(parseFiltersFromQuery(router.query))
+  // parseFiltersFromQuery() called on every render ❌
+}
 ```

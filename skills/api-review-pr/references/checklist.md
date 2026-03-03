@@ -111,6 +111,7 @@ For ✅/❌ code examples → [examples.md](examples.md)
 - No `!` non-null assertion without prior null check → 🔴
 - Discriminated unions for states (not boolean flags) → 🟡
 - Type guards for external API data → 🟡
+- `satisfies` operator for type-checked constants — `const T = {...} satisfies Record<K, V>` over `as` → 🟡
 - Tests: `createStubObj<IMyRepo>({ method: sinon.stub() })` — typed mocks, not `{} as any` → 🔴
 
 ### #11 Testability

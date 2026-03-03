@@ -73,6 +73,7 @@ For ✅/❌ code examples → [examples.md](examples.md)
 - **PageContent**: data fetching + orchestration, no raw service calls in page files → 🔴
 - **Component**: presentation only — receives props, no business logic → 🟡
 - Parameters ≤ 3 (use props object if more) → 🟡
+- No boolean prop proliferation (`isEditing`, `isModal`, `isCompact`) — use explicit variant components instead → 🟡
 
 ### #7 Elegance
 
@@ -114,6 +115,7 @@ For ✅/❌ code examples → [examples.md](examples.md)
 - `result.isOk` checked before accessing `result.data` → 🔴
 - Discriminated unions for form/UI states (not boolean flags) → 🟡
 - Type guards for external API responses before use → 🟡
+- `satisfies` operator for type-checked constants — `const T = {...} satisfies Record<K, V>` over `as` → 🟡
 
 ### #11 Testability
 
@@ -151,6 +153,8 @@ For ✅/❌ code examples → [examples.md](examples.md)
 - Split contexts by update frequency: fast-changing values in separate context from slow ones
 - `React.memo` for pure components that receive same props frequently
 - `useRef` for values that should NOT trigger re-render (timers, DOM refs, prev values)
+- Functional setState when update depends on prev: `setState(curr => [...curr, item])` not `setState([...items, item])` → 🟡
+- Lazy initial state for expensive computations: `useState(() => computeHeavy())` not `useState(computeHeavy())` → 🟡
 
 **Bundle Optimization:**
 

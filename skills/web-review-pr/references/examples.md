@@ -203,6 +203,44 @@ const CampaignList = ({ params }) => {
 }
 ```
 
+```tsx
+// ✅ Explicit variant components — no boolean prop proliferation
+function CampaignListPage() {
+  return <CampaignTable />
+}
+function CampaignSelectModal({ onSelect }: { onSelect: (code: string) => void }) {
+  return (
+    <Modal>
+      <CampaignTable onSelect={onSelect} />
+    </Modal>
+  )
+}
+function CampaignCompactView() {
+  return <CampaignTable compact />
+}
+
+// ❌ Boolean props create exponential complexity — hard to reason about
+function CampaignTable({
+  isModal,
+  isCompact,
+  isSelectable,
+  onSelect,
+}: Props) {
+  return (
+    <div>
+      {isModal && <ModalHeader />}
+      {isSelectable ? (
+        <SelectableRows onSelect={onSelect} />
+      ) : isCompact ? (
+        <CompactRows />
+      ) : (
+        <FullRows />
+      )}
+    </div>
+  )
+}
+```
+
 ---
 
 ## #7 Elegance
@@ -331,6 +369,24 @@ function isUserResponse(data: unknown): data is UserResponse {
 
 // ❌ Cast unknown directly
 const user = apiResponse as UserResponse
+```
+
+```ts
+// ✅ satisfies — validates all keys covered, no type widening
+import { CampaignStatus } from '@/modules/campaign/types'
+
+const CAMPAIGN_STATUS_TEXT = {
+  draft: 'แบบร่าง',
+  active: 'กำลังใช้งาน',
+  ended: 'สิ้นสุดแล้ว',
+} satisfies Record<CampaignStatus, string>
+// TypeScript error if new CampaignStatus added but not handled ✅
+
+// ❌ as — no exhaustiveness check; runtime undefined for missing keys
+const CAMPAIGN_STATUS_TEXT = {
+  draft: 'แบบร่าง',
+  active: 'กำลังใช้งาน',
+} as Record<CampaignStatus, string>  // 'ended' is missing, no error ❌
 ```
 
 ---
@@ -462,4 +518,46 @@ import { useTranslations } from '@/shared/libs/locale'
 
 // ❌ next-intl directly
 import { useTranslations } from 'next-intl'
+```
+
+```tsx
+// ✅ Functional setState — no stale closure, stable callback
+function CampaignList() {
+  const [selected, setSelected] = useState<string[]>([])
+
+  const handleSelect = useCallback((code: string) => {
+    setSelected(curr => [...curr, code])  // always latest state
+  }, [])  // no deps needed
+
+  const handleDeselect = useCallback((code: string) => {
+    setSelected(curr => curr.filter(c => c !== code))
+  }, [])
+
+  return <Table onSelect={handleSelect} onDeselect={handleDeselect} />
+}
+
+// ❌ Direct setState — stale closure risk + forces useCallback deps
+function CampaignList() {
+  const [selected, setSelected] = useState<string[]>([])
+
+  const handleSelect = useCallback((code: string) => {
+    setSelected([...selected, code])  // stale if selected not in deps
+  }, [selected])  // recreated every time selected changes ❌
+
+  return <Table onSelect={handleSelect} />
+}
+```
+
+```tsx
+// ✅ Lazy initial state — expensive compute runs once only
+function FilterPanel() {
+  const [filters, setFilters] = useState(() => parseFiltersFromUrl(window.location.search))
+  // parseFiltersFromUrl() called once on mount ✅
+}
+
+// ❌ Eager evaluation — runs on every render (even when ignored)
+function FilterPanel() {
+  const [filters, setFilters] = useState(parseFiltersFromUrl(window.location.search))
+  // parseFiltersFromUrl() called on every render ❌
+}
 ```

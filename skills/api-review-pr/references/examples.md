@@ -367,6 +367,24 @@ const userRepo = createStubObj<IUserRepo>({
 const userRepo = { findById: sinon.stub() } as any
 ```
 
+```ts
+// ✅ satisfies — validates all keys covered, no type widening
+import { SmsStatus } from '@/Modules/Sms/Commons/Types'
+
+const SMS_STATUS_TEXT = {
+  pending: 'รอส่ง',
+  sent: 'ส่งแล้ว',
+  failed: 'ส่งไม่สำเร็จ',
+} satisfies Record<SmsStatus, string>
+// TypeScript error if new SmsStatus added but not handled ✅
+
+// ❌ as — silently accepts incomplete map; new status causes runtime undefined
+const SMS_STATUS_TEXT = {
+  pending: 'รอส่ง',
+  sent: 'ส่งแล้ว',
+} as Record<SmsStatus, string>  // no error when 'failed' is missing ❌
+```
+
 ---
 
 ## #11 Testability
