@@ -99,7 +99,7 @@ specify extension disable <name>          # disable without removing
 | Variable | Purpose |
 |----------|---------|
 | `GH_TOKEN` / `GITHUB_TOKEN` | GitHub token for API requests during init |
-| `SPECIFY_FEATURE` | Override feature detection for non-Git repos (tells the agent which feature dir to use) |
+| `SPECIFY_FEATURE` | Override feature detection for non-Git repos. Set to the feature directory name (e.g., `001-photo-albums`). **Must be set before `/speckit.plan` or any follow-up commands.** |
 
 ---
 

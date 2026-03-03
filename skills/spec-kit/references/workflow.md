@@ -153,7 +153,7 @@ The constitution is referenced by every subsequent command as a compliance gate.
 
 ## Workflow Decision Guide
 
-**When to run `/speckit.clarify`:**
+**When to run `/speckit.clarify`** (formerly `/quizme`):
 
 - Spec has vague acceptance criteria ("user can manage photos" is vague)
 - Multiple interpretations are possible
