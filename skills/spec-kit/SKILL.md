@@ -47,6 +47,7 @@ See [references/cli.md](references/cli.md) for full CLI reference including `spe
 ```text
 .specify/
   memory/constitution.md
+  scripts/           # Helper scripts (check-prerequisites.sh, create-new-feature.sh, etc.)
   specs/001-feature-name/
     spec.md          # Step 2
     plan.md          # Step 4
@@ -57,6 +58,10 @@ See [references/cli.md](references/cli.md) for full CLI reference including `spe
     contracts/       # Step 4 (api-spec.json, etc.)
     checklists/      # Step 2: requirements.md · Step 5b: domain files (/speckit.checklist, optional)
   templates/
+    spec-template.md
+    plan-template.md
+    tasks-template.md
+    CLAUDE-template.md
 CLAUDE.md            # Agent instructions (varies by --ai flag)
 ```
 
@@ -70,7 +75,7 @@ CLAUDE.md            # Agent instructions (varies by --ai flag)
 - **Not checking for over-engineering in the plan** — Claude can add unrequested components; always ask for rationale when something wasn't in the spec
 - **Running `/speckit.tasks` without `plan.md`** — it will fail; run `/speckit.plan` first
 - **Ignoring `[P]` markers in tasks.md** — tasks marked `[P]` are safe to parallelize
-- **Re-running `/speckit.constitution`** — silently overwrites the existing constitution.md; only run once per project
+- **Re-running `/speckit.constitution` carelessly** — it supports re-runs to update principles, but silently overwrites; export any content you want to keep before re-running
 - **Missing local CLI tools for `/speckit.implement`** — the agent runs tool commands (npm, dotnet, etc.); have them installed and at the correct version before starting
 - **Only checking CLI output after implement** — runtime errors (e.g., browser console errors) may not appear in the terminal; test the running app and paste any errors back to the agent
 

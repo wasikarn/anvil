@@ -103,11 +103,14 @@ specify extension disable <name>          # disable without removing
 
 ---
 
-## Installation
+## Installation & Upgrade
 
 ```bash
 # Persistent install (recommended)
 uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
+
+# Upgrade to latest version
+uv tool install specify-cli --force --from git+https://github.com/github/spec-kit.git
 
 # One-time use without installing
 uvx --from git+https://github.com/github/spec-kit.git specify init <PROJECT_NAME>
