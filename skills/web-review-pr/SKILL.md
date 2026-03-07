@@ -63,15 +63,15 @@ Map each AC to file(s) in `git diff develop...HEAD`:
 
 Flag unconditionally — no confidence filter, always report:
 
-- `as any` / `as unknown as T` → 🔴
-- `result.data` accessed without checking `result.isOk` first → 🔴
-- hardcoded route strings (`/manage/...`) → 🔴 (use `ROUTE_PATHS`)
-- empty `catch {}` / swallowed errors → 🔴
-- nesting > 1 level → 🔴 (use early return)
-- `import { useTranslations } from 'next-intl'` → 🔴 (use `@/shared/libs/locale`)
-- `import { useQuery } from '@tanstack/react-query'` → 🔴 (must be `'react-query'` v3)
-- query/fetch inside loop → 🔴 (N+1)
-- `console.log` in non-test code → 🟡
+- `as any` / `as unknown as T` → 🔴 (destroys type safety — runtime errors slip past the compiler)
+- `result.data` accessed without checking `result.isOk` first → 🔴 (crashes on error responses — always guard the success path)
+- hardcoded route strings (`/manage/...`) → 🔴 (use `ROUTE_PATHS` — breaks silently on route rename, no type checking)
+- empty `catch {}` / swallowed errors → 🔴 (silent failures hide production bugs — errors vanish with no trace)
+- nesting > 1 level → 🔴 (use early return — deep nesting buries the happy path and makes tracing hard)
+- `import { useTranslations } from 'next-intl'` → 🔴 (use `@/shared/libs/locale` — project wrapper ensures correct locale config and type safety)
+- `import { useQuery } from '@tanstack/react-query'` → 🔴 (must be `'react-query'` v3 — tanstack v5 API is incompatible with this codebase)
+- query/fetch inside loop → 🔴 (N+1 — exponential network load; batch or preload instead)
+- `console.log` in non-test code → 🟡 (leaks debug output to production; use structured logger)
 
 Dispatch 7 agents in **foreground parallel** (all READ-ONLY). Pass each agent: Hard Rules above (verbatim) + AC context from Phase 2 + criteria from [references/checklist.md](references/checklist.md) + project-specific examples from [references/examples.md](references/examples.md).
 
@@ -88,16 +88,6 @@ Dispatch 7 agents in **foreground parallel** (all READ-ONLY). Pass each agent: H
 `feature-dev:code-reviewer` applies TypeScript advanced type principles (generics, branded types, discriminated unions, type guards — NO `as any`) and Clean Code principles (SRP, early returns, naming intent, function size). Confidence scoring maps: 90–100 → 🔴, 80–89 → 🟡.
 
 **⛔ CHECKPOINT** — collect ALL 7 results before proceeding. Do NOT fix until all complete.
-
-| Agent |
-| ------- |
-| code-reviewer |
-| comment-analyzer |
-| pr-test-analyzer |
-| silent-failure-hunter |
-| type-design-analyzer |
-| code-simplifier |
-| feature-dev:code-reviewer |
 
 Deduplicate → verify severity → remove false positives → proceed.
 

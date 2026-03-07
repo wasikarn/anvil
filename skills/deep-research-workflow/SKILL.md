@@ -1,10 +1,6 @@
 ---
 name: deep-research-workflow
-description: |
-  Guide for research-heavy feature development using the Research → Plan → Implement pattern.
-  Use when: (1) implementing complex features that touch multiple files, (2) user says "research first",
-  (3) task requires understanding existing codebase deeply before changing it, (4) feature has multiple
-  valid approaches and needs exploration, (5) user wants structured development workflow
+description: "Structured Research → Plan → Implement workflow for features that touch multiple files or require deep codebase understanding before coding. Use this skill whenever the user says 'research first', 'understand the codebase', 'plan before coding', 'I don't want to jump to code', or starts a complex feature without a clear implementation path. Also use when the task involves unfamiliar modules, multiple valid approaches, or risk of breaking existing patterns — a written plan prevents wrong assumptions from compounding into broken implementations."
 argument-hint: "[feature-description]"
 ---
 
