@@ -12,7 +12,16 @@ cat << 'EOF'
 - tathep-admin: Next.js 14 Pages Router + Tailwind + Headless UI + Vitest
 
 ### Key Conventions
-- Use Bun, not npm
+EOF
+
+# Dynamic: detect package manager from lock files
+if [ -f "bun.lockb" ] || [ -f "bun.lock" ]; then PKG_MGR="bun"
+elif [ -f "pnpm-lock.yaml" ]; then PKG_MGR="pnpm"
+elif [ -f "yarn.lock" ]; then PKG_MGR="yarn"
+else PKG_MGR="npm"; fi
+echo "- Package manager: \`$PKG_MGR\` (not others)"
+
+cat << 'EOF'
 - Commit messages in English, PR reviews in Thai
 - Always run tests before committing
 - Use Effect-TS patterns in API layer (pipe, Effect.gen, Layer)
