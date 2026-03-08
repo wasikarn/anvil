@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # link-skill.sh — Create ~/.claude/ symlinks for all assets in this repo.
 # Usage:
-#   bash scripts/link-skill.sh            # link everything (skills, agents, hooks, output-styles)
+#   bash scripts/link-skill.sh            # link everything (skills, agents, hooks, output-styles, commands)
 #   bash scripts/link-skill.sh spec-kit   # link one skill by name
 #   bash scripts/link-skill.sh --list     # show current link status
 
@@ -10,7 +10,7 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 # Asset types: repo_subdir:claude_target
-ASSET_TYPES="skills:$HOME/.claude/skills agents:$HOME/.claude/agents output-styles:$HOME/.claude/output-styles hooks:$HOME/.claude/hooks"
+ASSET_TYPES="skills:$HOME/.claude/skills agents:$HOME/.claude/agents output-styles:$HOME/.claude/output-styles hooks:$HOME/.claude/hooks commands:$HOME/.claude/commands"
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 link_item() {
