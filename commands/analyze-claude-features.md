@@ -44,6 +44,48 @@ Best Practices:
 
 ---
 
+## Scoring Rubric (100 points)
+
+| Criterion | Weight | Min |
+| --- | --- | --- |
+| Source coverage | 15 | 10 |
+| Context verification | 15 | 10 |
+| Gap analysis depth | 15 | 10 |
+| Decision matrix accuracy | 15 | 10 |
+| Traceability | 15 | — |
+| Actionability | 15 | — |
+| Prioritization quality | 10 | — |
+
+Grades: A (90-100), B (70-89), C (50-69), D (30-49), F (0-29). Target: **100/100**.
+
+Score breakdown:
+
+- **Source coverage 15/15:** All 14 sources read, key concepts extracted, no source skipped
+- **10/15:** ≥12 sources, minor gaps. **5/15:** <10 sources or superficial extraction
+- **Context verification 15/15:** All dirs/files/configs verified via tool output, zero assumptions
+- **10/15:** Most verified, 1-2 assumptions noted. **5/15:** Multiple unverified claims
+- **Gap analysis depth 15/15:** Every source checked against project, evidence-linked, false negatives caught
+- **10/15:** Most sources checked, some shallow. **5/15:** Surface-level comparison only
+- **Decision matrix accuracy 15/15:** Every config correctly classified, misplacements caught and flagged
+- **10/15:** Matrix applied but 1-2 items unchecked. **5/15:** Matrix not systematically applied
+- **Traceability 15/15:** Every recommendation chains: Source → Gap → Opportunity → Recommendation
+- **10/15:** Most chain, some orphaned. **5/15:** Recommendations without clear source linkage
+- **Actionability 15/15:** Every recommendation has specific files, commands, or config changes
+- **10/15:** Mostly concrete, some vague. **5/15:** Generic suggestions without file paths
+- **Prioritization quality 10/10:** Impact×Effort scored, quick wins separated, dependencies mapped
+- **7/10:** Scored but dependencies unclear. **3/10:** Subjective ranking without criteria
+
+Critical minimum thresholds — any criterion below its min → must fix before final score:
+
+| Criterion | Min |
+| --- | --- |
+| Source coverage | 10/15 |
+| Context verification | 10/15 |
+| Gap analysis depth | 10/15 |
+| Decision matrix accuracy | 10/15 |
+
+---
+
 ## Thinking Process (follow in order)
 
 **Step 1 — Comprehend Sources**
@@ -97,6 +139,21 @@ Checklist:
 
 ---
 
+**Quality Gate 1 — Context Completeness**
+Do NOT proceed to gap analysis until all checks pass:
+
+| Check | Pass Criteria |
+| --- | --- |
+| Sources fetched | ≥12 of 14 sources successfully read |
+| CLAUDE.md read | Full file read (not skimmed) |
+| Directory verified | `tree` or `ls` output captured |
+| Settings checked | `.claude/settings.json` content confirmed |
+| Unverified items | All listed with reason |
+
+Gate: PASS ✅ or FAIL ❌ — resolve failures before continuing.
+
+---
+
 **Step 4 — Gap Analysis**
 Compare each source's capabilities against confirmed context only.
 Do NOT propose improvements based on assumed or unverified state.
@@ -146,6 +203,21 @@ Checklist:
 
 ---
 
+**Quality Gate 2 — Opportunity Validity**
+Verify each opportunity before prioritizing:
+
+| Check | Pass Criteria |
+| --- | --- |
+| Evidence-linked | Every opportunity traces to a specific gap |
+| No duplicates | No two opportunities address the same gap |
+| Feasibility | Affected files/paths confirmed to exist |
+| Not already done | Feature not already implemented |
+| Conditional flagged | [UNVERIFIED]-based opportunities marked |
+
+Remove or merge opportunities that fail. Gate: PASS ✅ or FAIL ❌.
+
+---
+
 **Step 7 — Prioritize**
 Score each opportunity: Impact (H/M/L) × Effort (H/M/L) → rank and justify.
 
@@ -170,6 +242,41 @@ Checklist:
 
 ---
 
+**Step 9 — Verify & Score**
+Validate the final output, then score.
+
+Verification checklist:
+
+- [ ] **Source coverage** — every source appears in gap analysis or has "no gap found" note
+- [ ] **Traceability** — each recommendation chains: Source → Gap → Opportunity → Recommendation
+- [ ] **No phantom features** — all referenced files/paths verified to exist (or marked "to create")
+- [ ] **Decision matrix consistent** — no recommendation contradicts Step 5
+- [ ] **No stale references** — URLs, file paths, config keys all current
+- [ ] **Completeness** — no source silently dropped between steps
+
+Score each criterion (mandatory output format):
+
+```markdown
+| Criterion | Score | Status | Notes |
+| --- | --- | --- | --- |
+| Source coverage | XX/15 | ✅ or ⚠️ CRITICAL (if <10) | ... |
+| Context verification | XX/15 | ✅ or ⚠️ CRITICAL (if <10) | ... |
+| Gap analysis depth | XX/15 | ✅ or ⚠️ CRITICAL (if <10) | ... |
+| Decision matrix accuracy | XX/15 | ✅ or ⚠️ CRITICAL (if <10) | ... |
+| Traceability | XX/15 | ✅ | ... |
+| Actionability | XX/15 | ✅ | ... |
+| Prioritization quality | XX/10 | ✅ | ... |
+
+Total: XX/100 (Grade X)
+Critical check: PASS ✅ — all criteria above minimums
+— or —
+Critical check: FAIL ⚠️ — [Criterion] at X/15 (min 10)
+```
+
+If FAIL → go back to the failing step and fix before re-scoring.
+
+---
+
 ## Output
 
-Per-source summary (Step 1), gap analysis table (Step 4), decision matrix validation (Step 5), top improvements with rationale, and recommended adoption sequence with dependencies.
+Per-source summary (Step 1), gap analysis table (Step 4), decision matrix validation (Step 5), top improvements with rationale, recommended adoption sequence with dependencies, and verification + score (Step 9) with per-criterion breakdown. Target: 100/100.
