@@ -39,7 +39,6 @@ Compressed context (8KB) performs identically to verbose (40KB). Passive wins: n
 
 - **Grade B (70+) + no critical criterion below 10** = good baseline
 - **Grade A (90+)** = ideal for framework-heavy or complex projects
-- 100/100 is not always possible (e.g. no framework → retrieval readiness scores lower by design)
 - Fully autonomous — all 5 phases run without user-confirmation gates
 
 Critical minimum thresholds (score below these → must fix before passing):
@@ -51,7 +50,44 @@ Critical minimum thresholds (score below these → must fix before passing):
 | Retrieval readiness | 10/15 |
 | Conciseness | 10/15 |
 
+### Project Coverage (100 points)
+
+Measures how well the project adopts Claude Code features **relative to what's applicable**. 100/100 means all relevant features properly adopted — not every feature used. A simple script repo shouldn't need agent-teams to score 100.
+
+**Relevance assessment** — determine applicability per project:
+
+| Category | Applicable When | Not Applicable When |
+| --- | --- | --- |
+| CLAUDE.md | Always | — |
+| `.claude/rules/` | Path-specific conventions exist | Single-purpose project, no path variance |
+| Skills | Repeatable workflows exist | No repeatable workflows |
+| Subagents | Tasks benefit from delegation | Simple project, no delegation needs |
+| Output styles | Consistent tone/format needed | Default output sufficient |
+| Hooks | Deterministic automation needed | No automation benefits |
+| Permissions | Security-sensitive operations | Personal project, all tools trusted |
+| Settings | Custom env vars or config needed | Defaults work fine |
+| Scheduled tasks | Recurring monitoring needed | No recurring needs |
+| Plugins | Distribution to others needed | Personal/single-project use |
+| MCP | External tool integration needed | No external tools |
+| Agent teams | Complex parallel coordination needed | Sequential or simple tasks |
+
+**Score each applicable category (0-3):**
+
+- **3 — Fully adopted:** Feature used correctly, follows best practices, no gaps
+- **2 — Partially adopted:** Feature used but with gaps or misconfigurations
+- **1 — Minimal:** Feature exists but underutilized or poorly configured
+- **0 — Missing:** Applicable feature not used at all
+
+**Calculate:** `Project Coverage = (sum of scores / (applicable categories × 3)) × 100`
+
+When `$ARGUMENTS` includes "expect" + "score 100/100": list every gap preventing 100/100 and provide concrete steps to close each one.
+
 ## Workflow
+
+Two scores are produced:
+
+1. **CLAUDE.md Quality** (100 pts) — how effective is the CLAUDE.md content
+2. **Project Coverage** (100 pts) — how well does the project use applicable Claude Code features
 
 Copy this checklist and check off items as you complete each phase:
 
@@ -112,7 +148,7 @@ Example post-cutoff APIs (Next.js 16, released late 2025): sync access to `cooki
 
 ### 2. Quality Assessment
 
-Score each file using the 100-point rubric. See [references/quality-criteria.md](references/quality-criteria.md) for detailed scoring.
+Score each file using the CLAUDE.md Quality rubric (100 points). See [references/quality-criteria.md](references/quality-criteria.md) for detailed scoring.
 
 Quick checklist:
 
@@ -151,6 +187,33 @@ Critical check: FAIL ⚠️ — [Criterion] at X/15 (min 10), [Criterion] at X/1
 ```
 
 The Status column is **mandatory** — compare each score against the minimum thresholds table and mark `⚠️ CRITICAL` if below. Any `FAIL` criteria must be addressed in phase 4 before the file can pass.
+
+Then assess Project Coverage (100 points). Scan the project for Claude Code feature usage. Check for each category:
+
+- `.claude/rules/` — any `.md` files with `paths` frontmatter?
+- `skills/` or `.claude/commands/` — any skill/command files?
+- `agents/` or `.claude/agents/` — any agent definitions?
+- `output-styles/` — any style files?
+- `.claude/settings.json` — hooks, permissions, env vars configured?
+- `.mcp.json` or MCP in settings — any MCP servers?
+- `.claude-plugin/plugin.json` — plugin manifest?
+
+Determine applicability using the relevance table above, then score each applicable category 0-3.
+
+**Output format:**
+
+```markdown
+### Project Coverage: XX/100 (Grade X)
+
+| Category | Applicable? | Score | Evidence |
+| --- | --- | --- | --- |
+| CLAUDE.md | ✅ | X/3 | ... |
+| .claude/rules/ | ✅/❌ | X/3 or — | ... |
+| Skills | ✅/❌ | X/3 or — | ... |
+| ... | ... | ... | ... |
+
+Applicable: X/12 categories
+```
 
 ### 3. Audit
 
@@ -221,7 +284,7 @@ Proceed directly to phase 5 after outputting the proposed changes table.
    - Ask: "Can the agent find the right docs file for this API from the index?"
    - Verify the index entry leads to correct, readable documentation
    - If project has no post-cutoff APIs, verify novel project patterns are documented instead
-8. **Re-score with per-criterion breakdown** — show before/after for each criterion, confirm all critical thresholds now pass. Scores in the re-score table must be **final** — no post-hoc adjustments outside the table. If a criterion improved, update its score in the table directly.
+8. **Re-score both scores** — show before/after for each CLAUDE.md Quality criterion, confirm all critical thresholds now pass. Re-assess Project Coverage if phase 4 changes affected feature adoption (e.g. added `.claude/rules/`, created hooks). Scores in the re-score tables must be **final** — no post-hoc adjustments outside the table.
 
 **Verification output format** (must show all steps — do NOT stop after step 4):
 
@@ -237,7 +300,8 @@ Proceed directly to phase 5 after outputting the proposed changes table.
 | 5 | Paths verified | ✅ N/N paths exist |
 | 6 | Wording check | ✅ No absolute "MUST" directives / retrieval directive present (if framework) |
 | 7 | Behavior eval | ✅ Tested N post-cutoff APIs (or novel patterns): [result] / N/A (non-framework) |
-| 8 | Re-score | ✅ XX → XX (Grade X → X) |
+| 8a | CLAUDE.md Quality re-score | ✅ XX → XX (Grade X → X) |
+| 8b | Project Coverage re-score | ✅ XX → XX (Grade X → X) |
 ```
 
 Every row must have an actual result — do NOT skip rows or mark as N/A without explanation.
@@ -248,7 +312,7 @@ Every row must have an actual result — do NOT skip rows or mark as N/A without
 2. Return to Phase 4 — re-scope the changes that caused failure
 3. Do NOT incrementally patch — revert and re-apply cleanly
 
-Report: `Score: XX → XX | Fixed N stale | Added N gaps | Removed N redundant | Size: XX KB → XX KB`
+Report: `CLAUDE.md Quality: XX → XX | Project Coverage: XX → XX | Fixed N stale | Added N gaps | Removed N redundant | Size: XX KB → XX KB`
 
 **Example output (phases 2-3):**
 

@@ -17,7 +17,7 @@ Prefer reading before editing — key references:
 ## Skill Architecture
 
 - `SKILL.md` — 5-phase workflow: Discovery → Score → Audit → Update → Verify
-- `references/quality-criteria.md` — 100-point rubric (8 criteria, min thresholds for critical ones)
+- `references/quality-criteria.md` — CLAUDE.md Quality rubric (8 criteria) + Project Coverage rubric (12 categories)
 - `scripts/pre-scan.sh` — detects framework/scripts/structure in ~30ms; always run first in Phase 1
 - Audit report written to `.claude/optimize-context-report.md` — survives context compaction
 
@@ -51,4 +51,5 @@ SKILL.md frontmatter controls how Claude invokes this skill:
 - `pre-scan.sh` targets bash 3.x (macOS default) — no `declare -A`, no `mapfile`
 - `stat -f%z` is macOS/BSD syntax for file size — GNU Linux uses `stat -c%s`
 - Size measurement excludes auto-generated sections (`<claude-mem-context>`, plugin blocks) — score human-authored content only
-- 100/100 is achievable for vertical/hybrid projects; non-framework projects may score lower on retrieval readiness if no docs index applies
+- Two scores: CLAUDE.md Quality (content quality) + Project Coverage (feature adoption). Both use 100-point scales
+- Project Coverage 100/100 is achievable for any project — scores only applicable features, not all 12 categories

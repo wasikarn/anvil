@@ -65,6 +65,37 @@
 | D | 30–49 |
 | F | 0–29 |
 
+## Project Coverage Scoring (100 points)
+
+Separate from the CLAUDE.md Quality rubric above. Measures adoption of Claude Code features relative to what's applicable for the specific project.
+
+### How to assess
+
+1. **Determine applicability** — for each of 12 categories, decide if the feature applies based on project context
+2. **Score each applicable category 0-3** — Missing (0), Minimal (1), Partially adopted (2), Fully adopted (3)
+3. **Calculate** — `(sum of scores / (applicable × 3)) × 100`
+
+### Scoring guidelines per category
+
+| Category | 3 (Full) | 2 (Partial) | 1 (Minimal) | 0 (Missing) |
+| --- | --- | --- | --- | --- |
+| CLAUDE.md | <200 lines, current, actionable | Good but missing 1-2 sections | Exists but sparse/stale | No CLAUDE.md |
+| `.claude/rules/` | Path-scoped with `paths` frontmatter | Rules exist, no path scoping | Empty rules dir | Should have, doesn't |
+| Skills | Proper frontmatter, trigger-complete descriptions | Exist but missing fields | Minimal frontmatter | Workflows uncaptured |
+| Subagents | Tools/model/memory configured, auto-trigger | Exist but missing key fields | Basic definition only | Delegation would help |
+| Output styles | `keep-coding-instructions` correct | Exist but wrong config | Minimal style file | Tone needed, no styles |
+| Hooks | Events matched, guards in place | Exist but no guards | 1-2 hooks only | Automation unaddressed |
+| Permissions | Project-level allow/deny rules | Some rules, incomplete | User-level defaults only | Ops unprotected |
+| Settings | Meaningful customization | Some, not optimized | Only defaults | Config needed, not set |
+| Scheduled tasks | Optimal intervals configured | Set up, not optimal | Basic only | Needs unaddressed |
+| Plugins | Valid manifest, tested | Exists but untested | Partial manifest | Distribution needed |
+| MCP | Servers configured, scoped | Exist, broad scope | Basic config | Tools needed, not wired |
+| Agent teams | Structure, task sizing set | Work, coordination issues | Basic team only | Parallel work sequential |
+
+### Key principle
+
+100/100 is achievable for any project — it means "all applicable features properly used". A simple CLI tool with just CLAUDE.md + hooks can score 100.
+
 ## Red Flags
 
 - Commands that would fail (wrong paths, missing deps)
