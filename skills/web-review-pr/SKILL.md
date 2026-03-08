@@ -22,7 +22,10 @@ Invoke as `/web-review-pr [pr-number] [jira-key?] [Author|Reviewer]`
 
 **PR:** #$0 | **Jira:** $1 | **Mode:** $2 (default: Author)
 **Today:** !`date +%Y-%m-%d`
-**Diff:** !`git diff develop...HEAD --stat 2>/dev/null | tail -10`
+**Diff stat:** !`git diff develop...HEAD --stat 2>/dev/null | tail -10`
+**PR title:** !`gh pr view $0 --json title,body,labels,author --jq '{title,body,labels: [.labels[].name],author: .author.login}' 2>/dev/null`
+**PR comments:** !`gh pr view $0 --comments --json comments --jq '[.comments[] | {author: .author.login, body: .body[:200]}]' 2>/dev/null`
+**Changed files:** !`gh pr diff $0 --name-only 2>/dev/null`
 
 **Args:** `$0`=PR# (required) · `$1`=Jira key or Author/Reviewer · `$2`=Author/Reviewer
 **Modes:** Author = fix code · Reviewer = comment only (in Thai)

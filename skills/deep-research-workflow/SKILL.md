@@ -1,7 +1,9 @@
 ---
 name: deep-research-workflow
-description: "Structured Research → Plan → Implement workflow for features that touch multiple files or require deep codebase understanding before coding. Use this skill whenever the user says 'research first', 'understand the codebase', 'plan before coding', 'I don't want to jump to code', or starts a complex feature without a clear implementation path. Also use when the task involves unfamiliar modules, multiple valid approaches, or risk of breaking existing patterns — a written plan prevents wrong assumptions from compounding into broken implementations."
+description: "Research → Plan → Implement workflow for complex features. Use when user says 'research first', 'plan before coding', 'understand the codebase', or starts a multi-file feature without a clear path. Produces research.md and plan.md before any code."
 argument-hint: "[feature-description]"
+context: fork
+agent: general-purpose
 ---
 
 # /deep-research-workflow
