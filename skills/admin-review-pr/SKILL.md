@@ -17,6 +17,7 @@ Invoke as `/admin-review-pr [pr-number] [jira-key?] [Author|Reviewer]`
 | --- |
 | [checklist.md](references/checklist.md) |
 | [examples.md](references/examples.md) |
+| [review-output-format.md](../../references/review-output-format.md) |
 
 ---
 
@@ -33,6 +34,7 @@ Invoke as `/admin-review-pr [pr-number] [jira-key?] [Author|Reviewer]`
 
 Read CLAUDE.md first — auto-loaded, contains full project patterns and conventions.
 For 12-point checklist details → [references/checklist.md](references/checklist.md)
+**Output format:** Follow [review-output-format.md](../../references/review-output-format.md) exactly — output each phase section as it completes for real-time streaming.
 
 ---
 
