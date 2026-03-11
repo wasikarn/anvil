@@ -168,6 +168,69 @@ async execute(userId: string) {
 }
 ```
 
+### Lookup table for multi-branch conditions
+
+❌ Bad:
+
+```typescript
+function getStatusColor(status: string): string {
+  if (status === 'active') {
+    return 'green'
+  } else if (status === 'pending') {
+    return 'yellow'
+  } else if (status === 'error') {
+    return 'red'
+  } else if (status === 'cancelled') {
+    return 'gray'
+  } else {
+    return 'black'
+  }
+}
+```
+
+✅ Good:
+
+```typescript
+const STATUS_COLORS: Record<string, string> = {
+  active: 'green',
+  pending: 'yellow',
+  error: 'red',
+  cancelled: 'gray',
+}
+
+function getStatusColor(status: string): string {
+  return STATUS_COLORS[status] ?? 'black'
+}
+```
+
+### Extract complex conditional blocks
+
+❌ Bad:
+
+```typescript
+async execute(input: CreateOrderInputDTO) {
+  if (input.items.length > 0) {
+    if (input.payment) {
+      if (input.payment.isVerified) {
+        // ... 20 lines of processing
+      }
+    }
+  }
+}
+```
+
+✅ Good:
+
+```typescript
+async execute(input: CreateOrderInputDTO) {
+  if (input.items.length === 0) return this.error('EMPTY_ITEMS')
+  if (!input.payment) return this.error('NO_PAYMENT')
+  if (!input.payment.isVerified) return this.error('UNVERIFIED_PAYMENT')
+
+  return this.processOrder(input)
+}
+```
+
 ---
 
 ## #6 Small Function & SOLID

@@ -2,7 +2,7 @@
 
 Shared output format for all `*-review-pr` skills. Each phase outputs its section as it completes — streaming progress to the user.
 
-Language: headings/structure in English, descriptions in Thai (mixed with English technical terms).
+Output language: Thai mixed with English technical terms. Templates below use English for readability; actual output must be in Thai.
 
 ---
 
@@ -30,9 +30,9 @@ Output after fetching Jira ticket. Skip entirely if no Jira key provided.
 ```markdown
 ### Phase 1: Ticket Understanding
 
-**Problem:** <สรุปปัญหาเป็นไทย>
-**Value:** <ทำไมต้องทำ>
-**Scope:** <ขอบเขต>
+**Problem:** <problem summary>
+**Value:** <why it matters>
+**Scope:** <scope>
 
 **AC Checklist:**
 - [ ] AC1: <description>
@@ -48,8 +48,8 @@ Output after mapping ACs to code. Skip if no Jira key.
 
 | AC  | Status             | File          | Note                |
 | --- | ------------------ | ------------- | ------------------- |
-| AC1 | ✅ Implemented      | `src/foo.tsx` | ครบตาม spec          |
-| AC2 | 🔴 Not implemented  | —             | ไม่พบ implementation |
+| AC1 | ✅ Implemented      | `src/foo.tsx` | Complete per spec          |
+| AC2 | 🔴 Not implemented  | —             | No implementation found |
 ```
 
 Status values: `✅ Implemented`, `🔴 Not implemented`, `🔴 Partial`.
@@ -85,8 +85,8 @@ Output in two parts: agent progress table (update as each agent completes), then
 
 | #  | Sev | Rule | File          | Line | Agents | Issue                             |
 | -- | --- | ---- | ------------- | ---- | ------ | --------------------------------- |
-| 1  | 🔴  | #2   | `src/foo.tsx` | 42   | 3/7    | ใช้ `as any` — ควรเป็น type guard |
-| 2  | 🟡  | #9   | `src/bar.tsx` | 88   | 1/7    | console.log ค้างอยู่               |
+| 1  | 🔴  | #2   | `src/foo.tsx` | 42   | 3/7    | Uses `as any` — should use type guard |
+| 2  | 🟡  | #9   | `src/bar.tsx` | 88   | 1/7    | Leftover console.log                  |
 ```
 
 - **Sev:** 🔴 Critical, 🟡 Warning, 🔵 Info
@@ -103,8 +103,8 @@ Output in two parts: agent progress table (update as each agent completes), then
 
 | #  | Fix                                | File             |
 | -- | ---------------------------------- | ---------------- |
-| 1  | ลบ `as any`, เพิ่ม type guard       | `src/foo.tsx:42` |
-| 2  | ลบ console.log                      | `src/bar.tsx:88` |
+| 1  | Remove `as any`, add type guard    | `src/foo.tsx:42` |
+| 2  | Remove console.log                 | `src/bar.tsx:88` |
 
 ✅ **Validate:** `<validate-command>` — PASS
 ```
@@ -134,7 +134,7 @@ Always output last:
 
 ### Final Verdict
 
-✅ **APPROVE** — แก้ไข 🔴 X, 🟡 Y issues | AC: N/N ✅ | Validate: PASS | Signal: X%
+✅ **APPROVE** — Fixed 🔴 X, 🟡 Y issues | AC: N/N ✅ | Validate: PASS | Signal: X%
 ```
 
 Or:
@@ -144,7 +144,7 @@ Or:
 
 ### Final Verdict
 
-❌ **REQUEST CHANGES** — พบ 🔴 X issues ที่ต้องแก้ | AC: N/N ❌ | Signal: X%
+❌ **REQUEST CHANGES** — Found 🔴 X issues to fix | AC: N/N ❌ | Signal: X%
 ```
 
 Verdict rules:

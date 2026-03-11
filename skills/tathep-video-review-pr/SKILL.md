@@ -81,7 +81,7 @@ Flag unconditionally — no confidence filter, always report:
 - raw `try { } catch { }` → 🔴 (use `rethrowOrWrapError()` or `createErrorHandler()` from `@/utils/error-handling` — raw try-catch loses error context)
 - generic `new Error()` or `throw new Error()` → 🔴 (use domain exceptions `VideoProcessingError.transient()` / `.permanent()` or `ProcessingError.fromCode()` — generic errors bypass error classification)
 - `biome-ignore` comment → 🔴 (fix the issue instead — suppressing lints hides problems)
-- nesting > 1 level → 🔴 (use early return / guard clauses — deep nesting buries the happy path)
+- nesting > 1 level → 🔴 (use guard clauses, extract function, or lookup table — deep nesting buries the happy path)
 - `--no-verify` on git commands → 🔴 (never bypass pre-commit/pre-push hooks)
 - query inside loop (N+1) → 🔴 (batch INSERT/UPDATE — exponential DB load)
 - `console.log` / `console.error` → 🔴 (use `LoggerFactory.getLogger()` from `@/infrastructure/telemetry/LoggerFactory` — console output is unstructured)

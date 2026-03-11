@@ -65,6 +65,8 @@ For ✅/❌ code examples → [examples.md](examples.md)
 - No nested ternaries (`a ? b ? c : d : e`) → 🔴
 - No callback hell → use async/await → 🔴
 - Use `continue` for filtering in loops → 🟡
+- Replace 4+ branch `if-else` chains with lookup object/map → 🟡
+- Extract complex conditional blocks into named functions → 🟡
 
 ### #6 Small Function & SOLID
 

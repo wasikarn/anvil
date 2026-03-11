@@ -80,7 +80,7 @@ Flag unconditionally — no confidence filter, always report:
 - `result.data` accessed without checking `result.isOk` first → 🔴 (crashes on error responses — always guard the success path)
 - hardcoded route strings (`/manage/...`) → 🔴 (use `ROUTE_PATHS` — breaks silently on route rename, no type checking)
 - empty `catch {}` / swallowed errors → 🔴 (silent failures hide production bugs — errors vanish with no trace)
-- nesting > 1 level → 🔴 (use early return — deep nesting buries the happy path and makes tracing hard)
+- nesting > 1 level → 🔴 (use guard clauses, extract function, or lookup table — deep nesting buries the happy path)
 - `import { useTranslations } from 'next-intl'` → 🔴 (use `@/shared/libs/locale` — project wrapper ensures correct locale config and type safety)
 - `import { useQuery } from '@tanstack/react-query'` → 🔴 (must be `'react-query'` v3 — tanstack v5 API is incompatible with this codebase)
 - query/fetch inside loop → 🔴 (N+1 — exponential network load; batch or preload instead)

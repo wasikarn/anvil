@@ -81,7 +81,7 @@ Flag unconditionally — no confidence filter, always report:
 - hardcoded route strings (`/manage/...`, `/ad/...`) → 🔴 (use `ROUTE_PATHS` — breaks silently on route rename, no type checking)
 - hardcoded Thai status text → 🔴 (use `*_STATUS_TEXT` constants — duplicated strings diverge over time and miss future i18n)
 - empty `catch {}` / swallowed errors → 🔴 (silent failures hide production bugs — errors vanish with no trace)
-- nesting > 1 level → 🔴 (use early return — deep nesting buries the happy path and makes tracing hard)
+- nesting > 1 level → 🔴 (use guard clauses, extract function, or lookup table — deep nesting buries the happy path)
 - `import { useQuery } from '@tanstack/react-query'` → 🔴 (must be `'react-query'` v3 — tanstack v5 API is incompatible with this codebase)
 - query/fetch inside loop → 🔴 (N+1 — exponential network load; batch or preload instead)
 - `console.log` in non-test code → 🟡 (leaks debug output to production; use structured logger)

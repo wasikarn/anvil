@@ -166,6 +166,65 @@ async def get_conversation(self, user_code: str, session_id: str) -> Conversatio
         raise ConversationNotFoundException(session_id)
 ```
 
+### Dict lookup for multi-branch conditions
+
+❌ Bad:
+
+```python
+def get_status_color(status: str) -> str:
+    if status == "active":
+        return "green"
+    elif status == "pending":
+        return "yellow"
+    elif status == "error":
+        return "red"
+    elif status == "cancelled":
+        return "gray"
+    else:
+        return "black"
+```
+
+✅ Good:
+
+```python
+STATUS_COLORS: dict[str, str] = {
+    "active": "green",
+    "pending": "yellow",
+    "error": "red",
+    "cancelled": "gray",
+}
+
+def get_status_color(status: str) -> str:
+    return STATUS_COLORS.get(status, "black")
+```
+
+### Extract complex conditional blocks
+
+❌ Bad:
+
+```python
+async def process_conversation(conversation: Conversation) -> Response:
+    if conversation.messages:
+        if conversation.is_active():
+            if conversation.has_valid_context():
+                # ... processing logic
+                pass
+```
+
+✅ Good:
+
+```python
+async def process_conversation(conversation: Conversation) -> Response:
+    if not conversation.messages:
+        raise EmptyConversationError(conversation.id)
+    if not conversation.is_active():
+        raise InactiveConversationError(conversation.id)
+    if not conversation.has_valid_context():
+        raise InvalidContextError(conversation.id)
+
+    return await _execute_conversation_processing(conversation)
+```
+
 ---
 
 ## #6 Small Function & SOLID

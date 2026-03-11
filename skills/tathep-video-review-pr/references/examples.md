@@ -191,6 +191,69 @@ function validateVideoInput(input: VideoInput): void {
 }
 ```
 
+### Lookup table for multi-branch conditions
+
+❌ Bad:
+
+```typescript
+function getStatusColor(status: string): string {
+  if (status === 'active') {
+    return 'green'
+  } else if (status === 'pending') {
+    return 'yellow'
+  } else if (status === 'error') {
+    return 'red'
+  } else if (status === 'cancelled') {
+    return 'gray'
+  } else {
+    return 'black'
+  }
+}
+```
+
+✅ Good:
+
+```typescript
+const STATUS_COLORS: Record<string, string> = {
+  active: 'green',
+  pending: 'yellow',
+  error: 'red',
+  cancelled: 'gray',
+}
+
+function getStatusColor(status: string): string {
+  return STATUS_COLORS[status] ?? 'black'
+}
+```
+
+### Extract complex conditional blocks
+
+❌ Bad:
+
+```typescript
+async function processVideoJob(job: VideoJob) {
+  if (job.state === 'pending') {
+    if (job.input.isValid()) {
+      if (!job.isExpired()) {
+        // ... processing logic
+      }
+    }
+  }
+}
+```
+
+✅ Good:
+
+```typescript
+async function processVideoJob(job: VideoJob) {
+  if (job.state !== 'pending') return
+  if (!job.input.isValid()) throw VideoProcessingError.permanent('Invalid input', job.id)
+  if (job.isExpired()) throw VideoProcessingError.permanent('Job expired', job.id)
+
+  await executeVideoProcessing(job)
+}
+```
+
 ---
 
 ## #6 Small Function & SOLID

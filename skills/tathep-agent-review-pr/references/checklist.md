@@ -63,6 +63,9 @@ For ✅/❌ code examples → [examples.md](examples.md)
 - Max 1 nesting level — use early returns for all guard clauses → 🔴
 - No nested ternaries → 🔴
 - No callback hell → use async/await → 🔴
+- Use `continue` for loop filtering instead of nested `if` → 🟡
+- Replace 4+ branch `if-elif` chains with `dict` dispatch → 🟡
+- Extract complex conditional blocks into named functions → 🟡
 
 ### #6 Small Function & SOLID
 

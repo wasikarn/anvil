@@ -80,7 +80,7 @@ Flag unconditionally — no confidence filter, always report:
 - `throw new Error(...)` → 🔴 (use `XxxException.staticMethod()` — bypasses Effect-TS error channel; caller can't handle typed errors)
 - `new MyService()` inside UseCase/Controller → 🔴 (use `@inject` — breaks DI container; service can't be swapped or mocked)
 - empty `catch {}` / swallowed errors → 🔴 (silent failures hide production bugs — errors vanish with no trace)
-- nesting > 1 level → 🔴 (use early return — deep nesting buries the happy path and makes tracing hard)
+- nesting > 1 level → 🔴 (use guard clauses, extract function, or lookup table — deep nesting buries the happy path)
 - `.innerJoin()` → 🔴 (use `whereHas`/subquery — inner joins break Lucid ORM lazy-load conventions)
 - query inside loop → 🔴 (N+1 — exponential DB load; preload or batch instead)
 - `console.log` → 🔴 (use `Logger` from `App/Helpers/Logger` — console logs vanish in production, no structured context)

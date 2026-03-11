@@ -160,6 +160,70 @@ function getPlayerStatus(player: IPlayer) {
 }
 ```
 
+### Lookup table for multi-branch conditions
+
+❌ Bad:
+
+```typescript
+function getStatusColor(status: string): string {
+  if (status === 'active') {
+    return 'green'
+  } else if (status === 'pending') {
+    return 'yellow'
+  } else if (status === 'error') {
+    return 'red'
+  } else if (status === 'cancelled') {
+    return 'gray'
+  } else {
+    return 'black'
+  }
+}
+```
+
+✅ Good:
+
+```typescript
+const STATUS_COLORS: Record<string, string> = {
+  active: 'green',
+  pending: 'yellow',
+  error: 'red',
+  cancelled: 'gray',
+}
+
+function getStatusColor(status: string): string {
+  return STATUS_COLORS[status] ?? 'black'
+}
+```
+
+### Extract complex conditional blocks
+
+❌ Bad:
+
+```typescript
+function UserDashboard({ user }: Props) {
+  if (user) {
+    if (user.isActive) {
+      if (user.hasPermission('dashboard')) {
+        return <Dashboard user={user} />
+      }
+    }
+  }
+  return <AccessDenied />
+}
+```
+
+✅ Good:
+
+```typescript
+function UserDashboard({ user }: Props) {
+  if (!user) return <AccessDenied />
+  if (!user.isActive) return <AccessDenied />
+  if (!user.hasPermission('dashboard')) return <AccessDenied />
+
+  return <Dashboard user={user} />
+}
+```
+
 ---
 
 ## #6 Small Function & SOLID

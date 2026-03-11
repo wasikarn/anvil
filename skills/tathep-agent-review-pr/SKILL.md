@@ -85,6 +85,7 @@ Flag unconditionally — no confidence filter, always report:
 - raw `try/except` with broad `except` where structured `ErrorMessage` pattern exists → 🔴 (use project error handling patterns — broad catches hide error categories)
 - `import *` (wildcard import) → 🔴 (pollutes namespace — always import specific names)
 - query inside loop (N+1) → 🔴 (batch or preload — exponential DB load)
+- nesting > 1 level → 🔴 (use guard clauses, extract function, or lookup dict — deep nesting buries the happy path)
 
 Dispatch 7 agents in **foreground parallel** (all READ-ONLY). Pass each agent: Hard Rules above (verbatim) + AC context from Phase 2 + criteria from [references/checklist.md](references/checklist.md) + project-specific examples from [references/examples.md](references/examples.md).
 
