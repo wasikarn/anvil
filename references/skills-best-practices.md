@@ -1,22 +1,26 @@
 # Skills Best Practices
 
-Researched 2026-03-03 from agentskills.io spec, Claude Code official docs, and IDE validator.
+Researched 2026-03-11 from official Claude Code docs (`code.claude.com/docs/en/skills`).
 
 ## Supported Frontmatter Fields
 
-| Field | Required | Max |
-| ------- | ---------- | ----- |
-| `name` | No* | 64 chars |
-| `description` | Recommended | 1024 chars |
-| `argument-hint` | No | — |
-| `compatibility` | No | 500 chars |
-| `disable-model-invocation` | No | — |
-| `user-invocable` | No | — |
-| `license` | No | — |
-| `metadata` | No | — |
+All fields are optional. Only `description` is recommended.
 
-**Not IDE-validated:** `context`, `agent`, `model`, `hooks` — IDE flags these as unsupported.
-Existing PR review skills have `context: fork` and work at runtime; IDE validator may be behind.
+| Field | Description | Max |
+| --- | --- | --- |
+| `name` | Display name / slash command trigger. Lowercase letters, numbers, hyphens. | 64 chars |
+| `description` | What it does + when to use it. Claude uses this for auto-invocation. | 1024 chars |
+| `argument-hint` | Hint shown during `/` autocomplete (e.g. `[issue-number]`). | — |
+| `disable-model-invocation` | `true` = only user can invoke. Removes description from context. | — |
+| `user-invocable` | `false` = hides from `/` menu. Claude can still auto-invoke. | — |
+| `allowed-tools` | Tools auto-approved when skill is active (e.g. `Read, Grep, Bash(gh *)`). | — |
+| `model` | Model override when skill is active (e.g. `sonnet`, `opus`, `haiku`). | — |
+| `context` | `fork` = run in isolated subagent context. | — |
+| `agent` | Subagent type when `context: fork` (e.g. `Explore`, `Plan`, custom agent). | — |
+| `hooks` | Lifecycle hooks scoped to this skill. See hooks docs for format. | — |
+| `compatibility` | Prerequisites (CLIs, env, repo context). From agentskills.io spec. | 500 chars |
+| `license` | License identifier. From agentskills.io spec. | — |
+| `metadata` | Arbitrary metadata object. From agentskills.io spec. | — |
 
 ## disable-model-invocation vs user-invocable
 
@@ -48,12 +52,13 @@ description: "Summarize PR changes. Use when user asks for PR summary, code revi
 
 ## String Substitutions
 
-| Variable |
-| ---------- |
-| `$ARGUMENTS` |
-| `$0`, `$1`, `$2` |
-| `${CLAUDE_SESSION_ID}` |
-| `` !`cmd` `` |
+| Variable | Description |
+| --- | --- |
+| `$ARGUMENTS` | All arguments passed when invoking. Appended as `ARGUMENTS: <value>` if not present in content. |
+| `$ARGUMENTS[N]` / `$N` | Access specific argument by 0-based index (e.g. `$0` = first arg). |
+| `${CLAUDE_SESSION_ID}` | Current session ID. |
+| `${CLAUDE_SKILL_DIR}` | Directory containing the skill's SKILL.md. Use for referencing bundled scripts/files. |
+| `` !`cmd` `` | Shell injection — command runs before content is sent to Claude, output replaces placeholder. |
 
 ## File Structure
 

@@ -36,17 +36,18 @@ skills/<name>/
 name: skill-name                    # Slash command trigger: /skill-name
 description: "What it does. Use when: X, Y, Z."  # Max 1024 chars — cover what + when + triggers
 argument-hint: "[arg1] [arg2?]"    # Optional: shown in /autocomplete
-compatibility: "Requires gh CLI"   # Optional: prerequisites (CLIs, env, repo context)
 disable-model-invocation: true      # Optional: removes description from context; manual-only
-allowed-tools: Read, Grep, Glob    # Optional: auto-approve these tools when skill is active
-model: sonnet                       # Optional: override model (sonnet/opus/haiku/inherit)
+user-invocable: false               # Optional: hides from / menu; Claude can still auto-invoke
+allowed-tools: Read, Grep, Glob    # Optional: auto-approve tools when skill is active
+model: sonnet                       # Optional: override model (sonnet/opus/haiku)
 context: fork                       # Optional: run in isolated subagent context
-agent: Explore                      # Optional: subagent type when context: fork (default: general-purpose)
+agent: Explore                      # Optional: subagent type when context: fork
 hooks: {}                           # Optional: lifecycle hooks scoped to this skill
+compatibility: "Requires gh CLI"   # Optional: prerequisites (agentskills.io spec)
 ---
 ```
 
-**Substitutions:** `$ARGUMENTS` (all args), `$0`/`$1` (positional), `${CLAUDE_SKILL_DIR}` (skill directory path), `` !`command` `` (shell injection)
+**Substitutions:** `$ARGUMENTS` (all args), `$ARGUMENTS[N]`/`$N` (positional), `${CLAUDE_SESSION_ID}`, `${CLAUDE_SKILL_DIR}` (skill directory), `` !`command` `` (shell injection)
 
 Full field reference: [references/skills-best-practices.md](references/skills-best-practices.md)
 
