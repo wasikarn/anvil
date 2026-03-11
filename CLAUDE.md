@@ -61,6 +61,8 @@ Full field reference: [references/skills-best-practices.md](references/skills-be
 | `web-review-pr` |
 | `admin-review-pr` |
 | `auto-pr-review` |
+| `agent-review-pr` |
+| `video-review-pr` |
 | `env-check` |
 | `env-heal` |
 
