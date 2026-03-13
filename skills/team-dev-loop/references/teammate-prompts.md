@@ -41,6 +41,7 @@ INSTRUCTIONS:
 3. Document coupling points — what would break if we change X?
 4. Note constraints: unique indexes, foreign keys, validation rules
 5. Check for existing tests that cover this area
+6. DB performance risks: identify unbounded queries, missing indexes on query conditions, and tables with large data volumes — flag these as constraints in findings
 
 OUTPUT: Structured findings with file:line references for every claim.
 Send your findings to the team lead when done.
@@ -86,6 +87,7 @@ RULES:
 4. Commit after each completed task
 5. Run validate command after each commit: {validate_command}
 6. If blocked, message the team lead with specifics — do not guess
+7. For Repository/DB changes: apply sql-optimization patterns — batch writes (`createMany`/`updateOrCreateMany`), indexed query conditions, paginated results for unbounded data
 
 CONVENTIONS:
 {project_conventions}

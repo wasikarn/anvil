@@ -52,8 +52,17 @@ Flag unconditionally — no confidence filter, always report:
 - query inside loop → Critical (N+1 — exponential DB load; preload or batch instead)
 - `console.log` → Critical (use `Logger` from `App/Helpers/Logger` — console logs vanish in production, no structured context)
 - bare string DI paths `'App/Services/X'` → Critical (use `InjectPaths` constant — breaks silently on rename, no type checking)
+- unbounded `.all()` or raw query without `.limit()` or pagination on large-data tables → Warning (OOM/timeout risk at scale — use `.paginate()`, keyset, or explicit `.limit()`)
 
 `feature-dev:code-reviewer` applies TypeScript advanced type principles (generics, branded types, discriminated unions, type guards — NO `as any`) and Clean Code principles (SRP, early returns, naming intent, function size).
+
+## SQL Performance
+
+When the PR diff includes `*Repository*`, `*Migration*`, or raw SQL files, dispatch a sql-optimization agent in Phase 3 alongside the other agents:
+
+> Invoke `/sql-optimization` with the changed query code.
+> Focus: index coverage on WHERE/ORDER BY/JOIN columns, unbounded queries, batch ops vs loop writes, pagination pattern (keyset vs OFFSET for large tables).
+> Output findings in `[#3 Query Performance] file:line — issue → fix` format and report to lead.
 
 ## Project Constraints
 

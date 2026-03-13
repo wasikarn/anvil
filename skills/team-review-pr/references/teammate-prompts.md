@@ -43,6 +43,13 @@ You are reviewing PR #[PR_NUMBER] for architecture and performance issues.
 
 YOUR FOCUS: N+1 prevention (#3), DRY & simplicity (#4), flatten structure (#5), small functions & SOLID (#6), elegance (#7), and all Hard Rules.
 
+SQL PERFORMANCE: If the PR diff contains Repository files, database migration files, or raw SQL queries:
+1. Invoke /sql-optimization with the relevant query code
+2. Check index coverage on all WHERE/ORDER BY/JOIN conditions
+3. Verify pagination pattern (keyset preferred over OFFSET for large tables)
+4. Confirm batch operations (createMany/updateOrCreateMany) instead of loop writes
+5. Include sql-optimization findings in your report using standard severity format
+
 [INSERT SHARED RULES BLOCK]
 ```
 

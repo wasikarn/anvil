@@ -32,14 +32,19 @@ For ✅/❌ code examples → [examples.md](examples.md)
 
 | # | Aspect |
 | --- | -------- |
-| 3 | **N+1 Prevention** |
+| 3 | **Query Performance** |
 
-### #3 N+1 Prevention
+### #3 Query Performance
 
 - No query inside loop (N queries for N records) → 🔴
 - `.preload('relation')` used for eager loading related models → 🔴
 - `.whereHas()` or subquery used — never `.innerJoin()` → 🔴
 - Independent async calls use `Promise.all([...])` not sequential `await` → 🟡
+- Batch writes: `createMany()`/`updateOrCreateMany()` — not loop insert/update → 🟡
+- Pagination on large tables: `.paginate()` or keyset — not unbounded `.all()` → 🟡
+- Aggregates on DB side: `countDistinct()`/`sum()` — not `.all().length` or JS-side aggregation → 🟡
+- Column selection: `.select(['col1', 'col2'])` on wide models when full row not needed → 🔵
+- Complex JOINs in migrations: EXPLAIN ANALYZE evidence in PR description → 🔵
 
 ## Maintainability
 
@@ -141,6 +146,7 @@ Always verify:
 - [ ] **DI correct**: `@inject([InjectPaths.X])` · InjectPaths use `'IClassName'` format · import from `@adonisjs/fold`
 - [ ] **Provider imports**: via `ModulePaths.ts` relative paths — not global `'App/...'` strings
 - [ ] **Query style**: `subquery` or `whereHas` — never `JOIN`
+- [ ] **SQL performance**: batch ops (`createMany`/`updateOrCreateMany`) · paginated results for unbounded datasets · indexed WHERE/ORDER BY columns
 - [ ] **Error handling**: `XxxModuleException.staticMethod()` factory — not `throw new Error()`
 - [ ] **Effect-TS**: `Option.fromNullable` for nullable; `Effect.pipe` for composition; `TryCatch` for external calls
 - [ ] **Test isolation**: `Database.beginGlobalTransaction()` / `rollbackGlobalTransaction()` + `sinon.restore()`
