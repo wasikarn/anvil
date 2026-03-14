@@ -102,8 +102,16 @@
         ]
       }
     ],
-    "UserPromptSubmit": [],
     "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/rtk-rewrite.sh"
+          }
+        ]
+      },
       {
         "matcher": "Grep",
         "hooks": [
@@ -133,9 +141,18 @@
             "async": true
           }
         ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/shellcheck-written-scripts.sh",
+            "async": true
+          }
+        ]
       }
     ],
-    "PostToolUseFailure": [],
     "Notification": [
       {
         "hooks": [
@@ -210,7 +227,7 @@
   },
   "outputStyle": "Thai Tech Lead",
   "feedbackSurveyRate": 0,
-  "autoUpdatesChannel": "stable",
+  "autoUpdatesChannel": "latest",
   "autoMemoryDirectory": "~/.claude/memory",
   "skipDangerousModePermissionPrompt": true
 }
