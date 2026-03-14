@@ -16,7 +16,7 @@ bash scripts/link-skill.sh <name>
 
 # Check symlink status
 bash scripts/link-skill.sh --list
-```text
+```
 
 ## Contents
 
@@ -100,7 +100,7 @@ dotclaude/
 ├── global-CLAUDE.md  → ~/.claude/CLAUDE.md
 ├── statusline.sh     → ~/.claude/statusline.sh
 └── global-settings.template.json  # Template for settings.json
-```text
+```
 
 ## New Machine Setup
 
@@ -108,7 +108,7 @@ dotclaude/
 git clone git@github.com:wasikarn/dotclaude.git ~/Codes/Personals/dotclaude
 cd ~/Codes/Personals/dotclaude
 bash scripts/install.sh
-```text
+```
 
 The install script will:
 
