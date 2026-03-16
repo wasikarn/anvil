@@ -60,4 +60,3 @@ ls -la ~/.claude/skills/dlc-build
 - Artifacts written to **target project root** (not this skills repo): `dev-loop-context.md`, `research.md`, `plan.md`, `review-findings-*.md`
 - Team cleanup must be done by lead in Phase 6 — teammates don't self-terminate
 - One team per session — cannot run multiple dlc-build in parallel
-- `review-conventions.md` references 7-agent model — adapt to 3 reviewers (N/7 → N/3) when using in Phase 4

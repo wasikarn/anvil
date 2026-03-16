@@ -48,7 +48,7 @@ Before anything, verify agent teams are available:
 ```text
 If TeamCreate tool is not available → check graceful degradation:
 - If Task (subagent) tool is available → "Agent Teams not enabled. Running in subagent mode (no debate, parallel subagent review)."
-- If neither → "Running in solo mode. Use project-specific review skills instead: /tathep-api-review-pr, /tathep-web-review-pr, etc."
+- If neither → "Running in solo mode. Lead performs sequential checklist-based review per review-conventions.md."
 ```
 
 ---
@@ -77,6 +77,24 @@ Clean up after Phase 6:
 ```bash
 git worktree remove /tmp/review-pr-$0
 ```
+
+---
+
+## Phase 0.05: Context Bootstrap
+
+Run the `pr-review-bootstrap` agent before creating reviewer teammates — it uses Haiku (cheap) to gather shared context once, preventing 3x redundant fetches:
+
+```text
+Task pr-review-bootstrap agent with:
+  - PR number: $0
+  - Jira key: (if present in $ARGUMENTS)
+
+Capture output: {bootstrap_context} — includes diff summary, file groupings, AC checklist
+```
+
+Inject `{bootstrap_context}` into all 3 teammate prompts in Phase 2.
+
+If bootstrap fails → fallback: each teammate gathers its own context (current behavior). Do not block on this.
 
 ---
 
@@ -146,7 +164,15 @@ Create an agent team named `review-pr-$0` with 3 reviewer teammates using prompt
 - **Teammate 2 — Architecture & Performance:** Focus on N+1 (#3), DRY (#4), flatten (#5), SOLID (#6), elegance (#7)
 - **Teammate 3 — DX & Testing:** Focus on naming (#8), docs (#9), testability (#11), debugging (#12)
 
-Insert project Hard Rules (from Phase 1) and PR number into each prompt. If Jira AC was parsed (Phase 0.5), include AC summary so teammates can verify coverage in their focus area. All teammates are READ-ONLY.
+Insert into each teammate prompt:
+
+- Project Hard Rules (from Phase 1)
+- PR number
+- `{bootstrap_context}` from Phase 0.05 (if available)
+- AC summary if Jira AC was parsed (Phase 0.6)
+- Known dismissed patterns: if `{project_root}/.claude/review-dismissed.md` exists, include last 10 entries as `{dismissed_patterns}` — teammates skip re-raising these patterns without new evidence
+
+All teammates are READ-ONLY.
 
 ### Step 2: Wait for all reviews
 
@@ -170,9 +196,19 @@ Wait for all 3 teammates to complete their independent review. Track progress:
 
 Follow [debate-protocol.md](references/debate-protocol.md) exactly.
 
+### Step 0: Pre-Debate Triage
+
+Before broadcasting, classify all findings per [debate-protocol.md](references/debate-protocol.md) Pre-Debate Triage rules:
+
+- **Auto-pass** (skip debate, include directly): Hard Rule + confidence ≥ 90
+- **Auto-drop** (skip debate, drop): Info + confidence < 80
+- **Must-debate** (all others): enter round-robin
+
+Only must-debate findings are sent to teammates. This reduces debate token cost 30-50%.
+
 ### Step 1: Broadcast findings
 
-Send each teammate the compiled findings from all three reviews:
+Send each teammate the must-debate findings from all three reviews:
 
 ```text
 All reviews are complete. Here are the findings from all teammates:
@@ -226,6 +262,16 @@ Consolidate surviving findings per [review-conventions.md](../../references/revi
 4. **Signal check** — if (Critical+Warning)/Total < 60%, review for noise
 
 Output the consolidated findings table per [review-output-format.md](../../references/review-output-format.md).
+
+**Dismissed Findings Log:** After consolidation, if any findings were dropped via debate with clear reasoning, append to `{project_root}/.claude/review-dismissed.md`:
+
+```markdown
+| Date | Pattern | File | Reason dismissed | PR |
+| --- | --- | --- | --- | --- |
+| 2026-03-17 | missing null check | bar.ts:88 | guarded by caller at line 45 | #1234 |
+```
+
+Cap at 50 entries (remove oldest when over limit).
 
 Replace the "Agents" column with "Consensus":
 

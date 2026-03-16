@@ -5,13 +5,13 @@ Uses 3 reviewer teammates that challenge each other's findings instead of 7 para
 
 ## How It Differs from Other Skills
 
-| Aspect | dlc-review | dlc-review | dlc-build | dlc-debug |
-| --- | --- | --- | --- | --- |
-| Scope | PR review only | PR review + debate | Full dev loop | Debug + DX harden |
-| Execution | 7 subagents (report only) | 3 teammates (debate) | Dynamic roster per phase | Investigator + DX Analyst + Fixer |
-| False positives | Lead consolidation | Adversarial debate | Embedded (reuses dlc-review) | N/A (no review phase) |
-| Project scope | Project-specific | Auto-detects project | Auto-detects project | Auto-detects project |
-| Feature status | Stable, production | Experimental | Experimental | Experimental |
+| Aspect | dlc-review | dlc-build | dlc-debug |
+| --- | --- | --- | --- |
+| Scope | PR review + debate | Full dev loop | Debug + DX harden |
+| Execution | 3 teammates (debate) | Dynamic roster per phase | Investigator + DX Analyst + Fixer |
+| False positives | Adversarial debate | Embedded (reuses dlc-review) | N/A (no review phase) |
+| Project scope | Auto-detects project | Auto-detects project | Auto-detects project |
+| Feature status | Experimental | Experimental | Experimental |
 
 ## Docs Index
 
@@ -27,7 +27,7 @@ Uses 3 reviewer teammates that challenge each other's findings instead of 7 para
 - `SKILL.md` — lead orchestration playbook; phases, team creation, debate flow
 - `references/debate-protocol.md` — debate rules, round-robin assignment, consensus criteria
 - Reuses shared `references/review-conventions.md` and `references/review-output-format.md`
-- Project-specific Hard Rules loaded dynamically from `dlc-review` skills
+- Project-specific Hard Rules loaded from `{project_root}/.claude/skills/review-rules/hard-rules.md` if present
 
 ## Validate After Changes
 
@@ -51,3 +51,6 @@ ls -la ~/.claude/skills/dlc-review
 - Max 2 debate rounds enforced by lead — prevents runaway token usage
 - Team cleanup must be done by lead, not teammates
 - One team per session — cannot run multiple dlc-review in parallel
+- Phase 0.05 bootstrap uses `pr-review-bootstrap` agent (Haiku) — if unavailable, teammates gather context themselves
+- Pre-Debate Triage skips debate for Auto-pass (Hard Rule + conf ≥90) and Auto-drop (Info + conf <80) findings
+- Dismissed findings persist at `{project_root}/.claude/review-dismissed.md` — cap 50 entries FIFO

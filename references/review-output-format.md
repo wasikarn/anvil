@@ -1,6 +1,6 @@
 # PR Review Output Format
 
-Shared output format for all `*-review-pr` skills. Each phase outputs its section as it completes — streaming progress to the user.
+Shared output format for `dlc-*` review skills. Each phase outputs its section as it completes — streaming progress to the user.
 
 Output language: Thai mixed with English technical terms. Templates below use English for readability; actual output must be in Thai.
 
@@ -56,24 +56,20 @@ Status values: `✅ Implemented`, `🔴 Not implemented`, `🔴 Partial`.
 
 ## Phase 3: 12-Point Review
 
-Output in two parts: agent progress table (update as each agent completes), then findings table (after all 7 agents done).
+Output in two parts: reviewer progress table (update as each reviewer completes), then findings table (after all reviewers done).
 
-### Part 1: Agent Progress
+### Part 1: Reviewer Progress
 
 ```markdown
 ### Phase 3: 12-Point Review
 
-#### Agent Progress
+#### Reviewer Progress
 
-| Agent                     | Status  | 🔴  | 🟡  | 🔵  |
-| ------------------------- | ------- | --- | --- | --- |
-| code-reviewer             | ✅ Done | 1   | 2   | 0   |
-| comment-analyzer          | ✅ Done | 0   | 0   | 1   |
-| pr-test-analyzer          | ✅ Done | 0   | 1   | 0   |
-| silent-failure-hunter     | ✅ Done | 0   | 1   | 0   |
-| type-design-analyzer      | ✅ Done | 0   | 0   | 1   |
-| code-simplifier           | ✅ Done | 0   | 1   | 0   |
-| feature-dev:code-reviewer | ✅ Done | 1   | 0   | 1   |
+| Reviewer                    | Status  | 🔴  | 🟡  | 🔵  |
+| --------------------------- | ------- | --- | --- | --- |
+| Correctness & Security      | ✅ Done | 1   | 2   | 0   |
+| Architecture & Performance  | ✅ Done | 0   | 1   | 0   |
+| DX & Testing                | ✅ Done | 0   | 0   | 1   |
 ```
 
 ### Part 2: Findings (after dedup)
@@ -83,10 +79,10 @@ Output in two parts: agent progress table (update as each agent completes), then
 
 #### Findings
 
-| #  | Sev | Rule | File          | Line | Agents | Issue                             |
-| -- | --- | ---- | ------------- | ---- | ------ | --------------------------------- |
-| 1  | 🔴  | #2   | `src/foo.tsx` | 42   | 3/7    | Uses `as any` — should use type guard |
-| 2  | 🟡  | #9   | `src/bar.tsx` | 88   | 1/7    | Leftover console.log                  |
+| #  | Sev | Rule | File          | Line | Agreement | Issue                             |
+| -- | --- | ---- | ------------- | ---- | --------- | --------------------------------- |
+| 1  | 🔴  | #2   | `src/foo.tsx` | 42   | 2/3       | Uses `as any` — should use type guard |
+| 2  | 🟡  | #9   | `src/bar.tsx` | 88   | 1/3       | Leftover console.log                  |
 ```
 
 - **Sev:** 🔴 Critical, 🟡 Warning, 🔵 Info

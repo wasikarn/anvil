@@ -1,6 +1,6 @@
 # Review Conventions
 
-Shared conventions for all `tathep-*-review-pr` skills.
+Shared conventions for `dlc-*` review skills.
 
 ## Review Principles
 
@@ -43,9 +43,9 @@ Examples:
 
 ## Consolidation (Phase 3.5)
 
-After CHECKPOINT (all 7 agents collected):
+After CHECKPOINT (all reviewers collected):
 
-1. **Dedup** by `file:line` — 2+ agents flag same spot → keep highest severity, merge evidence, record agreement count (e.g. "3/7")
+1. **Dedup** by `file:line` — 2+ reviewers flag same spot → keep highest severity, merge evidence, record agreement count (e.g. "N/3")
 2. **Pattern cap** — same rule violation repeated in >3 files → consolidate into 1 finding + "and N more locations". List max 3 representative file:line references.
 3. **Verify** — re-read flagged code before confirming severity. Drop any finding where the code doesn't match the claim — if an agent didn't read the file or misread it, discard the finding entirely.
 4. **Remove false positives** — documented patterns, project exceptions, intentional code
@@ -59,16 +59,12 @@ After CHECKPOINT (all 7 agents collected):
 - Must cite evidence: file:line or specific pattern used
 - Focus: correct project patterns, test coverage on complex logic, architecture boundaries, thoughtful error handling
 
-## Agent Focus Areas
+## Reviewer Focus Areas
 
-| Agent | Primary Rules | Focus |
+| Reviewer | Primary Rules | Focus |
 | --- | --- | --- |
-| code-reviewer | #1, #4, #5, #6, #7 | Correctness, DRY, structure, SOLID |
-| comment-analyzer | #8, #9 | Naming, documentation |
-| pr-test-analyzer | #11 | Test coverage + quality |
-| silent-failure-hunter | #12, Hard Rules (catch) | Error handling, silent failures |
-| type-design-analyzer | #10, Hard Rules (type) | Type safety |
-| code-simplifier | #4, #5, #7 | Simplification, elegance |
-| feature-dev:code-reviewer | #1, #6, #10 | Architecture, advanced types |
+| Correctness & Security | #1, #2, #10, #12 | Functional correctness, security, type safety, error handling |
+| Architecture & Performance | #3, #4, #5, #6, #7 | N+1, DRY, structure, SOLID, elegance, SQL performance |
+| DX & Testing | #8, #9, #11, #12 | Naming, documentation, testability, debugging |
 
-All agents receive Hard Rules verbatim. Primary = report with full detail + examples. Secondary = flag only if 90+ confidence.
+All reviewers receive Hard Rules verbatim. Primary = report with full detail + examples. Secondary = flag only if 90+ confidence.

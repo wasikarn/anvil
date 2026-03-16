@@ -308,8 +308,6 @@ Reuse dlc-review pattern (see [teammate-prompts.md](references/teammate-prompts.
 3. Adversarial debate per [debate-protocol.md](../dlc-review/references/debate-protocol.md)
 4. Consolidate findings per [review-conventions.md](../../references/review-conventions.md)
 
-**Adaptation note:** `review-conventions.md` references 7 agents and "N/7" consensus — for dlc-build's 3-reviewer model: replace "7 agents" with "3 reviewers" and "N/7" with "N/3". Consolidation rules (dedup, pattern cap, verify, sort) still apply.
-
 **Confidence filter:** Drop any finding with confidence < 80 before consolidation (Hard Rule violations bypass this filter — always report).
 
 #### Iteration 2: Focused Review

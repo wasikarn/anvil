@@ -9,11 +9,17 @@ All teammates share these rules (insert into each prompt):
 ```text
 SCOPE: Only review files in the PR diff. Do NOT flag issues in unchanged files.
 
+CONTEXT:
+{bootstrap_context}
+
 RULES:
 - READ-ONLY — do not modify any files
 - Every finding MUST cite file:line with actual code evidence
 - Hard Rules: [insert project Hard Rules here]
 - Non-Hard-Rule findings require confidence >= 80 (scale 0-100)
+
+KNOWN FALSE POSITIVES (do not re-raise without new evidence):
+{dismissed_patterns}
 
 OUTPUT FORMAT: For each finding, provide:
 1. Severity: Critical/Warning/Info
