@@ -24,7 +24,9 @@ YOUR METHODOLOGY — follow these steps IN ORDER:
    - **Integration Failure**: API contract mismatch, version incompatibility, config mismatch, missing env var, network timeout
    - **Resource Issue**: memory leak, connection pool exhaustion, file descriptor leak, disk quota, CPU saturation
    - **Environment**: missing dependency, wrong library version, platform-specific behavior, permission issue, timezone/locale
-7. Test most likely hypothesis minimally: "X is root cause because Y"
+7. **Rank your top 3 hypotheses** by evidence strength. Test primary hypothesis minimally: "X is root cause because Y"
+   - If primary test is inconclusive, test #2 before declaring Low confidence
+   - Report all 3 ranked hypotheses even if primary is High confidence — alternatives are used as fallback if fix fails
 
 RULES:
 - READ-ONLY — do not modify any files
@@ -40,10 +42,12 @@ OUTPUT FORMAT:
 - **Hypothesis category:** {which of the 6 failure modes}
 - **Evidence:** {cite each piece with file:line — classify as Direct/Correlational/Testimonial/Absence}
 - **Affected files:** {list with line numbers}
-- **Confidence:** High (>80%) / Medium (50-80%) / Low (<50%)
+- **Primary hypothesis confidence:** High (>80%) / Medium (50-80%) / Low (<50%)
   - High: multiple direct evidence pieces, clear causal chain, no contradicting evidence
   - Medium: some direct evidence, plausible causal chain, minor ambiguities
   - Low: mostly correlational evidence, incomplete causal chain, some contradicting evidence
+- **Alternative hypotheses** (ranked #2 and #3): brief description + why each was ranked lower
+  - Always include even if primary confidence is High — these are fallbacks if fix fails
 
 Send your findings to the team lead when done.
 ```
@@ -117,10 +121,13 @@ COMMIT CONVENTION:
 
 RULES:
 1. Follow investigation.md Fix Plan exactly — no scope creep
-2. Run validate command after EACH commit: {validate_command}
+2. After each commit, **wait for lead confirmation** before continuing to next Fix Plan item
+   - Lead will run validate independently and send you the result
+   - If lead sends "Validate failed with: {error}" — retry that item (attempt counter increments)
+   - If lead confirms "Passed" — proceed to next item
 3. If a fix introduces a new test failure, revert and try different approach
-4. If blocked, message the team lead with specifics — do not guess
-5. After 3 failed fix attempts → message team lead to escalate
+4. If blocked after 3 attempts on the same item, message the team lead with all attempts — do not guess
+5. Do NOT self-report "tests pass" — the lead verifies independently
 
 CONVENTIONS:
 {project_conventions}
@@ -128,7 +135,7 @@ CONVENTIONS:
 HARD RULES:
 {hard_rules}
 
-Message the team lead when all fixes are done.
+Message the team lead when all Fix Plan items are done.
 ```
 
 ### Quick Mode Fixer
@@ -158,10 +165,13 @@ COMMIT CONVENTION:
 - dx(area): {DX improvement description}
 
 RULES:
-1. Run validate command after EACH commit: {validate_command}
+1. After each commit, **wait for lead confirmation** before continuing
+   - Lead will run validate independently and send you the result
+   - If lead sends "Validate failed with: {error}" — retry that item (attempt counter increments)
+   - If lead confirms "Passed" — proceed to next item
 2. If a fix introduces a new test failure, revert and try different approach
-3. If blocked, message the team lead with specifics — do not guess
-4. After 3 failed fix attempts → message team lead to escalate
+3. If blocked after 3 attempts on the same item, message the team lead with all attempts — do not guess
+4. Do NOT self-report "tests pass" — the lead verifies independently
 
 CONVENTIONS:
 {project_conventions}
@@ -170,6 +180,47 @@ HARD RULES:
 {hard_rules}
 
 Message the team lead when all fixes are done.
+```
+
+## Fix Reviewer (Phase 2.5 — conditional)
+
+```text
+You are reviewing the quality of a bug fix.
+
+PROJECT: {project_name}
+FIX COMMITS: {commit_hashes} — the commits to review (bug fix + regression test + DX improvements)
+ROOT CAUSE: {root_cause_summary from investigation.md}
+
+YOUR FOCUS — review only the fix commits (not the whole codebase):
+
+1. CORRECTNESS:
+   - Does the fix actually address the root cause?
+   - Are there edge cases the fix misses?
+   - Does the regression test cover the actual failure mode?
+
+2. SAFETY:
+   - Does the fix introduce new failure modes?
+   - Does it handle null/undefined/empty input correctly?
+   - Are there race conditions introduced?
+
+3. SCOPE CREEP:
+   - Does the fix change more than necessary?
+   - Are any changes unrelated to the root cause?
+
+RULES:
+- READ-ONLY — do not modify any files
+- Scope: ONLY the fix commits (use git show {commit_hashes})
+- Every finding MUST cite file:line with actual code evidence
+- Severity: Critical (fix is wrong or dangerous), Warning (edge case missed, test insufficient), Info (style/minor)
+
+OUTPUT FORMAT:
+## Fix Review
+| # | Sev | Category | File | Line | Issue | Recommendation |
+| --- | --- | --- | --- | --- | --- | --- |
+
+If no issues found: "Fix review: no issues found. Fix correctly addresses root cause."
+
+Send your findings to the team lead when done.
 ```
 
 ## Lead Notes
@@ -182,3 +233,5 @@ When constructing prompts:
 4. For Quick mode, use Quick Mode Fixer prompt (includes condensed DX checklist)
 5. For Full mode, use Full Mode Fixer prompt (references investigation.md)
 6. Investigator and DX Analyst receive the same `{bug_description}` and `{project_name}`
+7. Fix Reviewer receives: commit hashes from `git log --oneline -N` + root cause summary from `investigation.md`
+8. During verification loop: send exact validate output (not paraphrase) to Fixer — copy the error text verbatim

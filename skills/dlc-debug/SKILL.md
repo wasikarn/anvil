@@ -1,7 +1,7 @@
 ---
 name: dlc-debug
 description: "Agent Teams debugging with parallel DX analysis — Investigator traces root cause while DX Analyst audits observability, error handling, and test coverage. Pass a Jira key (BEP-XXXX) to enrich bug context from ticket details. Use when: debugging complex bugs, production incidents, or when you want to harden the affected area. Triggers: debug, team debug, investigate bug, /dlc-debug."
-argument-hint: "[bug-description-or-jira-key] [--quick?]"
+argument-hint: "[bug-description-or-jira-key] [--quick?] [--review?]"
 compatibility: "Requires gh CLI, git, and CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 (degrades gracefully without)"
 disable-model-invocation: true
 allowed-tools: Read, Grep, Glob, Bash(git *), Bash(gh *)
@@ -29,8 +29,9 @@ Invoke as `/dlc-debug [bug-description-or-jira-key] [--quick?]`
 **Recent commits:** !`git log --oneline -5 2>/dev/null`
 **Project:** !`bash "${CLAUDE_SKILL_DIR}/../../scripts/detect-project.sh" 2>/dev/null`
 
-**Args:** `$0`=bug description (required) · `$1`=`--quick` (optional, skip DX Analyst)
+**Args:** `$0`=bug description (required) · `$1`=`--quick` (optional, skip DX Analyst) · `$2`=`--review` (optional, add Fix Reviewer after Fixer)
 **Modes:** Full = Investigator + DX Analyst + Fixer · Quick = Investigator + Fixer (DX checklist only)
+**Review:** `--review` flag or P0 severity → Fix Reviewer runs after Fixer (scoped to fix commits only)
 
 Read CLAUDE.md first — auto-loaded, contains project patterns and conventions.
 
@@ -103,7 +104,15 @@ Branch: {branch_name}
 
 ## Hard Rules
 {project_hard_rules}
+
+## Progress
+- [ ] Phase 0: Triage
+- [ ] Phase 1: Investigation
+- [ ] Phase 2: Fix + Harden
+- [ ] Phase 3: Ship
 ```
+
+Lead updates the progress checkboxes at the start of each phase.
 
 **GATE:** User confirms mode → proceed. (P0: auto-proceed with Full mode.)
 
@@ -133,7 +142,14 @@ Create team `debug-{branch}` with 1-2 teammates using prompts from [teammate-pro
 
 ### Step 3: Convergence
 
-Lead shuts down all Phase 1 teammates, then merges findings into `investigation.md` at **target project root**:
+Lead shuts down all Phase 1 teammates.
+
+**DX Signal Quality Check (Full mode only):** Before merging, check DX findings:
+
+- If all findings are Info-severity → skip DX section in Fix Plan (no actionable improvements)
+- If (Critical + Warning) / Total < 50% → note "low DX signal" to user before proceeding
+
+Then merge findings into `investigation.md` at **target project root**:
 
 ```markdown
 # Investigation Report
@@ -152,7 +168,7 @@ Lead shuts down all Phase 1 teammates, then merges findings into `investigation.
 3. [DX] {each DX improvement as separate item}
 ```
 
-**GATE:** Root cause identified with file:line evidence → proceed. If Investigator cannot find root cause → escalate to user (do not proceed to Phase 2).
+**GATE:** Root cause identified with file:line evidence **and confidence >= Medium** → proceed. If confidence is Low or root cause not found → escalate to user (present alternative hypotheses; do not proceed to Phase 2).
 
 ---
 
@@ -175,13 +191,47 @@ commit 4: dx(area): add logging at {decision point}
 commit 5: dx(area): add validation for {edge case}
 ```
 
-**Validate gate:** Project validate command must pass after every commit.
+### Verification Loop
 
-**If fix fails:** If 3+ fix attempts fail → Fixer messages lead. Lead questions architecture and escalates to user. Do not attempt fix #4 without user guidance.
+After **each Fix Plan item** committed by Fixer, Lead independently verifies before Fixer continues:
 
-After Fixer completes, Lead shuts down Fixer.
+```text
+1. Run validate command and read actual output (do not trust Fixer's "tests pass" claim)
+2. If validate FAILS:
+   a. Send exact error output to Fixer: "Validate failed with: {error_text} — retry"
+   b. Fixer retries (attempt counter increments)
+   c. If 3 retries on same item → escalate (see below)
+3. If validate PASSES: confirm to Fixer and continue to next Fix Plan item
+```
 
-**GATE:** All Fix Plan items done + validate passes → proceed.
+**If fix fails 3 times on the same item:**
+
+1. Present all attempts + error patterns to user
+2. **Check alternative hypothesis first** — if `investigation.md` has an alternative hypothesis, offer: "Try alternative hypothesis: {hypothesis} before full re-investigation"
+3. If alternative also fails or none exists → offer 4 escalation options (see phase-gates.md)
+
+After all Fix Plan items done, Lead shuts down Fixer.
+
+**Final Lead Verification (do not rely on Fixer's claims):**
+
+1. Run validate command fresh and read actual output
+2. `git diff --stat HEAD~N` — confirm scope matches Fix Plan (N = number of fix commits)
+3. `git log --oneline -10` — confirm one commit per Fix Plan item
+4. `git status` — confirm clean working tree
+
+**GATE:** All Fix Plan items done + Final Lead verification passes → proceed.
+
+### Phase 2.5: Fix Review (conditional)
+
+Run Fix Review if: `--review` flag was passed **or** severity is P0.
+
+Create Fix Reviewer in same team using prompts from [teammate-prompts.md](references/teammate-prompts.md).
+Provide: fix commit hashes (from `git log --oneline -N`), root cause summary from `investigation.md`.
+
+After Fix Reviewer completes, Lead shuts down Fix Reviewer.
+
+**If Fix Reviewer finds Critical issues** → Lead presents findings to user and asks whether to fix before shipping or proceed.
+**If Fix Reviewer finds only Warnings/Info** → include in Debug Summary; proceed to Phase 3.
 
 ---
 
@@ -220,7 +270,7 @@ After Fixer completes, Lead shuts down Fixer.
 
 ## Constraints
 
-- **Max 2 teammates concurrent** — Investigator + DX Analyst in Phase 1, then Fixer alone in Phase 2
+- **Max 2 teammates concurrent** — Investigator + DX Analyst in Phase 1 · Fixer alone in Phase 2 · Fix Reviewer alone in Phase 2.5
 - **No debate phase** — debugging needs speed, not consensus
 - **Investigator is READ-ONLY** — no file modifications during Phase 1
 - **DX Analyst is READ-ONLY** — no file modifications during Phase 1

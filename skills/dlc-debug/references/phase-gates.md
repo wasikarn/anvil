@@ -30,21 +30,32 @@ Every phase transition has explicit gate conditions. No phase proceeds until its
 ### Investigate → Fix
 
 - [ ] Investigator completed with root cause analysis
-- [ ] Root cause cites file:line evidence with confidence level
+- [ ] Root cause cites file:line evidence with **confidence >= Medium (50%)**
+  - **Low confidence** → escalate to user before proceeding; present alternative hypotheses and ask for guidance
+  - High/Medium confidence → proceed automatically
 - [ ] DX Analyst completed with findings table (Full mode only)
 - [ ] `investigation.md` written with merged findings and Fix Plan
 - [ ] Investigator + DX Analyst shut down
 
 If Investigator cannot identify root cause → escalate to user. Do NOT proceed to Fix.
 
-### Fix → Ship
+### Fix → Phase 2.5 (or Ship if no review)
 
-- [ ] All Fix Plan items attempted
+- [ ] All Fix Plan items verified by Lead's verification loop (not Fixer's self-report)
 - [ ] Bug fix committed with regression test
 - [ ] DX improvements committed (Critical: all, Warning: as appropriate)
-- [ ] Project validate command passes
-- [ ] No uncommitted changes in working tree
+- [ ] **Final Lead verification:**
+  1. Run validate command fresh and read actual output
+  2. `git diff --stat HEAD~N` — confirm scope matches Fix Plan (N = number of commits)
+  3. `git log --oneline -10` — confirm commit-per-task convention followed
+  4. No uncommitted changes: `git status` shows clean working tree
 - [ ] Fixer shut down
+
+### Phase 2.5 → Ship (conditional — skip if no `--review` flag and severity is not P0)
+
+- [ ] Fix Reviewer completed with findings table
+- [ ] If Critical findings: user decides to fix or proceed
+- [ ] Fix Reviewer shut down
 
 ### Ship → Done
 
