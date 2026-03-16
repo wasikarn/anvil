@@ -8,7 +8,7 @@ Every phase transition has explicit gate conditions. No phase proceeds until its
 | --- | --- | --- |
 | Triage → Research | Requirements clear, mode confirmed | User |
 | Research → Plan | research.md complete with file:line evidence | Lead |
-| Plan → Implement (iter 1) | plan.md approved by user (annotation cycle done) | User |
+| Plan → Implement (iter 1) | .claude/plans/plan.md approved by user (annotation cycle done) | User |
 | Implement → Review | All tasks done + validate passes | Lead (automated) |
 | Review → Assess | Findings consolidated with consensus | Lead |
 | Assess → Implement (loop) | Critical found, iteration < 3 | Lead (automated) |
@@ -34,14 +34,14 @@ Every phase transition has explicit gate conditions. No phase proceeds until its
 
 ### Plan → Implement
 
-- [ ] `plan.md` written with task list
+- [ ] `.claude/plans/plan.md` written with task list
 - [ ] Tasks tagged `[P]` (parallel) or `[S]` (sequential)
 - [ ] User completed at least 1 annotation cycle
 - [ ] User explicitly approves plan
 
 ### Implement → Review
 
-- [ ] All tasks in plan.md marked complete
+- [ ] All tasks in .claude/plans/plan.md marked complete
 - [ ] Project validate command passes (e.g. `npm run validate:all`)
 - [ ] Each task has at least 1 commit
 - [ ] No uncommitted changes in working tree
@@ -73,7 +73,7 @@ Critical count == 0?
 
 - [ ] Summary presented with iteration count
 - [ ] User selects: create PR / merge / keep branch / restart loop
-- [ ] If PR: description auto-generated from plan.md + review summary
+- [ ] If PR: description auto-generated from .claude/plans/plan.md + review summary
 - [ ] Team cleaned up (all teammates shut down)
 
 ## Escalation Protocol

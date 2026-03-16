@@ -211,11 +211,11 @@ Lead merges all explorer findings into `research.md` at project root. Structure:
 ### Step 1: Enter Plan Mode (Full mode only)
 
 **Full mode:** Call `EnterPlanMode` — uses Opus model for higher-quality planning.
-**Quick/Hotfix mode:** Skip — write `plan.md` directly without entering plan mode.
+**Quick/Hotfix mode:** Skip — write `.claude/plans/plan.md` directly without entering plan mode.
 
 ### Step 2: Write Plan
 
-Create `plan.md` at project root. Source material:
+Create `.claude/plans/plan.md` in the target project directory. Source material:
 
 - Full mode: `research.md` findings
 - Quick mode: task description + CLAUDE.md conventions
@@ -234,7 +234,7 @@ Plan structure:
 ### Step 3: Annotation Cycle
 
 Present plan to user. User may correct, reject, add constraints, or redirect.
-Write all corrections into `plan.md` `## Annotations` section.
+Write all corrections into `.claude/plans/plan.md` `## Annotations` section.
 Repeat until user approves.
 
 **Full mode:** After user approves — call `ExitPlanMode` before proceeding.
@@ -265,7 +265,7 @@ Create 1-2 worker teammates using prompts from [teammate-prompts.md](references/
 - `[S]` tasks: 1 worker, sequential
 - `[P]` tasks: 2 workers with non-overlapping file assignments
 
-**Controller provides full task text** to each worker — copy the relevant task descriptions from plan.md into the worker creation prompt. Workers should NOT need to read plan.md themselves for their assigned tasks.
+**Controller provides full task text** to each worker — copy the relevant task descriptions from .claude/plans/plan.md into the worker creation prompt. Workers should NOT need to read .claude/plans/plan.md themselves for their assigned tasks.
 
 Workers follow TDD: failing test → implement → green → commit.
 Lead validates each commit against plan.
@@ -427,19 +427,19 @@ Present options to user:
 
 #### PR Template (option 1)
 
-**Title:** English, under 70 chars, start with verb — derived from plan.md problem statement.
+**Title:** English, under 70 chars, start with verb — derived from .claude/plans/plan.md problem statement.
 
 **Description (Thai):**
 
 ```markdown
 ## สิ่งที่เปลี่ยนแปลง
-{สรุปสิ่งที่แก้/เพิ่ม จาก plan.md problem statement — 2-3 ประโยค}
+{สรุปสิ่งที่แก้/เพิ่ม จาก .claude/plans/plan.md problem statement — 2-3 ประโยค}
 
 ## เหตุผล
-{ทำไมต้องทำ และ approach ที่เลือก จาก plan.md rationale}
+{ทำไมต้องทำ และ approach ที่เลือก จาก .claude/plans/plan.md rationale}
 
 ## วิธีทดสอบ
-{test strategy จาก plan.md — unit/integration/manual steps}
+{test strategy จาก .claude/plans/plan.md — unit/integration/manual steps}
 
 ## Jira
 {BEP-XXXX หรือ N/A}
@@ -475,7 +475,7 @@ If cherry-pick conflicts → note the conflict in backport PR description, assig
 
 1. Shut down all remaining teammates
 2. Clean up the team
-3. Optionally archive artifacts (`dev-loop-context.md`, `plan.md`, `research.md`, `review-findings-*.md`)
+3. Optionally archive artifacts (`dev-loop-context.md`, `.claude/plans/plan.md`, `research.md`, `review-findings-*.md`)
 
 ---
 
@@ -488,7 +488,7 @@ If cherry-pick conflicts → note the conflict in backport PR description, assig
 - **Reviewers are READ-ONLY always** — no file modifications during review
 - **Hard Rules cannot be dropped** — only reclassified with evidence
 - **Commit per task** — enables clean revert if fix introduces regressions
-- **Artifacts persist on disk** — `dev-loop-context.md`, `plan.md`, `research.md`, `review-findings-*.md` survive context compression
+- **Artifacts persist on disk** — `dev-loop-context.md`, `.claude/plans/plan.md`, `research.md`, `review-findings-*.md` survive context compression
 - **YAGNI** — implement only what the task requires; speculative abstractions and "just in case" code are review findings
 - **Hotfix scope** — `--hotfix` touches only the broken code path; no refactoring, no unrelated improvements
 - **Hotfix backport** — every hotfix to `main` MUST have a backport PR to `develop`; skip only if `develop` already has the fix
