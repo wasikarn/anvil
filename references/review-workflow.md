@@ -88,10 +88,9 @@ Per [review-conventions.md](review-conventions.md): dedup by file:line, verify s
 As **Tech Lead**: focus on architecture, patterns, team standards, and mentoring — not syntax nitpicks.
 For each issue, explain *why* it matters, not just *what* to change.
 
-1. Show **AC Checklist** (pass/fail) first (if Jira)
-2. Collect all findings: file path + line number + comment body
-3. Submit to GitHub (see below)
-4. Show: AC Checklist, Strengths, all findings
+1. Collect all findings: file path + line number + comment body
+2. **EXECUTE GitHub submission (mandatory — see below)**
+3. Show: AC Checklist, Strengths, all findings, submission result
 
 **Comment language:** Thai mixed with English technical terms — casual Slack/PR tone. Short, direct, no stiff formal phrases. Use the skill's comment examples as style reference.
 
@@ -99,7 +98,9 @@ For each issue, explain *why* it matters, not just *what* to change.
 
 **Strengths (1-3):** Genuinely good practices only. Evidence required (file:line). Use the skill's strengths examples as reference.
 
-#### Submit to GitHub
+#### Submit to GitHub (MANDATORY — must execute, not describe)
+
+**DO NOT** output Phase 4 section until after the `gh` command has been executed and returned a response. The submission is an action, not a template to fill in.
 
 **Step 1 — get line numbers from diff:**
 
@@ -134,6 +135,8 @@ gh pr review {pr_number} --repo {repo} \
 ```
 
 Replace `{repo}` and `{pr_number}` with values from the skill's Project Config and invocation args.
+
+**Step 3 — verify submission succeeded:** Check the `gh` command exit code and response. If it fails (e.g., line number out of diff range), fix the offending comment's line number and retry.
 
 ---
 

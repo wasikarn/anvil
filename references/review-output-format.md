@@ -113,6 +113,8 @@ If validate fails: `❌ **Validate:** <command> — FAIL` then fix and re-valida
 
 ### Reviewer Mode
 
+Output this section ONLY AFTER the `gh` command has been executed:
+
 ```markdown
 ### Phase 4: Review Submitted
 
@@ -120,7 +122,13 @@ If validate fails: `❌ **Validate:** <command> — FAIL` then fix and re-valida
 - praise: (ดี) <specific good practice> `<file:line>`
 - praise: (ดี) <specific good practice> `<file:line>`
 
-Submitted **<REQUEST_CHANGES|APPROVE>** with <N> inline comments to GitHub.
+✅ Submitted **<REQUEST_CHANGES|APPROVE>** with <N> inline comments to GitHub.
+```
+
+If submission failed, output:
+
+```markdown
+❌ Submission failed: <error message> — retrying with corrected line numbers
 ```
 
 No fix table — findings are submitted as GitHub inline comments instead.
