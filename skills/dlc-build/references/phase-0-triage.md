@@ -80,9 +80,15 @@ Per [workflow-modes.md](workflow-modes.md) — use the Mode Decision Tree:
 
 **GATE:** User confirms mode (and validate command if empty) → proceed.
 
-## Step 2.5: Branch Setup
+## Step 2.5: Load Mode File
 
-Follow [workflow-modes.md](workflow-modes.md) §Branch Setup — creates feature/fix/hotfix branch based on mode and Jira key.
+After mode is confirmed, load the corresponding mode file:
+
+- Full → [references/modes/feature.md](modes/feature.md)
+- Quick → [references/modes/quick.md](modes/quick.md)
+- Hotfix → [references/modes/hotfix.md](modes/hotfix.md)
+
+The mode file contains branch strategy and mode-specific phase pre-steps. Read it in full before proceeding. Branch setup is defined inside the mode file — `workflow-modes.md §Branch Setup` no longer exists.
 
 ## Step 3: Create Context Artifact
 
