@@ -322,6 +322,14 @@ Load [references/pr-template.md](references/pr-template.md) for PR title format,
    - **Auto-cleanup:** `rm -f .claude/dlc-build/dev-loop-context.md .claude/dlc-build/research.md .claude/dlc-build/review-findings-*.md`
    - **Archive:** leave in `.claude/dlc-build/` for reference (add `.claude/dlc-build/` to `.gitignore` if not already)
 
+### Step 4: Metrics (optional)
+
+Append one JSON line to `~/.claude/dlc-metrics.jsonl` for future analysis:
+
+```json
+{"skill":"dlc-build","date":"{YYYY-MM-DD}","mode":"{mode}","iterations":{N},"task":"{task_short}","final_critical":0,"final_warning":{W}}
+```
+
 ---
 
 ## Constraints
