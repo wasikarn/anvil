@@ -30,9 +30,9 @@ Search before answering: QMD for project docs/notes, claude-mem for past decisio
 Use `tree` instead of multiple Glob/LS calls:
 
 ```bash
-tree --gitignore -L 3 --dirsfirst --prune   # full overview
-tree -d --gitignore -L 3                     # dirs only
-tree -P "*.ts|*.tsx" --gitignore --prune     # specific types
+rtk tree --gitignore -L 3 --dirsfirst --prune   # full overview
+rtk tree -d --gitignore -L 3                     # dirs only
+rtk tree -P "*.ts|*.tsx" --gitignore --prune     # specific types
 ```
 
 ## CLI Tools Available

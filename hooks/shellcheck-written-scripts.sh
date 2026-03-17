@@ -17,22 +17,15 @@ esac
 # Skip if file doesn't exist (shouldn't happen in PostToolUse, but safety)
 [ -f "$FILE_PATH" ] || exit 0
 
-# Run shellcheck — capture output
-SC_OUTPUT=$(shellcheck -f gcc "$FILE_PATH" 2>&1) || true
+# Run shellcheck via RTK — compressed output, no manual truncation needed
+SC_OUTPUT=$(rtk shellcheck "$FILE_PATH" 2>&1) || true
 
 if [ -z "$SC_OUTPUT" ]; then
   exit 0
 fi
 
-# Count issues
-ERRORS=$(echo "$SC_OUTPUT" | grep -c ':.*error:' || true)
-WARNINGS=$(echo "$SC_OUTPUT" | grep -c ':.*warning:' || true)
-
-# Truncate if too long (max 2000 chars)
-SC_TRUNCATED=$(echo "$SC_OUTPUT" | head -30)
-
-jq -nc --arg ctx "shellcheck found ${ERRORS} error(s), ${WARNINGS} warning(s) in ${FILE_PATH}:
-${SC_TRUNCATED}" '{
+jq -nc --arg ctx "shellcheck: ${FILE_PATH}
+${SC_OUTPUT}" '{
   hookSpecificOutput: {
     hookEventName: "PostToolUse",
     additionalContext: $ctx

@@ -16,7 +16,7 @@ Pre-gather shared project context in one pass so Phase 1 explorers don't redunda
 ### 1. Map Project Structure
 
 ```bash
-tree --gitignore -L 3 --dirsfirst --prune
+rtk tree --gitignore -L 3 --dirsfirst --prune
 ```
 
 ### 2. Read CLAUDE.md
