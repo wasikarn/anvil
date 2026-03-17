@@ -1,0 +1,82 @@
+[
+  {
+    "query": "ok so the PM just assigned me BEP-2341 — it's a new endpoint to let admins bulk-deactivate users. the ticket has ACs and subtasks. can you build it?",
+    "should_trigger": true
+  },
+  {
+    "query": "production is on fire, users can't log in, it's been 45 minutes. need to hotfix this NOW. BEP-1992 --hotfix",
+    "should_trigger": true
+  },
+  {
+    "query": "i want to add rate limiting to the auth routes in tathep-platform-api. it's a new middleware, probably touches 3-4 files. let's build it",
+    "should_trigger": true
+  },
+  {
+    "query": "can you implement BEP-1845 for me? it's a refactor to move the payment processing logic out of the controller into a separate service layer",
+    "should_trigger": true
+  },
+  {
+    "query": "there's a small bug where the user profile endpoint returns a 500 when the avatar_url is null. it's a quick fix in UserController.ts. fix it using the dev loop",
+    "should_trigger": true
+  },
+  {
+    "query": "i need to implement the full notification system from BEP-2210 — push notifications, in-app alerts, email digest. it's a big feature",
+    "should_trigger": true
+  },
+  {
+    "query": "let's do the whole dev loop for this: add pagination to the /users list endpoint. currently it returns all users which is killing the DB",
+    "should_trigger": true
+  },
+  {
+    "query": "can you pick up BEP-1776 and run through the full development workflow? it's a medium-sized refactor of how we handle file uploads",
+    "should_trigger": true
+  },
+  {
+    "query": "run dlc-build on this: i need to add a soft-delete mechanism (deleted_at column) to the articles table and update all queries to filter it out",
+    "should_trigger": true
+  },
+  {
+    "query": "the checkout flow is broken in prod after the deploy at 2pm. BEP-9001 --hotfix. customers can't complete purchases",
+    "should_trigger": true
+  },
+  {
+    "query": "hey can you review my PR #847? i just added the OAuth2 Google login feature and want a thorough review before i merge",
+    "should_trigger": false
+  },
+  {
+    "query": "can you respond to the reviewer comments on PR #801? they asked me to extract the validation logic and add error codes. about 5 comments total",
+    "should_trigger": false
+  },
+  {
+    "query": "i need to debug why the /api/reports endpoint is timing out in production. it started happening after the migration last night, been going on for 3 hours",
+    "should_trigger": false
+  },
+  {
+    "query": "the memory usage on our API server keeps climbing until it OOMs after about 6 hours under load. help me find the leak",
+    "should_trigger": false
+  },
+  {
+    "query": "i made a small change to update the error message in auth middleware to be more descriptive. can you commit it with a conventional commit message?",
+    "should_trigger": false
+  },
+  {
+    "query": "need to write a quick one-off migration script to backfill the country_code column for existing users based on their phone_number. not a feature, just a data fix we need to run once",
+    "should_trigger": false
+  },
+  {
+    "query": "the CI pipeline failed on PR #912 — there's a TypeScript error in UserService.spec.ts line 42 about a missing property. can you look at the diff and suggest what's wrong?",
+    "should_trigger": false
+  },
+  {
+    "query": "can you explain how the Effect-TS Layer system works in our codebase? specifically how services get injected into use cases and how to add a new service dependency",
+    "should_trigger": false
+  },
+  {
+    "query": "i want to add a unit test for the calculateTax function in TaxService.ts — it doesn't have any tests yet and i want to cover edge cases",
+    "should_trigger": false
+  },
+  {
+    "query": "can you search the codebase for all places where we call db.query() directly without going through the repository layer? want to know the scope before i start the cleanup",
+    "should_trigger": false
+  }
+]

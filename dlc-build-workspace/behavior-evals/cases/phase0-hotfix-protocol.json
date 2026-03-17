@@ -1,0 +1,74 @@
+[
+  {
+    "id": "hotfix-flag-branch-from-main",
+    "dimension": "phase0-hotfix-protocol",
+    "description": "--hotfix flag → HOTFIX mode, branch from main",
+    "query": "production is on fire, users can't log in, it's been 45 minutes — BEP-1992 --hotfix",
+    "assertions": [
+      {
+        "text": "Classifies as HOTFIX mode",
+        "check": "output contains 'hotfix' or 'HOTFIX' as mode classification"
+      },
+      {
+        "text": "Branches from main (not develop)",
+        "check": "branch setup includes 'git checkout main' before creating new branch"
+      },
+      {
+        "text": "Branch name uses hotfix/ prefix",
+        "check": "proposed branch name starts with 'hotfix/'"
+      },
+      {
+        "text": "YAML mode field is 'hotfix'",
+        "check": "dev-loop-context.md YAML frontmatter has 'mode: hotfix'"
+      },
+      {
+        "text": "Mentions skipping Phase 1 research",
+        "check": "output explicitly states Phase 1 (Research) will be skipped"
+      }
+    ]
+  },
+  {
+    "id": "hotfix-production-keyword",
+    "dimension": "phase0-hotfix-protocol",
+    "description": "Production incident without explicit flag → HOTFIX",
+    "query": "the checkout flow is broken in prod after the deploy at 2pm — customers can't complete purchases, this is P0",
+    "assertions": [
+      {
+        "text": "Classifies as HOTFIX mode due to production/P0 keywords",
+        "check": "output contains 'hotfix' or 'HOTFIX' as mode classification"
+      },
+      {
+        "text": "Branches from main",
+        "check": "branch setup targets main as base branch"
+      },
+      {
+        "text": "Branch name uses hotfix/ prefix",
+        "check": "proposed branch name starts with 'hotfix/'"
+      }
+    ]
+  },
+  {
+    "id": "hotfix-pr-target-and-backport",
+    "dimension": "phase0-hotfix-protocol",
+    "description": "Hotfix PR targets main + mentions backport to develop",
+    "query": "api is returning 500 for all authenticated requests after last night's deploy — BEP-9001 --hotfix",
+    "assertions": [
+      {
+        "text": "Classifies as HOTFIX mode",
+        "check": "output contains 'hotfix' or 'HOTFIX' as mode classification"
+      },
+      {
+        "text": "PR target is main",
+        "check": "output mentions PR targeting main branch (not develop)"
+      },
+      {
+        "text": "Mentions backport to develop after merging to main",
+        "check": "output mentions backport PR or cherry-pick to develop after the hotfix lands on main"
+      },
+      {
+        "text": "Mode is identified as hotfix in output",
+        "check": "output clearly identifies mode as hotfix — either via YAML 'mode: hotfix', or via a heading, classification result, or summary stating HOTFIX mode"
+      }
+    ]
+  }
+]

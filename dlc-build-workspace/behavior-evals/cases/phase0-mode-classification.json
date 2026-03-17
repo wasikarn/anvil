@@ -1,0 +1,130 @@
+[
+  {
+    "id": "phase0-full-new-feature",
+    "dimension": "phase0-mode-classification",
+    "description": "New feature touching multiple layers → FULL",
+    "query": "add email notification functionality to the user service: send confirmation emails on register, and password-reset emails on request",
+    "assertions": [
+      {
+        "text": "Classifies as FULL mode",
+        "check": "output contains 'full' or 'FULL' as mode classification"
+      },
+      {
+        "text": "Branch from develop (not main)",
+        "check": "branch setup targets develop as base, not main"
+      },
+      {
+        "text": "Branch uses feature/ prefix or asks user for a feature/ branch name",
+        "check": "output proposes a branch starting with 'feature/' OR asks user to provide a branch name with 'feature/' as suggested prefix"
+      },
+      {
+        "text": "YAML mode field is 'full'",
+        "check": "dev-loop-context.md YAML frontmatter has 'mode: full'"
+      },
+      {
+        "text": "Cites new feature / multi-layer reasoning",
+        "check": "output mentions new feature, new domain, or multiple architectural layers as classification reason"
+      }
+    ]
+  },
+  {
+    "id": "phase0-full-schema-change",
+    "dimension": "phase0-mode-classification",
+    "description": "Schema migration → FULL",
+    "query": "add a soft-delete mechanism: deleted_at column to the articles table and update all queries to filter it out",
+    "assertions": [
+      {
+        "text": "Classifies as FULL mode",
+        "check": "output contains 'full' or 'FULL' as mode classification"
+      },
+      {
+        "text": "Cites schema change as reason",
+        "check": "output mentions schema change, migration, or API contract change as classification reason"
+      },
+      {
+        "text": "YAML mode field is 'full'",
+        "check": "dev-loop-context.md YAML frontmatter has 'mode: full'"
+      }
+    ]
+  },
+  {
+    "id": "phase0-quick-isolated-bug",
+    "dimension": "phase0-mode-classification",
+    "description": "Small isolated bug in one file → QUICK",
+    "query": "there's a small bug where the user profile endpoint returns a 500 when the avatar_url is null. it's a quick fix in UserController.ts",
+    "assertions": [
+      {
+        "text": "Classifies as QUICK mode",
+        "check": "output contains 'quick' or 'QUICK' as mode classification"
+      },
+      {
+        "text": "Branch from develop using fix/ prefix",
+        "check": "output states that the branch will use 'fix/' prefix AND targets develop as base branch — both conditions must be present"
+      },
+      {
+        "text": "YAML mode field is 'quick'",
+        "check": "dev-loop-context.md YAML frontmatter has 'mode: quick'"
+      },
+      {
+        "text": "Cites isolated/single-file reasoning",
+        "check": "output mentions bug fix, isolated, single file, or same layer as classification reason"
+      }
+    ]
+  },
+  {
+    "id": "phase0-quick-refactor-same-layer",
+    "dimension": "phase0-mode-classification",
+    "description": "Small refactor within same layer → QUICK",
+    "query": "refactor the validateEmail function in AuthService.ts to use a regex constant instead of inline regex — it's called from 2 places in the same file",
+    "assertions": [
+      {
+        "text": "Classifies as QUICK mode",
+        "check": "output contains 'quick' or 'QUICK' as mode classification"
+      },
+      {
+        "text": "YAML mode field is 'quick'",
+        "check": "dev-loop-context.md YAML frontmatter has 'mode: quick'"
+      }
+    ]
+  },
+  {
+    "id": "phase0-full-explicit-flag",
+    "dimension": "phase0-mode-classification",
+    "description": "--full flag overrides default classification → FULL",
+    "query": "fix the typo in the error message in AuthMiddleware.ts --full",
+    "assertions": [
+      {
+        "text": "Classifies as FULL mode due to --full flag",
+        "check": "output contains 'full' or 'FULL' as mode classification, not Quick"
+      },
+      {
+        "text": "Acknowledges --full flag override",
+        "check": "output mentions --full flag or user override as reason for Full mode"
+      }
+    ]
+  },
+  {
+    "id": "phase0-full-jira-multi-story",
+    "dimension": "phase0-mode-classification",
+    "description": "Jira ticket for multi-layer feature → FULL",
+    "query": "implement BEP-2210 — it's the full notification system: push notifications, in-app alerts, email digest",
+    "assertions": [
+      {
+        "text": "Classifies as FULL mode",
+        "check": "output contains 'full' or 'FULL' as mode classification"
+      },
+      {
+        "text": "Attempts to fetch Jira ticket BEP-2210",
+        "check": "output mentions fetching BEP-2210 or references Jira context"
+      },
+      {
+        "text": "Branch uses feature/BEP-2210 prefix",
+        "check": "proposed branch name starts with 'feature/BEP-2210'"
+      },
+      {
+        "text": "YAML jira field is BEP-2210",
+        "check": "dev-loop-context.md YAML has 'jira: BEP-2210'"
+      }
+    ]
+  }
+]

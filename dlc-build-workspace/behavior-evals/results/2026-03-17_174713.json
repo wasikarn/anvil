@@ -1,0 +1,470 @@
+{
+  "results": [
+    {
+      "id": "hotfix-flag-branch-from-main",
+      "dimension": "phase0-hotfix-protocol",
+      "description": "--hotfix flag \u2192 HOTFIX mode, branch from main",
+      "passed": 5,
+      "total": 5,
+      "assertions": [
+        {
+          "text": "Classifies as HOTFIX mode",
+          "passed": true,
+          "evidence": "The output explicitly states \"**Final Mode: HOTFIX**\" in section 1 and repeatedly references \"HOTFIX\" and \"hotfix\" throughout the document, including in the mode classification, branch setup, YAML frontmatter (`mode: hotfix`), and section headers.",
+          "raw": "PASS \u2014 The output explicitly states \"**Final Mode: HOTFIX**\" in section 1 and repeatedly references \"HOTFIX\" and \"hotfix\" throughout the document, including in the mode classification, branch setup, YAML frontmatter (`mode: hotfix`), and section headers."
+        },
+        {
+          "text": "Branches from main (not develop)",
+          "passed": true,
+          "evidence": "The output explicitly states \"Base Branch Analysis: Mode: HOTFIX \u2192 must branch from `main` (not `develop`)\" and includes the command \"git checkout main && git pull\" before creating the new branch.",
+          "raw": "PASS \u2014 The output explicitly states \"Base Branch Analysis: Mode: HOTFIX \u2192 must branch from `main` (not `develop`)\" and includes the command \"git checkout main && git pull\" before creating the new branch."
+        },
+        {
+          "text": "Branch name uses hotfix/ prefix",
+          "passed": true,
+          "evidence": "The output clearly states \"Full branch name: `hotfix/BEP-1992-users-cant-log-in`\" which starts with the 'hotfix/' prefix as required.",
+          "raw": "PASS \u2014 The output clearly states \"Full branch name: `hotfix/BEP-1992-users-cant-log-in`\" which starts with the 'hotfix/' prefix as required."
+        },
+        {
+          "text": "YAML mode field is 'hotfix'",
+          "passed": true,
+          "evidence": "The YAML frontmatter in section 3 explicitly shows `mode: hotfix` in the dev-loop-context.md structure.",
+          "raw": "PASS \u2014 The YAML frontmatter in section 3 explicitly shows `mode: hotfix` in the dev-loop-context.md structure."
+        },
+        {
+          "text": "Mentions skipping Phase 1 research",
+          "passed": true,
+          "evidence": "The output explicitly states \"Decision: SKIP Phase 1 entirely\" and provides detailed reasoning that \"Hotfix mode explicitly skips Phase 1 research\" with a direct quote from the workflow modes documentation.",
+          "raw": "PASS \u2014 The output explicitly states \"Decision: SKIP Phase 1 entirely\" and provides detailed reasoning that \"Hotfix mode explicitly skips Phase 1 research\" with a direct quote from the workflow modes documentation."
+        }
+      ],
+      "output_preview": "# Phase 0 Triage Execution \u2014 Evaluation Mode\n\nProcessing request: `production is on fire, users can't log in, it's been 45 minutes \u2014 BEP-1992 --hotfix`\n\n---\n\n## 1. Mode Classification\n\n**Walking the Mode Decision Tree:**\n\n```\nStep 1: --hotfix flag OR task mentions \"production\"/\"P0\"/\"urgent fix\"/\"hotfix\"/\"incident\"?\n  \u2713 YES: --hotfix flag is present\n  \u2713 YES: Task mentions \"production is on fire\"\n  \u2713 YES: Task context indicates urgent production issue (45-minute outage)\n  \n\u2192 MATCH: HOTFIX mode\n```",
+      "elapsed": 64.7
+    },
+    {
+      "id": "hotfix-production-keyword",
+      "dimension": "phase0-hotfix-protocol",
+      "description": "Production incident without explicit flag \u2192 HOTFIX",
+      "passed": 3,
+      "total": 3,
+      "assertions": [
+        {
+          "text": "Classifies as HOTFIX mode due to production/P0 keywords",
+          "passed": true,
+          "evidence": "The output clearly states \"**Final Mode: HOTFIX**\" in the Mode Classification section and consistently uses \"HOTFIX\" and \"hotfix\" throughout the document as the mode classification.",
+          "raw": "PASS \u2014 The output clearly states \"**Final Mode: HOTFIX**\" in the Mode Classification section and consistently uses \"HOTFIX\" and \"hotfix\" throughout the document as the mode classification."
+        },
+        {
+          "text": "Branches from main",
+          "passed": true,
+          "evidence": "The output explicitly states \"**Base branch:** `main` (hotfix mode always branches from main, not develop)\" and shows the git commands creating the branch from main: \"git checkout main\" followed by \"git checkout -b hotfix/checkout-flow-broken\".",
+          "raw": "PASS \u2014 The output explicitly states \"**Base branch:** `main` (hotfix mode always branches from main, not develop)\" and shows the git commands creating the branch from main: \"git checkout main\" followed by \"git checkout -b hotfix/checkout-flow-broken\"."
+        },
+        {
+          "text": "Branch name uses hotfix/ prefix",
+          "passed": true,
+          "evidence": "The output explicitly states \"**Branch prefix:** `hotfix/`\" and shows the full branch name as \"`hotfix/checkout-flow-broken`\" which clearly starts with the hotfix/ prefix.",
+          "raw": "PASS \u2014 The output explicitly states \"**Branch prefix:** `hotfix/`\" and shows the full branch name as \"`hotfix/checkout-flow-broken`\" which clearly starts with the hotfix/ prefix."
+        }
+      ],
+      "output_preview": "# Phase 0 Triage Analysis\n\n## 1. Mode Classification\n\n**Walking the Decision Tree:**\n\n```\nStep 1: --hotfix flag OR task mentions \"production\"/\"P0\"/\"urgent fix\"/\"hotfix\"/\"incident\"?\n  \u2192 YES: Task explicitly mentions \"broken in prod\" and \"P0\"\n  \u2192 MATCH: HOTFIX mode\n```\n\n**Final Mode: HOTFIX**\n\n**Rationale:** The request contains multiple hotfix triggers:\n- \"broken in prod\" \u2192 production issue\n- \"P0\" \u2192 highest priority/urgency\n- \"customers can't complete purchases\" \u2192 revenue-impacting incident\n- Tim",
+      "elapsed": 50.7
+    },
+    {
+      "id": "hotfix-pr-target-and-backport",
+      "dimension": "phase0-hotfix-protocol",
+      "description": "Hotfix PR targets main + mentions backport to develop",
+      "passed": 3,
+      "total": 4,
+      "assertions": [
+        {
+          "text": "Classifies as HOTFIX mode",
+          "passed": true,
+          "evidence": "The output explicitly states \"**Final Mode: HOTFIX**\" in the Mode Classification section and uses \"HOTFIX\" throughout the document including in the YAML where it shows \"mode: hotfix\".",
+          "raw": "PASS \u2014 The output explicitly states \"**Final Mode: HOTFIX**\" in the Mode Classification section and uses \"HOTFIX\" throughout the document including in the YAML where it shows \"mode: hotfix\"."
+        },
+        {
+          "text": "PR target is main",
+          "passed": true,
+          "evidence": "The output explicitly states \"**Base Branch:** `main`\" in the Branch Setup section and shows the git commands starting with \"git checkout main\" before creating the hotfix branch.",
+          "raw": "PASS \u2014 The output explicitly states \"**Base Branch:** `main`\" in the Branch Setup section and shows the git commands starting with \"git checkout main\" before creating the hotfix branch."
+        },
+        {
+          "text": "Mentions backport to develop after merging to main",
+          "passed": false,
+          "evidence": "The output does not mention backport, cherry-pick, or any process for moving changes back to the develop branch after the hotfix merges to main; it only discusses the hotfix workflow up through merge to main without addressing post-merge backporting.",
+          "raw": "FAIL \u2014 The output does not mention backport, cherry-pick, or any process for moving changes back to the develop branch after the hotfix merges to main; it only discusses the hotfix workflow up through merge to main without addressing post-merge backporting."
+        },
+        {
+          "text": "Mode is identified as hotfix in output",
+          "passed": true,
+          "evidence": "The output explicitly states \"**Final Mode: HOTFIX**\" in the Mode Classification section and includes `mode: hotfix` in the YAML frontmatter of dev-loop-context.md.",
+          "raw": "PASS \u2014 The output explicitly states \"**Final Mode: HOTFIX**\" in the Mode Classification section and includes `mode: hotfix` in the YAML frontmatter of dev-loop-context.md."
+        }
+      ],
+      "output_preview": "# Phase 0 Triage Analysis\n\n## 1. Mode Classification\n\n**Walking the Mode Decision Tree:**\n\n1. **Check: `--hotfix` flag OR task mentions \"production\"/\"P0\"/\"urgent fix\"/\"hotfix\"/\"incident\"?**\n   - \u2705 YES: `--hotfix` flag is present\n   - \u2705 YES: Task mentions \"500 for all authenticated requests after last night's deploy\" (production issue)\n   \n   **\u2192 HOTFIX mode**\n\n**Final Mode: HOTFIX**\n\n**Rationale:** The explicit `--hotfix` flag combined with production-impacting behavior (500 errors for all authe",
+      "elapsed": 44.5
+    },
+    {
+      "id": "jira-key-present-fetch",
+      "dimension": "phase0-jira-handling",
+      "description": "Jira key in query \u2192 fetch ticket + extract ACs",
+      "passed": 3,
+      "total": 3,
+      "assertions": [
+        {
+          "text": "Identifies BEP-2341 as Jira key",
+          "passed": true,
+          "evidence": "The output explicitly identifies \"BEP-2341\" as the Jira ticket key multiple times, including in the document title \"Phase 0 Triage Analysis for BEP-2341,\" in the YAML block with \"jira: 'BEP-2341',\" and in the Jira Handling section stating \"Action: YES \u2014 Will fetch Jira ticket BEP-2341.\"",
+          "raw": "PASS \u2014 The output explicitly identifies \"BEP-2341\" as the Jira ticket key multiple times, including in the document title \"Phase 0 Triage Analysis for BEP-2341,\" in the YAML block with \"jira: 'BEP-2341',\" and in the Jira Handling section stating \"Action: YES \u2014 Will fetch Jira ticket BEP-2341.\""
+        },
+        {
+          "text": "Plans to fetch the Jira ticket",
+          "passed": true,
+          "evidence": "The output explicitly states under \"4. Jira Handling\" that \"Action: YES \u2014 Will fetch Jira ticket BEP-2341\" and describes the fetch sequence including \"Call Jira API for ticket BEP-2341\" and \"Extract AC items.\"",
+          "raw": "PASS \u2014 The output explicitly states under \"4. Jira Handling\" that \"Action: YES \u2014 Will fetch Jira ticket BEP-2341\" and describes the fetch sequence including \"Call Jira API for ticket BEP-2341\" and \"Extract AC items.\""
+        },
+        {
+          "text": "YAML jira field set to BEP-2341",
+          "passed": true,
+          "evidence": "The YAML section in dev-loop-context.md explicitly contains `jira: \"BEP-2341\"` which directly satisfies the assertion that the YAML jira field is set to BEP-2341.",
+          "raw": "PASS \u2014 The YAML section in dev-loop-context.md explicitly contains `jira: \"BEP-2341\"` which directly satisfies the assertion that the YAML jira field is set to BEP-2341."
+        }
+      ],
+      "output_preview": "# Phase 0 Triage Analysis for BEP-2341\n\n## 1. Mode Classification\n\n**Walking the Decision Tree:**\n\n1. **--hotfix flag OR task mentions \"production\"/\"P0\"/\"urgent fix\"/\"hotfix\"/\"incident\"?**\n   - NO \u2014 task does not mention any urgency indicators\n\n2. **--quick flag?**\n   - NO \u2014 no flag provided\n\n3. **--full flag?**\n   - NO \u2014 no flag provided\n\n4. **Task involves ANY of:**\n   - \"new feature\" / \"add endpoint\" / \"new module\" / \"redesign\" \u2192 **YES** (\"new endpoint\")\n   - Schema change (migration) or API ",
+      "elapsed": 42.9
+    },
+    {
+      "id": "jira-key-absent-skip",
+      "dimension": "phase0-jira-handling",
+      "description": "No Jira key \u2192 skip Jira fetch entirely",
+      "passed": 2,
+      "total": 2,
+      "assertions": [
+        {
+          "text": "Decides to skip Jira ticket fetch",
+          "passed": true,
+          "evidence": "The output explicitly states \"**Decision:** \u274c **Skip Jira fetch**\" in the \"4. Jira Handling\" section and provides reasoning that \"skip if no Jira key in `$ARGUMENTS`\".",
+          "raw": "PASS \u2014 The output explicitly states \"**Decision:** \u274c **Skip Jira fetch**\" in the \"4. Jira Handling\" section and provides reasoning that \"skip if no Jira key in `$ARGUMENTS`\"."
+        },
+        {
+          "text": "YAML jira field is empty",
+          "passed": true,
+          "evidence": "The YAML section explicitly shows `jira: \"\"` on line 39, which satisfies the criteria for an empty jira field with empty string value.",
+          "raw": "PASS \u2014 The YAML section explicitly shows `jira: \"\"` on line 39, which satisfies the criteria for an empty jira field with empty string value."
+        }
+      ],
+      "output_preview": "# Phase 0 Triage Analysis\n\n## 1. Mode Classification\n\nWalking the Mode Decision Tree:\n\n**Step 1:** `--hotfix` flag OR task mentions \"production\"/\"P0\"/\"urgent fix\"/\"hotfix\"/\"incident\"?\n- \u274c NO \u2014 no hotfix flag, no production urgency keywords\n\n**Step 2:** `--quick` flag?\n- \u274c NO \u2014 no quick flag present\n\n**Step 3:** `--full` flag?\n- \u274c NO \u2014 no full flag present\n\n**Step 4:** Task involves ANY of:\n- \"new feature\" / \"add endpoint\" / \"new module\" / \"redesign\"\n  - \u2705 YES \u2014 \"new middleware\" implies a new mod",
+      "elapsed": 48.2
+    },
+    {
+      "id": "phase0-full-new-feature",
+      "dimension": "phase0-mode-classification",
+      "description": "New feature touching multiple layers \u2192 FULL",
+      "passed": 5,
+      "total": 5,
+      "assertions": [
+        {
+          "text": "Classifies as FULL mode",
+          "passed": true,
+          "evidence": "The output explicitly states \"**Final Mode: `FULL`**\" in the Mode Classification section and the YAML frontmatter contains \"mode: full\".",
+          "raw": "PASS \u2014 The output explicitly states \"**Final Mode: `FULL`**\" in the Mode Classification section and the YAML frontmatter contains \"mode: full\"."
+        },
+        {
+          "text": "Branch from develop (not main)",
+          "passed": true,
+          "evidence": "The output explicitly states \"Base Branch: `develop`\" and shows the git commands starting with \"git checkout develop\" before creating the feature branch, confirming that develop (not main) is the base branch target.",
+          "raw": "PASS \u2014 The output explicitly states \"Base Branch: `develop`\" and shows the git commands starting with \"git checkout develop\" before creating the feature branch, confirming that develop (not main) is the base branch target."
+        },
+        {
+          "text": "Branch uses feature/ prefix or asks user for a feature/ branch name",
+          "passed": true,
+          "evidence": "The output proposes the branch name \"feature/email-notifications\" with the feature/ prefix, as shown in the \"Full Branch Name: `feature/email-notifications`\" section and in the git commands `git checkout -b feature/email-notifications`.",
+          "raw": "PASS \u2014 The output proposes the branch name \"feature/email-notifications\" with the feature/ prefix, as shown in the \"Full Branch Name: `feature/email-notifications`\" section and in the git commands `git checkout -b feature/email-notifications`."
+        },
+        {
+          "text": "YAML mode field is 'full'",
+          "passed": true,
+          "evidence": "The YAML frontmatter in section 3 contains the line \"mode: full\" which directly satisfies the assertion.",
+          "raw": "PASS \u2014 The YAML frontmatter in section 3 contains the line \"mode: full\" which directly satisfies the assertion."
+        },
+        {
+          "text": "Cites new feature / multi-layer reasoning",
+          "passed": true,
+          "evidence": "The output explicitly states \"This is a multi-file feature introducing a new domain concept (email notifications)\" and later mentions \"multiple architectural layers\" will be touched including \"user service registration logic, password-reset logic, email service integration, possibly models/migrations, config\" as the reasoning for FULL mode classification.",
+          "raw": "PASS \u2014 The output explicitly states \"This is a multi-file feature introducing a new domain concept (email notifications)\" and later mentions \"multiple architectural layers\" will be touched including \"user service registration logic, password-reset logic, email service integration, possibly models/migrations, config\" as the reasoning for FULL mode classification."
+        }
+      ],
+      "output_preview": "# Phase 0 Triage Evaluation \u2014 `dlc-build` Skill (Lead Agent)\n\n---\n\n## 1. Mode Classification\n\n**Walking the Decision Tree:**\n\n1. **`--hotfix` flag OR task mentions \"production\"/\"P0\"/\"urgent fix\"/\"hotfix\"/\"incident\"?**\n   - \u274c NO \u2014 No flag present, no urgency keywords in task description.\n\n2. **`--quick` flag?**\n   - \u274c NO \u2014 No flag present.\n\n3. **`--full` flag?**\n   - \u274c NO \u2014 No flag present.\n\n4. **Task involves ANY of:**\n   - \u2705 **\"new feature\"** \u2014 Adding email notification functionality qualifies ",
+      "elapsed": 58.2
+    },
+    {
+      "id": "phase0-full-schema-change",
+      "dimension": "phase0-mode-classification",
+      "description": "Schema migration \u2192 FULL",
+      "passed": 3,
+      "total": 3,
+      "assertions": [
+        {
+          "text": "Classifies as FULL mode",
+          "passed": true,
+          "evidence": "The output explicitly states \"**Decision: FULL mode**\" in the Mode Classification section and includes \"mode: full\" in the YAML configuration.",
+          "raw": "PASS \u2014 The output explicitly states \"**Decision: FULL mode**\" in the Mode Classification section and includes \"mode: full\" in the YAML configuration."
+        },
+        {
+          "text": "Cites schema change as reason",
+          "passed": true,
+          "evidence": "The output explicitly states \"\u2705 **Schema change**: Adding `deleted_at` column requires a migration\" in Step 4 of the Mode Classification section, and later mentions \"This is an architectural change\" and \"Database migration planning\" as part of the rationale for FULL mode.",
+          "raw": "PASS \u2014 The output explicitly states \"\u2705 **Schema change**: Adding `deleted_at` column requires a migration\" in Step 4 of the Mode Classification section, and later mentions \"This is an architectural change\" and \"Database migration planning\" as part of the rationale for FULL mode."
+        },
+        {
+          "text": "YAML mode field is 'full'",
+          "passed": true,
+          "evidence": "The YAML frontmatter in section 3 explicitly contains \"mode: full\" on line 2 of the yaml block.",
+          "raw": "PASS \u2014 The YAML frontmatter in section 3 explicitly contains \"mode: full\" on line 2 of the yaml block."
+        }
+      ],
+      "output_preview": "# Phase 0 Triage Analysis\n\n## 1. Mode Classification\n\nWalking the decision tree:\n\n**Step 1:** `--hotfix` flag OR task mentions \"production\"/\"P0\"/\"urgent fix\"/\"hotfix\"/\"incident\"?\n- \u274c No flags, no urgent production keywords\n\n**Step 2:** `--quick` flag?\n- \u274c No flag present\n\n**Step 3:** `--full` flag?\n- \u274c No flag present\n\n**Step 4:** Task involves ANY of:\n- \"new feature\" / \"add endpoint\" / \"new module\" / \"redesign\"\n- Schema change (migration) or API contract change\n- Jira epic or multi-story ticket",
+      "elapsed": 46.2
+    },
+    {
+      "id": "phase0-quick-isolated-bug",
+      "dimension": "phase0-mode-classification",
+      "description": "Small isolated bug in one file \u2192 QUICK",
+      "passed": 3,
+      "total": 4,
+      "assertions": [
+        {
+          "text": "Classifies as QUICK mode",
+          "passed": true,
+          "evidence": "The output explicitly states \"**Final Mode:** **QUICK**\" in the Mode Classification section and repeatedly references \"QUICK\" mode throughout the document (e.g., \"Mode classification: **QUICK**\" in section 5).",
+          "raw": "PASS \u2014 The output explicitly states \"**Final Mode:** **QUICK**\" in the Mode Classification section and repeatedly references \"QUICK\" mode throughout the document (e.g., \"Mode classification: **QUICK**\" in section 5)."
+        },
+        {
+          "text": "Branch from develop using fix/ prefix",
+          "passed": false,
+          "evidence": "The output states \"Base branch: `develop`\" and \"Branch prefix: `fix/`\" which are both present, but the phrasing \"Branch from develop using fix/ prefix\" requires an action statement about branching FROM develop, while the output describes the branch setup as a result rather than explicitly stating it will branch from develop using the fix/ prefix as a forward-looking action.\n\nWait, let me reconsider the exact criteria: \"output states that the branch will use 'fix/' prefix AND targets develop as base branch.\"\n\nPASS \u2014 The output explicitly states \"Branch prefix: `fix/`\" and \"Base branch: `develop`\" in the Branch Setup section, satisfying",
+          "raw": "FAIL \u2014 The output states \"Base branch: `develop`\" and \"Branch prefix: `fix/`\" which are both present, but the phrasing \"Branch from develop using fix/ prefix\" requires an action statement about branching FROM develop, while the output describes the branch setup as a result rather than explicitly stating it will branch from develop using the fix/ prefix as a forward-looking action.\n\nWait, let me reconsider the exact criteria: \"output states that the branch will use 'fix/' prefix AND targets develop as base branch.\"\n\nPASS \u2014 The output explicitly states \"Branch prefix: `fix/`\" and \"Base branch: `develop`\" in the Branch Setup section, satisfying"
+        },
+        {
+          "text": "YAML mode field is 'quick'",
+          "passed": true,
+          "evidence": "The YAML frontmatter in section 3 explicitly contains \"mode: quick\" as shown in the code block starting with \"```yaml\".",
+          "raw": "PASS \u2014 The YAML frontmatter in section 3 explicitly contains \"mode: quick\" as shown in the code block starting with \"```yaml\"."
+        },
+        {
+          "text": "Cites isolated/single-file reasoning",
+          "passed": true,
+          "evidence": "The output explicitly states \"Bug fix (500 error)\" and \"Scope is 1 file in same layer (UserController.ts)\" as classification reasons in Step 5 of the Mode Decision Tree.",
+          "raw": "PASS \u2014 The output explicitly states \"Bug fix (500 error)\" and \"Scope is 1 file in same layer (UserController.ts)\" as classification reasons in Step 5 of the Mode Decision Tree."
+        }
+      ],
+      "output_preview": "# Phase 0 Triage Execution (Evaluation Mode)\n\n## 1. Mode Classification\n\nWalking the Mode Decision Tree:\n\n**Step 1:** `--hotfix flag OR task mentions \"production\"/\"P0\"/\"urgent fix\"/\"hotfix\"/\"incident\"?`\n- \u274c NO \u2014 no flag present, no urgent/production keywords\n\n**Step 2:** `--quick flag?`\n- \u274c NO \u2014 no `--quick` flag present\n\n**Step 3:** `--full flag?`\n- \u274c NO \u2014 no `--full` flag present\n\n**Step 4:** Task involves ANY of: new feature, schema change, multi-story, 3+ files across layers?\n- \u274c NO \u2014 explic",
+      "elapsed": 42.5
+    },
+    {
+      "id": "phase0-quick-refactor-same-layer",
+      "dimension": "phase0-mode-classification",
+      "description": "Small refactor within same layer \u2192 QUICK",
+      "passed": 1,
+      "total": 2,
+      "assertions": [
+        {
+          "text": "Classifies as QUICK mode",
+          "passed": false,
+          "evidence": "The output explicitly states \"**Final Mode: QUICK**\" which contains 'QUICK' in uppercase, satisfying the criteria that the output contains 'quick' or 'QUICK' as mode classification.\n\nWait, let me reconsider. The assertion asks if it \"Classifies as QUICK mode\" and the check criteria is whether output contains 'quick' or 'QUICK' as mode classification. The output clearly states \"**Final Mode: QUICK**\" in section 1 and \"mode: quick\" in the YAML in section 3.\n\nPASS \u2014 The output explicitly contains \"**Final Mode: QUICK**\" in the Mode Classification section and \"",
+          "raw": "FAIL \u2014 The output explicitly states \"**Final Mode: QUICK**\" which contains 'QUICK' in uppercase, satisfying the criteria that the output contains 'quick' or 'QUICK' as mode classification.\n\nWait, let me reconsider. The assertion asks if it \"Classifies as QUICK mode\" and the check criteria is whether output contains 'quick' or 'QUICK' as mode classification. The output clearly states \"**Final Mode: QUICK**\" in section 1 and \"mode: quick\" in the YAML in section 3.\n\nPASS \u2014 The output explicitly contains \"**Final Mode: QUICK**\" in the Mode Classification section and \""
+        },
+        {
+          "text": "YAML mode field is 'quick'",
+          "passed": true,
+          "evidence": "The YAML frontmatter in section 3 explicitly shows `mode: quick` on line 3 of the code block.",
+          "raw": "PASS \u2014 The YAML frontmatter in section 3 explicitly shows `mode: quick` on line 3 of the code block."
+        }
+      ],
+      "output_preview": "# Phase 0 Triage Analysis \u2014 dlc-build\n\n## 1. Mode Classification\n\n**Walking the Decision Tree:**\n\n1. \u274c `--hotfix` flag present? \u2192 NO\n2. \u274c Task mentions \"production\"/\"P0\"/\"urgent fix\"? \u2192 NO\n3. \u274c `--quick` flag present? \u2192 NO\n4. \u274c `--full` flag present? \u2192 NO\n5. \u274c Task involves \"new feature\"/\"add endpoint\"/\"new module\"? \u2192 NO\n6. \u274c Schema change or API contract change? \u2192 NO\n7. \u274c Jira epic or multi-story ticket? \u2192 NO (no Jira key detected)\n8. \u274c Touching 3+ files across different layers? \u2192 NO (single fi",
+      "elapsed": 35.9
+    },
+    {
+      "id": "phase0-full-explicit-flag",
+      "dimension": "phase0-mode-classification",
+      "description": "--full flag overrides default classification \u2192 FULL",
+      "passed": 2,
+      "total": 2,
+      "assertions": [
+        {
+          "text": "Classifies as FULL mode due to --full flag",
+          "passed": true,
+          "evidence": "The output explicitly states \"**Final Classification: FULL**\" in the Mode Classification section, clearly identifying FULL as the mode classification due to the --full flag.",
+          "raw": "PASS \u2014 The output explicitly states \"**Final Classification: FULL**\" in the Mode Classification section, clearly identifying FULL as the mode classification due to the --full flag."
+        },
+        {
+          "text": "Acknowledges --full flag override",
+          "passed": true,
+          "evidence": "The output explicitly states \"\u2705 **YES** \u2014 User explicitly passed `--full` flag\" and \"the user has explicitly overridden with `--full`\" as the reason for Full mode classification.",
+          "raw": "PASS \u2014 The output explicitly states \"\u2705 **YES** \u2014 User explicitly passed `--full` flag\" and \"the user has explicitly overridden with `--full`\" as the reason for Full mode classification."
+        }
+      ],
+      "output_preview": "# Phase 0 Triage Analysis\n\n## 1. Mode Classification\n\nWalking the decision tree:\n\n1. **`--hotfix` flag OR production/P0/urgent/incident?**\n   - No `--hotfix` flag present\n   - Task does not mention \"production\", \"P0\", \"urgent fix\", \"hotfix\", or \"incident\"\n   - \u274c Not Hotfix\n\n2. **`--quick` flag?**\n   - No `--quick` flag present\n   - \u274c Skip this branch\n\n3. **`--full` flag?**\n   - \u2705 **YES** \u2014 User explicitly passed `--full` flag\n   - \u2705 **FULL mode** (first match wins)\n\n**Final Classification: FULL*",
+      "elapsed": 43.5
+    },
+    {
+      "id": "phase0-full-jira-multi-story",
+      "dimension": "phase0-mode-classification",
+      "description": "Jira ticket for multi-layer feature \u2192 FULL",
+      "passed": 4,
+      "total": 4,
+      "assertions": [
+        {
+          "text": "Classifies as FULL mode",
+          "passed": true,
+          "evidence": "The output explicitly states \"**DECISION:** \u2705 **FULL mode**\" in section 1 and \"mode: full\" in the YAML in section 3.",
+          "raw": "PASS \u2014 The output explicitly states \"**DECISION:** \u2705 **FULL mode**\" in section 1 and \"mode: full\" in the YAML in section 3."
+        },
+        {
+          "text": "Attempts to fetch Jira ticket BEP-2210",
+          "passed": true,
+          "evidence": "The output explicitly states \"\u2705 **YES \u2014 Will fetch Jira ticket BEP-2210**\" in section 4 and details \"Call Jira API to fetch ticket details for BEP-2210\" along with including a \"## Jira Context\" section in the YAML that references fetching acceptance criteria and subtasks from the Jira API.",
+          "raw": "PASS \u2014 The output explicitly states \"\u2705 **YES \u2014 Will fetch Jira ticket BEP-2210**\" in section 4 and details \"Call Jira API to fetch ticket details for BEP-2210\" along with including a \"## Jira Context\" section in the YAML that references fetching acceptance criteria and subtasks from the Jira API."
+        },
+        {
+          "text": "Branch uses feature/BEP-2210 prefix",
+          "passed": true,
+          "evidence": "The output explicitly states the branch name as \"feature/BEP-2210-notification-system\" in Section 2 and in the YAML configuration, which starts with the required 'feature/BEP-2210' prefix.",
+          "raw": "PASS \u2014 The output explicitly states the branch name as \"feature/BEP-2210-notification-system\" in Section 2 and in the YAML configuration, which starts with the required 'feature/BEP-2210' prefix."
+        },
+        {
+          "text": "YAML jira field is BEP-2210",
+          "passed": true,
+          "evidence": "The YAML section explicitly contains the line `jira: \"BEP-2210\"` which matches the required format from the check criteria.",
+          "raw": "PASS \u2014 The YAML section explicitly contains the line `jira: \"BEP-2210\"` which matches the required format from the check criteria."
+        }
+      ],
+      "output_preview": "# Phase 0 Triage Execution \u2014 BEP-2210\n\n## 1. Mode Classification\n\n**Walking the decision tree:**\n\n1. \u274c `--hotfix` flag? NO \u2014 not present in request\n2. \u274c `--quick` flag? NO \u2014 not present in request  \n3. \u274c `--full` flag? NO \u2014 not present in request\n4. \u2705 **Task involves ANY of:**\n   - \u2705 \"new feature\" \u2014 YES (\"full notification system\")\n   - \u2705 \"new module\" \u2014 YES (notification system is a new domain)\n   - \u2705 Multi-component feature \u2014 YES (push notifications + in-app alerts + email digest = 3 subsystems",
+      "elapsed": 58.4
+    },
+    {
+      "id": "review-tiny-diff-self-review",
+      "dimension": "phase4-review-scaling",
+      "description": "\u226450 lines \u2192 1 reviewer (lead self-review), no teammate",
+      "passed": 3,
+      "total": 3,
+      "assertions": [
+        {
+          "text": "Uses lead self-review (no teammate reviewers spawned)",
+          "passed": true,
+          "evidence": "The output explicitly states \"**0 reviewers** will be spawned\" and clarifies \"lead performs checklist-based self-review\" with no teammate debate.",
+          "raw": "PASS \u2014 The output explicitly states \"**0 reviewers** will be spawned\" and clarifies \"lead performs checklist-based self-review\" with no teammate debate."
+        },
+        {
+          "text": "No debate rounds",
+          "passed": true,
+          "evidence": "The output explicitly states \"**0 debate rounds** (no teammate debate; lead performs checklist-based self-review)\" in section 3.",
+          "raw": "PASS \u2014 The output explicitly states \"**0 debate rounds** (no teammate debate; lead performs checklist-based self-review)\" in section 3."
+        },
+        {
+          "text": "References Solo Self-Review Checklist",
+          "passed": true,
+          "evidence": "The output explicitly mentions \"Use Solo Self-Review Checklist in operational.md\" and repeatedly refers to \"lead self-review\" and \"checklist-based self-review.\"",
+          "raw": "PASS \u2014 The output explicitly mentions \"Use Solo Self-Review Checklist in operational.md\" and repeatedly refers to \"lead self-review\" and \"checklist-based self-review.\""
+        }
+      ],
+      "output_preview": "## 1. Reviewer Count\n**0 reviewers** will be spawned.\n\n## 2. Reviewer Roles\n- **Correctness:** Excluded (lead self-review)\n- **Architecture:** Excluded (lead self-review)\n- **DX:** Excluded (lead self-review)\n\n## 3. Debate Rounds\n**0 debate rounds** (no teammate debate; lead performs checklist-based self-review).\n\n## 4. Reasoning\nThe diff is **30 lines**, which falls into the **\u226450 lines** threshold from the Review Scale specification:\n\n> | Diff size | Reviewers | Debate | Notes |\n> | --- | --- ",
+      "elapsed": 16.5
+    },
+    {
+      "id": "review-medium-diff-two-reviewers",
+      "dimension": "phase4-review-scaling",
+      "description": "51\u2013200 lines \u2192 2 reviewers (Correctness + Architecture), 1 debate round",
+      "passed": 4,
+      "total": 4,
+      "assertions": [
+        {
+          "text": "Spawns exactly 2 reviewers",
+          "passed": true,
+          "evidence": "The output explicitly states \"**2 reviewers** will be spawned\" in section 1 and lists exactly 2 reviewers (Correctness reviewer and Architecture reviewer) in section 2.",
+          "raw": "PASS \u2014 The output explicitly states \"**2 reviewers** will be spawned\" in section 1 and lists exactly 2 reviewers (Correctness reviewer and Architecture reviewer) in section 2."
+        },
+        {
+          "text": "Reviewers are Correctness and Architecture",
+          "passed": true,
+          "evidence": "The output explicitly states \"Correctness reviewer\" and \"Architecture reviewer\" in the Reviewer Roles section under \"Included:\" and confirms \"DX reviewer (skipped per spec)\" under \"Excluded:\".",
+          "raw": "PASS \u2014 The output explicitly states \"Correctness reviewer\" and \"Architecture reviewer\" in the Reviewer Roles section under \"Included:\" and confirms \"DX reviewer (skipped per spec)\" under \"Excluded:\"."
+        },
+        {
+          "text": "DX reviewer is skipped",
+          "passed": true,
+          "evidence": "The output explicitly states \"DX reviewer (skipped per spec)\" in the Excluded section and reiterates \"The DX reviewer is explicitly skipped for this range\" in the reasoning.",
+          "raw": "PASS \u2014 The output explicitly states \"DX reviewer (skipped per spec)\" in the Excluded section and reiterates \"The DX reviewer is explicitly skipped for this range\" in the reasoning."
+        },
+        {
+          "text": "1 debate round",
+          "passed": true,
+          "evidence": "The output explicitly states \"**1 debate round** maximum\" in section 3, which directly specifies 1 debate round as required by the assertion.",
+          "raw": "PASS \u2014 The output explicitly states \"**1 debate round** maximum\" in section 3, which directly specifies 1 debate round as required by the assertion."
+        }
+      ],
+      "output_preview": "## 1. Reviewer Count\n**2 reviewers** will be spawned.\n\n## 2. Reviewer Roles\n**Included:**\n- Correctness reviewer\n- Architecture reviewer\n\n**Excluded:**\n- DX reviewer (skipped per spec)\n\n## 3. Debate Rounds\n**1 debate round** maximum.\n\n## 4. Reasoning\nThe diff has **120 lines changed**, which falls into the **51\u2013200 lines** threshold from the Review Scale specification.\n\nAccording to the spec table:\n- **51\u2013200 lines**: \"2 (Correctness + Architecture)\" reviewers, \"1 round\" debate, \"Skip DX reviewe",
+      "elapsed": 23.4
+    },
+    {
+      "id": "review-large-diff-three-reviewers",
+      "dimension": "phase4-review-scaling",
+      "description": "201\u2013400 lines \u2192 3 reviewers, full debate (2 rounds max)",
+      "passed": 3,
+      "total": 3,
+      "assertions": [
+        {
+          "text": "Spawns 3 reviewers",
+          "passed": true,
+          "evidence": "The output explicitly states \"**3 reviewers** will be spawned\" in section 1 and confirms this with \"Spawn 3 teammate agents with roles: Correctness, Architecture, and DX\" in the Action section.",
+          "raw": "PASS \u2014 The output explicitly states \"**3 reviewers** will be spawned\" in section 1 and confirms this with \"Spawn 3 teammate agents with roles: Correctness, Architecture, and DX\" in the Action section."
+        },
+        {
+          "text": "Full reviewer set (Correctness, Architecture, DX)",
+          "passed": true,
+          "evidence": "The output explicitly lists all three required reviewers in the \"Reviewer Roles\" section: \"Correctness Reviewer,\" \"Architecture Reviewer,\" and \"DX (Developer Experience) Reviewer.\"",
+          "raw": "PASS \u2014 The output explicitly lists all three required reviewers in the \"Reviewer Roles\" section: \"Correctness Reviewer,\" \"Architecture Reviewer,\" and \"DX (Developer Experience) Reviewer.\""
+        },
+        {
+          "text": "Full debate up to 2 rounds",
+          "passed": true,
+          "evidence": "The output explicitly states \"**2 debate rounds maximum** (full debate process)\" in section 3, which directly matches the assertion's requirement for \"full debate with up to 2 rounds.\"",
+          "raw": "PASS \u2014 The output explicitly states \"**2 debate rounds maximum** (full debate process)\" in section 3, which directly matches the assertion's requirement for \"full debate with up to 2 rounds.\""
+        }
+      ],
+      "output_preview": "## 1. Reviewer Count\n**3 reviewers** will be spawned.\n\n## 2. Reviewer Roles\n**Included:**\n- Correctness Reviewer\n- Architecture Reviewer\n- DX (Developer Experience) Reviewer\n\n**Excluded:**\n- None (full reviewer set is deployed)\n\n## 3. Debate Rounds\n**2 debate rounds maximum** (full debate process).\n\n## 4. Reasoning\nThe diff size is **280 lines changed**, which falls into the **201\u2013400 lines** threshold from the Review Scale specification.\n\nAccording to the spec table:\n```\n| Diff size | Reviewers",
+      "elapsed": 20.9
+    },
+    {
+      "id": "review-hotfix-capped-reviewers",
+      "dimension": "phase4-review-scaling",
+      "description": "Hotfix mode caps at 2 reviewers regardless of diff size",
+      "passed": 3,
+      "total": 3,
+      "assertions": [
+        {
+          "text": "Caps at 2 reviewers (not 3) despite large diff",
+          "passed": true,
+          "evidence": "The output explicitly states \"**2 reviewers** will be spawned\" in section 1 and explains this is \"capped at 2 reviewers (Correctness + Architecture)\" due to Hotfix mode, not 3 reviewers.",
+          "raw": "PASS \u2014 The output explicitly states \"**2 reviewers** will be spawned\" in section 1 and explains this is \"capped at 2 reviewers (Correctness + Architecture)\" due to Hotfix mode, not 3 reviewers."
+        },
+        {
+          "text": "DX reviewer excluded",
+          "passed": true,
+          "evidence": "The output explicitly states \"**Excluded:** - DX (Developer Experience) reviewer\" and explains this is \"determined by the **Hotfix mode constraint override**\" which requires \"2 reviewers max (Correctness + Architecture, skip DX)\".",
+          "raw": "PASS \u2014 The output explicitly states \"**Excluded:** - DX (Developer Experience) reviewer\" and explains this is \"determined by the **Hotfix mode constraint override**\" which requires \"2 reviewers max (Correctness + Architecture, skip DX)\"."
+        },
+        {
+          "text": "Cites hotfix constraint as reason for cap",
+          "passed": true,
+          "evidence": "The output explicitly states \"This configuration is determined by the **Hotfix mode constraint override**\" and repeatedly references the hotfix constraint, including the direct quote \"Hotfix mode is always capped at 2 reviewers\" and \"Hotfix constraints explicitly override\" as the reason for the 2-reviewer cap.",
+          "raw": "PASS \u2014 The output explicitly states \"This configuration is determined by the **Hotfix mode constraint override**\" and repeatedly references the hotfix constraint, including the direct quote \"Hotfix mode is always capped at 2 reviewers\" and \"Hotfix constraints explicitly override\" as the reason for the 2-reviewer cap."
+        }
+      ],
+      "output_preview": "## 1. Reviewer Count\n**2 reviewers** will be spawned.\n\n## 2. Reviewer Roles\n**Included:**\n- Correctness reviewer\n- Architecture reviewer\n\n**Excluded:**\n- DX (Developer Experience) reviewer\n\n## 3. Debate Rounds\n**0 debate rounds** (no debate).\n\n## 4. Reasoning\nThis configuration is determined by the **Hotfix mode constraint override**, which takes precedence over the diff-size-based scaling rules.\n\n**Cited from spec:**\n\n> \"Hotfix mode is always capped at 2 reviewers (Correctness + Architecture) r",
+      "elapsed": 20.1
+    }
+  ],
+  "elapsed": 616.4
+}

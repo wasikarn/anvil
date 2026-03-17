@@ -1,0 +1,86 @@
+[
+  {
+    "id": "review-tiny-diff-self-review",
+    "dimension": "phase4-review-scaling",
+    "description": "≤50 lines → 1 reviewer (lead self-review), no teammate",
+    "query": "The implementation is complete. The diff has 30 lines changed across 2 files. Configure Phase 4 review for this: show reviewer count, debate rounds, and which reviewers to spawn.",
+    "assertions": [
+      {
+        "text": "Uses lead self-review (no teammate reviewers spawned)",
+        "check": "output specifies that no teammate reviewers are spawned — either '0 reviewers spawned', '1 (lead self-review)', or 'lead performs self-review'"
+      },
+      {
+        "text": "No debate rounds",
+        "check": "output specifies no debate or 0 debate rounds"
+      },
+      {
+        "text": "References Solo Self-Review Checklist",
+        "check": "output mentions solo self-review, lead self-review, or solo checklist"
+      }
+    ]
+  },
+  {
+    "id": "review-medium-diff-two-reviewers",
+    "dimension": "phase4-review-scaling",
+    "description": "51–200 lines → 2 reviewers (Correctness + Architecture), 1 debate round",
+    "query": "The implementation is complete. The diff has 120 lines changed across 5 files. Configure Phase 4 review: show reviewer count, debate rounds, and which reviewers to spawn.",
+    "assertions": [
+      {
+        "text": "Spawns exactly 2 reviewers",
+        "check": "output specifies 2 reviewers"
+      },
+      {
+        "text": "Reviewers are Correctness and Architecture",
+        "check": "output names Correctness reviewer and Architecture reviewer (not DX reviewer)"
+      },
+      {
+        "text": "DX reviewer is skipped",
+        "check": "output explicitly skips or omits DX reviewer"
+      },
+      {
+        "text": "1 debate round",
+        "check": "output specifies 1 debate round"
+      }
+    ]
+  },
+  {
+    "id": "review-large-diff-three-reviewers",
+    "dimension": "phase4-review-scaling",
+    "description": "201–400 lines → 3 reviewers, full debate (2 rounds max)",
+    "query": "The implementation is complete. The diff has 280 lines changed across 12 files. Configure Phase 4 review: show reviewer count, debate rounds, and which reviewers to spawn.",
+    "assertions": [
+      {
+        "text": "Spawns 3 reviewers",
+        "check": "output specifies 3 reviewers"
+      },
+      {
+        "text": "Full reviewer set (Correctness, Architecture, DX)",
+        "check": "output names all three: Correctness, Architecture, and DX reviewers"
+      },
+      {
+        "text": "Full debate up to 2 rounds",
+        "check": "output specifies full debate with up to 2 rounds"
+      }
+    ]
+  },
+  {
+    "id": "review-hotfix-capped-reviewers",
+    "dimension": "phase4-review-scaling",
+    "description": "Hotfix mode caps at 2 reviewers regardless of diff size",
+    "query": "This is a hotfix. The diff has 350 lines changed (large change due to cascading null checks). Configure Phase 4 review: show reviewer count and debate configuration.",
+    "assertions": [
+      {
+        "text": "Caps at 2 reviewers (not 3) despite large diff",
+        "check": "output specifies 2 reviewers maximum, not 3"
+      },
+      {
+        "text": "DX reviewer excluded",
+        "check": "output skips or excludes DX reviewer due to hotfix constraints"
+      },
+      {
+        "text": "Cites hotfix constraint as reason for cap",
+        "check": "output mentions hotfix mode, hotfix constraint, or 2-reviewer cap rule as reason"
+      }
+    ]
+  }
+]

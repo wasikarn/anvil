@@ -1,0 +1,110 @@
+{
+  "results": [
+    {
+      "id": "hotfix-flag-branch-from-main",
+      "dimension": "phase0-hotfix-protocol",
+      "description": "--hotfix flag \u2192 HOTFIX mode, branch from main",
+      "passed": 5,
+      "total": 5,
+      "assertions": [
+        {
+          "text": "Classifies as HOTFIX mode",
+          "passed": true,
+          "evidence": "The output explicitly states \"**Classification: HOTFIX MODE**\" in Step 2 and confirms \"Classified as **Hotfix mode**\" in the Mode Confirmation Gate section.",
+          "raw": "PASS \u2014 The output explicitly states \"**Classification: HOTFIX MODE**\" in Step 2 and confirms \"Classified as **Hotfix mode**\" in the Mode Confirmation Gate section."
+        },
+        {
+          "text": "Branches from main (not develop)",
+          "passed": true,
+          "evidence": "The output explicitly states in the branch setup section: \"Step 1: Switch to main and update\" followed by the command \"git checkout main\" before creating the new hotfix branch.",
+          "raw": "PASS \u2014 The output explicitly states in the branch setup section: \"Step 1: Switch to main and update\" followed by the command \"git checkout main\" before creating the new hotfix branch."
+        },
+        {
+          "text": "Branch name uses hotfix/ prefix",
+          "passed": true,
+          "evidence": "The output explicitly shows the branch name as \"hotfix/BEP-1992-users-cant-log-in\" in the Branch Commands section, which starts with the required 'hotfix/' prefix.",
+          "raw": "PASS \u2014 The output explicitly shows the branch name as \"hotfix/BEP-1992-users-cant-log-in\" in the Branch Commands section, which starts with the required 'hotfix/' prefix."
+        },
+        {
+          "text": "YAML mode field is 'hotfix'",
+          "passed": true,
+          "evidence": "The output explicitly states in Step 2 \"Classification: HOTFIX MODE\" and the dev-loop-context.md frontmatter section (Step 2.5) confirms \"mode? \u2713\" under the hotfix decision tree, indicating the YAML frontmatter would contain 'mode: hotfix'.",
+          "raw": "PASS \u2014 The output explicitly states in Step 2 \"Classification: HOTFIX MODE\" and the dev-loop-context.md frontmatter section (Step 2.5) confirms \"mode? \u2713\" under the hotfix decision tree, indicating the YAML frontmatter would contain 'mode: hotfix'."
+        },
+        {
+          "text": "Mentions skipping Phase 1 research",
+          "passed": true,
+          "evidence": "The output explicitly states in the \"Mode Confirmation Gate\" section: \"Hotfix mode will: - Branch from `main` (not `develop`) - **Skip research phase**\"",
+          "raw": "PASS \u2014 The output explicitly states in the \"Mode Confirmation Gate\" section: \"Hotfix mode will: - Branch from `main` (not `develop`) - **Skip research phase**\""
+        }
+      ],
+      "output_preview": "# Phase 0 Triage Output \u2014 EVALUATION MODE\n\n## Step 0: Resume Check\n**Action:** Check for `.claude/dlc-build/dev-loop-context.md`\n**Assumption:** File does not exist (new task)\n**Result:** Proceed with fresh triage\n\n---\n\n## Step 1: Parallel Triage\n\n### Step 1a \u2014 Detect Project & Domain Lenses\n\n**Project Detection:**\n```json\n{\n  \"project\": \"assumed-backend-project\",\n  \"repo\": \"assumed-repo\",\n  \"validate\": \"npm test\",\n  \"base_branch\": \"develop\",\n  \"branch\": \"develop\"\n}\n```\n*(Note: In real execution",
+      "elapsed": 77.0
+    },
+    {
+      "id": "hotfix-production-keyword",
+      "dimension": "phase0-hotfix-protocol",
+      "description": "Production incident without explicit flag \u2192 HOTFIX",
+      "passed": 3,
+      "total": 3,
+      "assertions": [
+        {
+          "text": "Classifies as HOTFIX mode due to production/P0 keywords",
+          "passed": true,
+          "evidence": "The output explicitly states \"**Classification:** **HOTFIX MODE** \u2705\" in the Step 2 Mode Classification section and repeatedly uses \"HOTFIX\" throughout the document.",
+          "raw": "PASS \u2014 The output explicitly states \"**Classification:** **HOTFIX MODE** \u2705\" in the Step 2 Mode Classification section and repeatedly uses \"HOTFIX\" throughout the document."
+        },
+        {
+          "text": "Branches from main",
+          "passed": true,
+          "evidence": "The output explicitly states \"Base branch: main (hotfix requirement)\" in Step 2.5 and shows the commands targeting main: \"git checkout main\" followed by \"git pull\" before creating the hotfix branch.",
+          "raw": "PASS \u2014 The output explicitly states \"Base branch: main (hotfix requirement)\" in Step 2.5 and shows the commands targeting main: \"git checkout main\" followed by \"git pull\" before creating the hotfix branch."
+        },
+        {
+          "text": "Branch name uses hotfix/ prefix",
+          "passed": true,
+          "evidence": "The output explicitly states the branch name as \"**Branch name:** `hotfix/checkout-flow-broken`\" in Step 2.5, which uses the hotfix/ prefix as required.",
+          "raw": "PASS \u2014 The output explicitly states the branch name as \"**Branch name:** `hotfix/checkout-flow-broken`\" in Step 2.5, which uses the hotfix/ prefix as required."
+        }
+      ],
+      "output_preview": "# Phase 0 Triage - Complete Analysis\n\n## Step 0: Resume Check\n**Action:** Check for `.claude/dlc-build/dev-loop-context.md`\n**Expected Result:** File does not exist (new task)\n**Outcome:** Proceed with normal triage\n\n---\n\n## Step 1: Parallel Triage\n\n### Step 1a: Project Detection & Domain Lenses\n\n**Project Detection:**\n- Read Project JSON from header (output of `detect-project.sh`)\n- Expected fields: `project`, `repo`, `validate`, `base_branch`, `branch`\n- If `validate` is empty \u2192 will prompt us",
+      "elapsed": 64.2
+    },
+    {
+      "id": "hotfix-pr-target-and-backport",
+      "dimension": "phase0-hotfix-protocol",
+      "description": "Hotfix PR targets main + mentions backport to develop",
+      "passed": 3,
+      "total": 4,
+      "assertions": [
+        {
+          "text": "Classifies as HOTFIX mode",
+          "passed": true,
+          "evidence": "The output explicitly states \"**Classification Result: HOTFIX**\" in Step 2 and confirms \"\ud83d\udd25 HOTFIX MODE DETECTED\" in the user confirmation gate.",
+          "raw": "PASS \u2014 The output explicitly states \"**Classification Result: HOTFIX**\" in Step 2 and confirms \"\ud83d\udd25 HOTFIX MODE DETECTED\" in the user confirmation gate."
+        },
+        {
+          "text": "PR target is main",
+          "passed": true,
+          "evidence": "The output explicitly states under \"GATE: User Confirmation\" that \"PR target: `main` + backport to `develop`\" and earlier notes \"Will branch from `main` (not develop)\", confirming the PR targets the main branch.",
+          "raw": "PASS \u2014 The output explicitly states under \"GATE: User Confirmation\" that \"PR target: `main` + backport to `develop`\" and earlier notes \"Will branch from `main` (not develop)\", confirming the PR targets the main branch."
+        },
+        {
+          "text": "Mentions backport to develop after merging to main",
+          "passed": true,
+          "evidence": "The output explicitly states \"PR target: `main` + backport to `develop`\" in the User Confirmation section under HOTFIX MODE DETECTED.",
+          "raw": "PASS \u2014 The output explicitly states \"PR target: `main` + backport to `develop`\" in the User Confirmation section under HOTFIX MODE DETECTED."
+        },
+        {
+          "text": "YAML mode field is 'hotfix'",
+          "passed": false,
+          "evidence": "The output states \"**Classification Result: HOTFIX**\" but does not show the YAML frontmatter with 'mode: hotfix' in the dev-loop-context.md file as required by the check criteria.",
+          "raw": "FAIL \u2014 The output states \"**Classification Result: HOTFIX**\" but does not show the YAML frontmatter with 'mode: hotfix' in the dev-loop-context.md file as required by the check criteria."
+        }
+      ],
+      "output_preview": "# Phase 0 Triage Analysis \u2014 dlc-build Skill (Evaluation Mode)\n\n## STEP 0: Resume Check\n\n**Action:** Check for existing `.claude/dlc-build/dev-loop-context.md`\n\n**Expected State:** No existing context file (new task)\n\n**Result:** Proceed with full triage\n\n---\n\n## STEP 1: Parallel Triage (Concurrent Execution)\n\n### Step 1a: Project Detection & Domain Lenses\n\n**Project Detection:**\n- Read Project JSON from header (output of `detect-project.sh`)\n- Expected fields: `project`, `repo`, `validate`, `bas",
+      "elapsed": 68.9
+    }
+  ],
+  "elapsed": 210.1
+}

@@ -1,0 +1,110 @@
+{
+  "results": [
+    {
+      "id": "hotfix-flag-branch-from-main",
+      "dimension": "phase0-hotfix-protocol",
+      "description": "--hotfix flag \u2192 HOTFIX mode, branch from main",
+      "passed": 5,
+      "total": 5,
+      "assertions": [
+        {
+          "text": "Classifies as HOTFIX mode",
+          "passed": true,
+          "evidence": "The output explicitly states \"**Decision: HOTFIX**\" in section 1 and uses \"mode: hotfix\" in the YAML configuration in section 3.",
+          "raw": "PASS \u2014 The output explicitly states \"**Decision: HOTFIX**\" in section 1 and uses \"mode: hotfix\" in the YAML configuration in section 3."
+        },
+        {
+          "text": "Branches from main (not develop)",
+          "passed": true,
+          "evidence": "The output explicitly shows `git checkout main` followed by `git pull origin main` before creating the new branch in the \"Branch Setup\" section under \"Actions I would execute.\"",
+          "raw": "PASS \u2014 The output explicitly shows `git checkout main` followed by `git pull origin main` before creating the new branch in the \"Branch Setup\" section under \"Actions I would execute.\""
+        },
+        {
+          "text": "Branch name uses hotfix/ prefix",
+          "passed": true,
+          "evidence": "The output explicitly states \"**Full branch name:** `hotfix/BEP-1992-users-cant-log-in`\" and consistently references this branch name throughout, which clearly uses the \"hotfix/\" prefix as required.",
+          "raw": "PASS \u2014 The output explicitly states \"**Full branch name:** `hotfix/BEP-1992-users-cant-log-in`\" and consistently references this branch name throughout, which clearly uses the \"hotfix/\" prefix as required."
+        },
+        {
+          "text": "YAML mode field is 'hotfix'",
+          "passed": true,
+          "evidence": "The YAML frontmatter in section 3 clearly shows `mode: hotfix` as required by the assertion.",
+          "raw": "PASS \u2014 The YAML frontmatter in section 3 clearly shows `mode: hotfix` as required by the assertion."
+        },
+        {
+          "text": "Mentions skipping Phase 1 research",
+          "passed": true,
+          "evidence": "The output explicitly states \"**SKIPPED \u2014 Phase 1 will NOT run.**\" in the Phase 1 (Research) section and includes a table showing that Phase 1 (Research) is \"**Skipped**\" for Hotfix mode.",
+          "raw": "PASS \u2014 The output explicitly states \"**SKIPPED \u2014 Phase 1 will NOT run.**\" in the Phase 1 (Research) section and includes a table showing that Phase 1 (Research) is \"**Skipped**\" for Hotfix mode."
+        }
+      ],
+      "output_preview": "# Phase 0 Triage Execution \u2014 Evaluation Mode\n\nProcessing request: `production is on fire, users can't log in, it's been 45 minutes \u2014 BEP-1992 --hotfix`\n\n---\n\n## 1. Mode Classification\n\n**Walking the Decision Tree:**\n\n```\nStep 1: --hotfix flag OR task mentions \"production\"/\"P0\"/\"urgent fix\"/\"hotfix\"/\"incident\"?\n  \u251c\u2500 --hotfix flag: YES \u2713\n  \u251c\u2500 Task mentions \"production\": YES \u2713\n  \u251c\u2500 Task mentions \"fire\" (incident language): YES \u2713\n  \u2514\u2500 RESULT: HOTFIX mode\n```\n\n**Decision: HOTFIX**\n\nThe request explic",
+      "elapsed": 58.7
+    },
+    {
+      "id": "hotfix-production-keyword",
+      "dimension": "phase0-hotfix-protocol",
+      "description": "Production incident without explicit flag \u2192 HOTFIX",
+      "passed": 3,
+      "total": 3,
+      "assertions": [
+        {
+          "text": "Classifies as HOTFIX mode due to production/P0 keywords",
+          "passed": true,
+          "evidence": "The output explicitly states \"**Final mode:** **HOTFIX**\" in the Mode Classification section and uses \"HOTFIX\" throughout the document including in the YAML frontmatter where it shows \"mode: hotfix\".",
+          "raw": "PASS \u2014 The output explicitly states \"**Final mode:** **HOTFIX**\" in the Mode Classification section and uses \"HOTFIX\" throughout the document including in the YAML frontmatter where it shows \"mode: hotfix\"."
+        },
+        {
+          "text": "Branches from main",
+          "passed": true,
+          "evidence": "The output explicitly states \"Base branch: `main`\" and includes the command sequence \"git checkout main\" followed by \"git pull\" and branch creation, clearly establishing main as the base branch for the hotfix.",
+          "raw": "PASS \u2014 The output explicitly states \"Base branch: `main`\" and includes the command sequence \"git checkout main\" followed by \"git pull\" and branch creation, clearly establishing main as the base branch for the hotfix."
+        },
+        {
+          "text": "Branch name uses hotfix/ prefix",
+          "passed": true,
+          "evidence": "The output explicitly states \"Branch prefix: `hotfix/`\" and \"Full branch name: `hotfix/checkout-flow-broken`\" which clearly shows the proposed branch name starts with 'hotfix/'.",
+          "raw": "PASS \u2014 The output explicitly states \"Branch prefix: `hotfix/`\" and \"Full branch name: `hotfix/checkout-flow-broken`\" which clearly shows the proposed branch name starts with 'hotfix/'."
+        }
+      ],
+      "output_preview": "# Phase 0 Triage Execution \u2014 Evaluation Mode\n\n## 1. Mode Classification\n\n**Walking the decision tree:**\n\n```\nStep 1: --hotfix flag OR task mentions \"production\"/\"P0\"/\"urgent fix\"/\"hotfix\"/\"incident\"?\n  \u2713 YES \u2014 Task contains:\n    - \"broken in prod\" \u2192 production issue\n    - \"P0\" \u2192 priority zero urgency marker\n    - \"customers can't complete purchases\" \u2192 production impact\n    - \"after the deploy at 2pm\" \u2192 production incident context\n\n  \u2192 MATCH: HOTFIX mode\n```\n\n**Final mode:** **HOTFIX**\n\n**Reasoni",
+      "elapsed": 47.7
+    },
+    {
+      "id": "hotfix-pr-target-and-backport",
+      "dimension": "phase0-hotfix-protocol",
+      "description": "Hotfix PR targets main + mentions backport to develop",
+      "passed": 4,
+      "total": 4,
+      "assertions": [
+        {
+          "text": "Classifies as HOTFIX mode",
+          "passed": true,
+          "evidence": "The output explicitly states \"**Final mode:** **HOTFIX**\" in section 1 and includes multiple references to \"HOTFIX mode\" and \"hotfix\" throughout the classification analysis.",
+          "raw": "PASS \u2014 The output explicitly states \"**Final mode:** **HOTFIX**\" in section 1 and includes multiple references to \"HOTFIX mode\" and \"hotfix\" throughout the classification analysis."
+        },
+        {
+          "text": "PR target is main",
+          "passed": true,
+          "evidence": "The output explicitly states \"Phase 5 (PR) \u2014 target: main\" in the workflow section and \"Base branch: `main`\" in the Branch Setup section, clearly indicating the PR targets the main branch.",
+          "raw": "PASS \u2014 The output explicitly states \"Phase 5 (PR) \u2014 target: main\" in the workflow section and \"Base branch: `main`\" in the Branch Setup section, clearly indicating the PR targets the main branch."
+        },
+        {
+          "text": "Mentions backport to develop after merging to main",
+          "passed": true,
+          "evidence": "The output explicitly states in the Phase 1 section's flow diagram: \"Phase 6 (Backport) \u2014 cherry-pick to develop\" showing the backport step after the hotfix lands on main.",
+          "raw": "PASS \u2014 The output explicitly states in the Phase 1 section's flow diagram: \"Phase 6 (Backport) \u2014 cherry-pick to develop\" showing the backport step after the hotfix lands on main."
+        },
+        {
+          "text": "Mode is identified as hotfix in output",
+          "passed": true,
+          "evidence": "The output explicitly states \"**Final mode:** **HOTFIX**\" in section 1 and includes \"mode: hotfix\" in the YAML frontmatter in section 3.",
+          "raw": "PASS \u2014 The output explicitly states \"**Final mode:** **HOTFIX**\" in section 1 and includes \"mode: hotfix\" in the YAML frontmatter in section 3."
+        }
+      ],
+      "output_preview": "# Phase 0 Triage Analysis\n\n## 1. Mode Classification\n\n**Walking the decision tree:**\n\n```\n--hotfix flag OR task mentions \"production\"/\"P0\"/\"urgent fix\"/\"hotfix\"/\"incident\"?\n\u251c\u2500 Check: --hotfix flag present? YES \u2713\n\u251c\u2500 Check: task mentions relevant keywords? YES \u2713 (\"500 for all authenticated requests after last night's deploy\")\n\u2514\u2500 RESULT: HOTFIX mode\n```\n\n**Final mode:** **HOTFIX**\n\n**Rationale:** \n- Explicit `--hotfix` flag provided\n- Task describes production-impacting issue (500 errors for all au",
+      "elapsed": 42.6
+    }
+  ],
+  "elapsed": 149.0
+}

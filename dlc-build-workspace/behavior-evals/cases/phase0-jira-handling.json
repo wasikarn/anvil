@@ -1,0 +1,38 @@
+[
+  {
+    "id": "jira-key-present-fetch",
+    "dimension": "phase0-jira-handling",
+    "description": "Jira key in query → fetch ticket + extract ACs",
+    "query": "implement BEP-2341 — the PM just assigned me this, it's a new endpoint to let admins bulk-deactivate users",
+    "assertions": [
+      {
+        "text": "Identifies BEP-2341 as Jira key",
+        "check": "output explicitly identifies BEP-2341 as the Jira ticket key"
+      },
+      {
+        "text": "Plans to fetch the Jira ticket",
+        "check": "output mentions fetching BEP-2341, calling Jira API, or extracting AC from the ticket"
+      },
+      {
+        "text": "YAML jira field set to BEP-2341",
+        "check": "dev-loop-context.md YAML has 'jira: BEP-2341'"
+      }
+    ]
+  },
+  {
+    "id": "jira-key-absent-skip",
+    "dimension": "phase0-jira-handling",
+    "description": "No Jira key → skip Jira fetch entirely",
+    "query": "add rate limiting to the auth routes — new middleware, probably touches 3-4 files",
+    "assertions": [
+      {
+        "text": "Decides to skip Jira ticket fetch",
+        "check": "output explicitly decides NOT to fetch a Jira ticket — either by saying 'skip', 'no Jira key', or 'no Jira fetch'"
+      },
+      {
+        "text": "YAML jira field is empty",
+        "check": "dev-loop-context.md YAML has 'jira: \"\"' or 'jira:' with empty value"
+      }
+    ]
+  }
+]

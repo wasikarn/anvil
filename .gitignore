@@ -2,3 +2,11 @@ skills/.DS_Store
 docs/superpowers
 skill-creator-workspace/
 prompts/
+eval-workspace/
+# dlc-build workspace — generated outputs and scratch files
+dlc-build-workspace/iteration-1/
+dlc-build-workspace/run-loop-results/
+dlc-build-workspace/behavior-evals/results/
+dlc-build-workspace/behavior-evals/.claude/
+dlc-build-workspace/behavior-evals/__pycache__/
+dlc-build-workspace/venv/

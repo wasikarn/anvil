@@ -1,0 +1,23 @@
+{
+  "skill_name": "dlc-build",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "I need to add email notification functionality to the user service: send confirmation emails on register, and password-reset emails on request. Use /dlc-build to triage this task and produce Phase 0 output — show the mode classification, branch name you would create, and the full content of the dev-loop-context.md artifact with YAML frontmatter.",
+      "expected_output": "Full mode (new feature, multi-file, multi-layer), branch named feature/email-notifications or similar from develop, dev-loop-context.md with correct YAML: mode: full, phase: triage, iteration: 0, branch, jira: empty, plan_file: empty. Includes pending PR check and domain lens detection.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "prompt": "Production is down — users are getting 500 errors on /api/auth/login since the deploy 20 minutes ago. Use /dlc-build BEP-1412 --hotfix to triage this incident and produce Phase 0 output: mode, branch setup commands, constraints that apply, and what the dev-loop-context.md would contain.",
+      "expected_output": "Hotfix mode (--hotfix flag + production/urgent indicators), git checkout main && git pull then branch hotfix/BEP-1412-auth-login-500, constraints: minimal scope (broken path only), 2 reviewers max, backport PR to develop after main merge. dev-loop-context.md mode: hotfix.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I've just finished implementing a bug fix for a null pointer exception in UserService.ts. git diff shows 45 lines changed across 2 files: UserService.ts and UserService.spec.ts. I'm running /dlc-build in Quick mode, iteration 1. How should I configure Phase 4 Review — how many reviewer teammates to spawn, debate format, and any mode-specific shortcuts?",
+      "expected_output": "Solo self-review only — no reviewer teammates spawned. Quick mode + diff ≤100 lines triggers lead self-review per workflow-modes.md. Use Solo Self-Review Checklist from operational.md. No debate rounds. No TeamCreate calls.",
+      "files": []
+    }
+  ]
+}
