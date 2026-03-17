@@ -41,7 +41,7 @@ Examples:
 - `suggestion: (แนะนำ) logic ซ้ำ 3 ที่ extract เป็น util ดีกว่าครับ`
 - `praise: (ดี) error handling ตรงนี้ structured ดีมาก มี context ครบ`
 
-## Consolidation (Phase 3.5)
+## Consolidation (Phase 4 — after all reviewers complete, before Assess)
 
 After CHECKPOINT (all reviewers collected):
 
