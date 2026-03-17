@@ -46,6 +46,8 @@ Every phase transition has explicit gate conditions. No phase proceeds until its
 - [ ] Each task has at least 1 commit
 - [ ] No uncommitted changes in working tree
 
+Lead verifies with: `git diff {base_branch}...HEAD --stat` (scope) + `git log --oneline {base_branch}..HEAD` (commit-per-task). See Verification Gate in operational.md.
+
 ### Review → Assess
 
 - [ ] All reviewers completed independent review

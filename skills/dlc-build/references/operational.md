@@ -22,6 +22,34 @@ Use when running in Solo mode (no Agent Teams or subagents available):
 - [ ] No `console.log` / debug artifacts in production code
 - [ ] Validate command passes
 
+### Checkpoint Recovery (Phase 3)
+
+If worker completes a task but validate fails:
+
+1. `git stash` (or revert the commit)
+2. Analyze exact error output — send the literal error text to worker
+3. Worker fixes based on actual error (not guessing)
+4. If 2 attempts fail → lead intervenes with narrower scope
+
+### 3-Fix Rule
+
+If fixer fails the same finding 3 times → lead stops and presents options:
+
+1. Switch to diagnosis mode — analyze root cause before fixing
+2. Revert to last clean checkpoint — try a different approach
+3. Accept with known issue — document and ship
+
+### Verification Gate (before Phase 4)
+
+Lead MUST independently verify — never trust worker reports:
+
+1. **RUN:** execute `{validate_command}` fresh
+2. **READ:** read the actual terminal output (not the worker's claim)
+3. **DIFF:** `git diff {base_branch}...HEAD --stat` — scope matches plan tasks
+4. **LOG:** `git log --oneline {base_branch}..HEAD` — confirm commit-per-task, no missing tasks
+
+If worker claims "done" but verify fails → send back with the specific failing evidence.
+
 ### Teammate Crash Recovery
 
 If a teammate stops responding or crashes mid-phase:

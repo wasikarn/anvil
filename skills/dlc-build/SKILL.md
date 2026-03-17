@@ -120,75 +120,15 @@ Per [workflow-modes.md](references/workflow-modes.md):
 
 ### Step 2.5: Branch Setup
 
-Check `branch` from the Project JSON against `base_branch`:
-
-```text
---hotfix mode?
-├→ Switch to main first: git checkout main && git pull
-├→ Jira key found? → create: hotfix/BEP-XXX-{slug}
-└→ No Jira key?   → create: hotfix/{slug}
-
-Already on a feature/fix/hotfix branch (not base)?
-└→ Proceed as-is — assume intentional
-
-On base branch (main/develop)?
-├→ Jira key found (Step 2.5)?
-│   ├→ Full mode  → create: feature/BEP-XXX-{slug}
-│   └→ Quick mode → create: fix/BEP-XXX-{slug}
-└→ No Jira key?
-    └→ Ask user: "Branch name? (e.g. feature/short-description)"
-```
-
-**Slug rules:** lowercase, hyphens only, max 40 chars, derived from task description (strip articles, keep nouns/verbs).
-
-Run: `git checkout -b {branch_name}`
-
-**GATE (Hotfix):** On `hotfix/*` branch branched from `main` → proceed.
-**GATE (Normal):** Branch is a non-base branch → proceed.
+Follow [workflow-modes.md](references/workflow-modes.md) §Branch Setup — creates feature/fix/hotfix branch based on mode and Jira key.
 
 ### Step 3: Create Context Artifact
 
-Create `.claude/dlc-build/` directory (if not exists) and write `dev-loop-context.md` there:
-
-```bash
-mkdir -p .claude/dlc-build
-```
-
-```markdown
-# Dev Loop Context
-
-Task: {task_description}
-Mode: {Full|Quick|Hotfix}
-Project: {project_name}
-Validate: {validate_command}
-Started: {date}
-Branch: {branch_name}
-Phase: triage
-
-## Hard Rules
-{project_hard_rules}
-
-## Jira Ticket (if provided)
-{jira_context_or_empty}
-```
-
-Update the `Phase:` field at each gate transition — enables session resume (Step 0).
+`mkdir -p .claude/dlc-build` and write `.claude/dlc-build/dev-loop-context.md` with fields: Task, Mode, Project, Validate, Started, Branch, `Phase: triage`, Hard Rules, Jira context. Update `Phase:` at every gate transition — enables session resume (Step 0).
 
 ### Step 4: Initialize Progress Tracker
 
-```markdown
-## Dev Loop: {TASK_NAME}
-Mode: {mode} | Project: {project} | Started: {date}
-
-- [x] Phase 0: Triage — {mode} mode, {project} detected
-- [ ] Phase 1: Research [Full only — skip for Quick/Hotfix]
-- [ ] Phase 2: Plan
-- [ ] Loop iteration 1/3
-  - [ ] Phase 3: Implement
-  - [ ] Phase 4: Review
-  - [ ] Phase 5: Assess
-- [ ] Phase 6: Ship
-```
+Post a checkbox list in conversation: Phase 0 (done), Phase 1 (Full only), Phase 2, Loop iterations 1-3 with nested Phase 3/4/5, Phase 6. Update checkboxes as each phase completes.
 
 **GATE:** User confirms mode → proceed.
 
@@ -200,25 +140,15 @@ Skip this phase entirely in Quick mode → go to Phase 2.
 
 ### Step 1: Create Explorer Team
 
-Create team `dev-loop-{branch}` with 2-3 explorer teammates using prompts from [teammate-prompts.md](references/teammate-prompts.md):
+Load [teammate-prompts.md](references/teammate-prompts.md) now. Create team `dev-loop-{branch}` with 2-3 explorer teammates:
 
 - **Explorer 1:** Execution paths + patterns in primary area
 - **Explorer 2:** Data model + dependencies + coupling
-- **Explorer 3:** Reference implementations (spawn only if task area has similar existing features)
+- **Explorer 3:** Reference implementations (spawn only if similar existing features exist)
 
 ### Step 2: Wait for Explorers
 
-All explorers must complete before proceeding. Track:
-
-```markdown
-### Phase 1: Research
-
-| Explorer | Status | Files examined |
-| --- | --- | --- |
-| Execution Paths | ... | ... |
-| Data Model | ... | ... |
-| References | ... | ... |
-```
+Track status in conversation (pending/done/crashed) for each explorer. Wait until all complete.
 
 ### Step 3: Merge Findings
 
@@ -274,50 +204,23 @@ Review scope narrows each iteration. See [phase-gates.md](references/phase-gates
 
 #### Iteration 1: Full Implementation
 
-Create 1-2 worker teammates using prompts from [teammate-prompts.md](references/teammate-prompts.md):
+Load [teammate-prompts.md](references/teammate-prompts.md) now. Create 1-2 worker teammates:
 
 - `[S]` tasks: 1 worker, sequential
 - `[P]` tasks: 2 workers with non-overlapping file assignments
 
-**Controller provides full task text** to each worker — copy the relevant task descriptions from the plan into the worker creation prompt. Workers should NOT need to read the plan themselves for their assigned tasks.
+**Controller provides full task text** — copy task descriptions into the worker creation prompt. Workers follow TDD: failing test → implement → green → commit.
 
-Workers follow TDD: failing test → implement → green → commit.
-Lead validates each commit against plan.
-
-**Checkpoint Recovery:** if worker completes task X but validate fails:
-
-1. `git stash` (or revert the commit)
-2. Analyze exact error output — send the literal error text to worker
-3. Worker fixes based on actual error (not guessing)
-4. If 2 attempts fail → lead intervenes with narrower scope
+On validate failure: see Checkpoint Recovery in [operational.md](references/operational.md).
 
 #### Iteration 2+: Fix Findings
 
-Create 1 fixer teammate with the fixer prompt from [teammate-prompts.md](references/teammate-prompts.md).
-Fixer receives ONLY unresolved findings from `.claude/dlc-build/review-findings-{N-1}.md`.
-Fix order: Critical → Warning. Each fix = separate commit.
+Create 1 fixer (prompt in teammate-prompts.md). Fixer receives ONLY unresolved findings from `.claude/dlc-build/review-findings-{N-1}.md`. Fix order: Critical → Warning. Each fix = separate commit.
 
-**If a fix introduces a NEW Critical:** fixer reverts the commit and messages lead.
-Lead decides: try different approach or escalate.
+If fixer introduces a NEW Critical: revert + message lead.
+If same finding fails 3× → see 3-Fix Rule in [operational.md](references/operational.md).
 
-**3-Fix Rule:** if fixer fails the same finding 3 times → lead stops the loop and presents options:
-
-1. Switch to diagnosis mode — analyze root cause before fixing
-2. Revert to last clean checkpoint — try a different approach
-3. Accept with known issue — document and ship
-
-**GATE:** All tasks done + validate command passes → update `Phase: implement` in dev-loop-context.md → proceed to Review.
-
-### Verification Gate (before proceeding to Phase 4)
-
-Lead MUST independently verify — never trust worker reports:
-
-1. **RUN:** execute `{validate_command}` fresh
-2. **READ:** read the actual terminal output (not the worker's claim)
-3. **DIFF:** `git diff {base_branch}...HEAD --stat` — scope matches plan tasks
-4. **LOG:** `git log --oneline {base_branch}..HEAD` — confirm commit-per-task, no missing tasks
-
-If worker claims "done" but verify fails → send back with the specific failing evidence.
+**GATE:** All tasks done + validate passes → run Verification Gate (see operational.md) → update `Phase: implement` → proceed to Review.
 
 ---
 
@@ -354,19 +257,7 @@ Load [debate-protocol.md](../dlc-review/references/debate-protocol.md) only for 
 
 ### Review Output
 
-Write findings to `.claude/dlc-build/review-findings-{iteration}.md`:
-
-```markdown
-# Review Findings — Iteration {N}
-
-## Summary
-Critical: X | Warning: Y | Info: Z
-
-## Findings
-| # | Sev | File | Line | Consensus | Issue | Fix |
-| --- | --- | --- | --- | --- | --- | --- |
-| 1 | Critical | ... | ... | ... | ... | ... |
-```
+Write findings to `.claude/dlc-build/review-findings-{iteration}.md` per [review-output-format.md](../../references/review-output-format.md).
 
 **GATE:** Findings consolidated → update `Phase: review` in dev-loop-context.md → proceed to Assess.
 
@@ -374,40 +265,7 @@ Critical: X | Warning: Y | Info: Z
 
 ### Phase 5: Assess (Lead Only)
 
-Count findings from `.claude/dlc-build/review-findings-{N}.md`. If Jira ticket was provided, also verify AC coverage — each AC must have corresponding implementation + test. Unverified AC = Critical finding.
-
-### Independent VCS Verification
-
-Before counting findings, lead verifies via VCS:
-
-1. `git diff {base_branch}...HEAD --stat` — confirm scope matches plan
-2. `git log --oneline {base_branch}..HEAD` — confirm commit-per-task
-3. If Jira: each AC has both implementation AND test in the diff
-
-```text
-Critical == 0 AND Warning == 0?
-├→ Yes: EXIT LOOP → Phase 6: Ship
-│
-Critical == 0 AND Warning > 0?
-├→ Ask user: "Fix warnings? (Y/N)"
-│   ├→ Yes: LOOP (iteration++)
-│   └→ No: EXIT LOOP → Phase 6: Ship
-│
-Critical > 0 AND iteration < 3?
-├→ LOOP (iteration++)
-│
-Critical > 0 AND iteration == 3?
-└→ STOP — escalate to user per phase-gates.md escalation protocol
-```
-
-Update progress tracker with iteration results:
-
-```markdown
-- [x] Loop iteration {N}/3
-  - [x] Phase 3: Implement — {task_count} tasks
-  - [x] Phase 4: Review — Critical: {X}, Warning: {Y}
-  - [x] Phase 5: Assess — {LOOP|EXIT|STOP}
-```
+Count findings from `.claude/dlc-build/review-findings-{N}.md`. If Jira: verify each AC has implementation + test (unverified AC = Critical). Apply decision tree from [phase-gates.md](references/phase-gates.md) §Assess→Loop Decision. Update progress tracker checkboxes (iteration N: Implement tasks, Review Critical/Warning, Assess outcome).
 
 **GATE:** Loop decision made → update `Phase: assess` (or `Phase: ship` if exiting) in dev-loop-context.md → proceed accordingly.
 
@@ -417,20 +275,7 @@ Update progress tracker with iteration results:
 
 ### Step 1: Present Summary
 
-```markdown
-## Implementation Complete
-
-**Task:** {task_description}
-**Mode:** {Full|Quick}
-**Iterations:** {count}/3
-**Final status:** Critical: 0, Warning: {Y}, Info: {Z}
-
-### Iteration History
-| Iter | Critical | Warning | Action |
-| --- | --- | --- | --- |
-| 1 | ... | ... | ... |
-| 2 | ... | ... | ... |
-```
+Load [references/pr-template.md](references/pr-template.md) now. Present the Phase 6 Summary (task, mode, iterations, final status, iteration history table).
 
 ### Step 2: Completion Options
 

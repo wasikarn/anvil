@@ -48,6 +48,32 @@ Classification criteria for Full, Quick, and Hotfix mode. Lead auto-classifies a
 | PR target | `develop` | `develop` | `main` + backport to `develop` |
 | Artifacts | research.md + plan.md | plan.md only | plan.md only |
 
+## Branch Setup (Phase 0 Step 2.5)
+
+Check `branch` from Project JSON against `base_branch`:
+
+```text
+--hotfix mode?
+├→ Switch to main first: git checkout main && git pull
+├→ Jira key found? → create: hotfix/BEP-XXX-{slug}
+└→ No Jira key?   → create: hotfix/{slug}
+
+Already on a feature/fix/hotfix branch (not base)?
+└→ Proceed as-is — assume intentional
+
+On base branch (main/develop)?
+├→ Jira key found?
+│   ├→ Full mode  → create: feature/BEP-XXX-{slug}
+│   └→ Quick mode → create: fix/BEP-XXX-{slug}
+└→ No Jira key?
+    └→ Ask user: "Branch name? (e.g. feature/short-description)"
+```
+
+**Slug rules:** lowercase, hyphens only, max 40 chars. Run: `git checkout -b {branch_name}`
+
+**GATE (Hotfix):** On `hotfix/*` branch from `main` → proceed.
+**GATE (Normal):** Branch is a non-base branch → proceed.
+
 ## Review Scale (Iteration 1)
 
 Scale review intensity by diff size to avoid over-spending tokens on small changes:

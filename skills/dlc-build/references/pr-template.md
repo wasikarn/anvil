@@ -1,5 +1,22 @@
 # PR Template
 
+## Phase 6 Summary (present before completion options)
+
+```markdown
+## Implementation Complete
+
+**Task:** {task_description}
+**Mode:** {Full|Quick}
+**Iterations:** {count}/3
+**Final status:** Critical: 0, Warning: {Y}, Info: {Z}
+
+### Iteration History
+| Iter | Critical | Warning | Action |
+| --- | --- | --- | --- |
+| 1 | ... | ... | ... |
+| 2 | ... | ... | ... |
+```
+
 ## PR Title
 
 English, under 70 chars, start with verb — derived from the plan problem statement.
