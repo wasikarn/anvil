@@ -10,3 +10,4 @@ dlc-build-workspace/behavior-evals/results/
 dlc-build-workspace/behavior-evals/.claude/
 dlc-build-workspace/behavior-evals/__pycache__/
 dlc-build-workspace/venv/
+dlc-build-workspace/.venv/
