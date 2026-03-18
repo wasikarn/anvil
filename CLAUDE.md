@@ -94,6 +94,21 @@ Hooks live at `hooks/`. Two sources of truth:
 
 These are already configured in `.claude/settings.json` (checked into the repo). They duplicate the plugin hooks above so contributors working via symlinks get the same behavior without having the plugin installed.
 
+### Personal hooks (not distributed with plugin)
+
+The following scripts exist in `hooks/` but are **not registered in `hooks.json`**. They are configured in the author's global `~/.claude/settings.json` for personal use and should NOT be added to the plugin manifest:
+
+| Script | Purpose |
+| --- | --- |
+| `play-sound.sh` | Play sound effects on hook events (async, no perf impact) |
+| `qmd-pre-search.sh` | Inject QMD search results before Grep tool calls |
+| `bash-blockers.sh` | Block dangerous bash commands |
+| `auto-test-env.sh` | Auto-detect test environment |
+| `patch-plugin-skills.sh` | Patch plugin skills after install |
+| `post-compact-context.sh` | Inject context after compaction |
+| `session-start-mcp-cleanup.sh` | Clean up stale MCP connections on session start |
+| `session-summary-hook.sh` | Generate session summary on session end |
+
 ## Output Styles
 
 Custom output styles live at `output-styles/<name>.md` with frontmatter (`name`, `description`, `keep-coding-instructions`). Symlinked to `~/.claude/output-styles/` via `link-skill.sh`.
