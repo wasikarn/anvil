@@ -25,13 +25,16 @@ Check if `.claude/dlc-build/dev-loop-context.md` exists in the current project:
 
 ```text
 .claude/dlc-build/dev-loop-context.md exists AND Phase != "complete"?
-├→ Yes: Show context summary and ask:
-│   "Resume from Phase {N} — {task_description}? (Y/N)"
-│   ├→ Yes: Skip to the recorded phase. Re-read artifacts in order:
+├→ Yes: Show context summary then call AskUserQuestion:
+│   question: "Resume from Phase {N} — {task_description}?"
+│   header: "Resume"
+│   options: [{ label: "Resume", description: "Continue from Phase N" },
+│              { label: "Start fresh", description: "Overwrite context file with new task" }]
+│   ├→ Resume: Skip to the recorded phase. Re-read artifacts in order:
 │   │       1. .claude/dlc-build/dev-loop-context.md
 │   │       2. Plan file: read plan_file: from YAML; fallback to ~/.claude/plans/ most recently modified .md
 │   │       3. .claude/dlc-build/review-findings-*.md (if exists)
-│   └→ No: Overwrite context file with new task.
+│   └→ Start fresh: Overwrite context file with new task.
 └→ No: Proceed with triage normally.
 ```
 
@@ -56,8 +59,10 @@ gh pr list --author @me --state open --json number,title,headRefName,createdAt \
 ```
 
 - If Jira key in `$ARGUMENTS` (e.g. `BEP-1234`) → check if any open PR branch contains that key
-  - Match found: "PR #1941 already targets BEP-1234. Use `/dlc-respond 1941` or `/dlc-review 1941 Author` instead?"
-  - User confirms → stop. User declines → proceed.
+  - Match found: Call AskUserQuestion — question: "PR #1941 already targets BEP-1234. Switch to that PR?",
+    header: "Existing PR", options: [{ label: "Switch to PR #1941", description: "Use /dlc-respond or /dlc-review instead" },
+    { label: "Continue new task", description: "Proceed with triage normally" }]
+    → Switch: stop. → Continue: proceed.
 - No match / no Jira key: list open PRs briefly, ask if user wants to switch to one
 - No open PRs → proceed silently
 
@@ -78,7 +83,17 @@ Per [workflow-modes.md](workflow-modes.md) — use the Mode Decision Tree:
 - Multi-file feature, architectural change → **Full mode**
 - Ambiguous → ask user
 
-**GATE:** User confirms mode (and validate command if empty) → proceed.
+**GATE:** Call AskUserQuestion to confirm mode:
+
+- question: "Confirm mode{validate_suffix}?" (append " — and validate command?" if validate is empty)
+- header: "Mode"
+- options: [{ label: "Full", description: "Multi-file feature or architectural change" },
+             { label: "Quick", description: "Bug fix or small refactor" },
+             { label: "Hotfix", description: "Urgent production fix (branch from main)" }]
+  (pre-select the classified mode as first option)
+
+If validate is empty, follow up with a second AskUserQuestion or free-text prompt for the validate command.
+→ proceed.
 
 ## Step 2.5: Load Mode File
 

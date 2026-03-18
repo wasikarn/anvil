@@ -90,7 +90,7 @@ Build triage table:
 
 Write to `{project_root}/respond-context.md` — thread triage table, project info, validate command, Jira context if fetched. Required for context compression recovery.
 
-**GATE:** Triage table confirmed by user → proceed. (See [references/phase-gates.md](references/phase-gates.md) Triage → Fix gate for checklist.)
+**GATE:** Call AskUserQuestion (see [references/phase-gates.md](references/phase-gates.md) Triage → Fix gate) → proceed.
 
 ---
 

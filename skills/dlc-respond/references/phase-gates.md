@@ -26,7 +26,9 @@ Every phase transition has explicit gate conditions. No phase proceeds until its
 - [ ] All review-level CHANGES_REQUESTED comments fetched (`gh pr view`)
 - [ ] Threads classified by severity (Critical / Important / Suggestion)
 - [ ] Dismissed patterns checked (`{project_root}/.claude/review-dismissed.md`)
-- [ ] Triage table presented and user acknowledges (may override severity or skip Suggestions)
+- [ ] Triage table presented then AskUserQuestion — question: "Triage complete. Proceed or override severity first?",
+  header: "Triage", options: [{ label: "Looks good, proceed", description: "Start fixing in severity order" },
+  { label: "Override severity / skip some", description: "Edit triage before fixing — lead adjusts then re-confirms" }]
 - [ ] `respond-context.md` written at project root
 
 ### Fix → Reply
@@ -60,8 +62,8 @@ When a thread fix fails 3 times:
 
 1. Present all 3 fix attempts with exact error/failure from each
 2. Identify pattern: same error type? same file area? same constraint?
-3. Offer options to user:
-   - "Lead takes over fixing directly"
-   - "Decline thread with explanation to reviewer"
-   - "Need your guidance — here's what I tried"
+3. Call AskUserQuestion — question: "Thread fix failed 3 times. How to proceed?",
+   header: "Escalation", options: [{ label: "Take over manually", description: "Lead fixes this thread directly" },
+   { label: "Decline with explanation", description: "Reply to reviewer explaining why this won't be fixed" },
+   { label: "Need guidance", description: "Pause — lead reviews what was tried and advises" }]
 4. Never silently skip — record the decision in `respond-context.md`

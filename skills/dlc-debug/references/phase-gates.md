@@ -56,13 +56,18 @@ If Investigator cannot identify root cause → escalate to user. Do NOT proceed 
 ### Phase 2.5 → Ship (conditional — skip if no `--review` flag and severity is not P0)
 
 - [ ] Fix Reviewer completed with findings table
-- [ ] If Critical findings: user decides to fix or proceed
+- [ ] If Critical findings: call AskUserQuestion — question: "Fix Reviewer found Critical issues. Fix before shipping?",
+  header: "Critical found", options: [{ label: "Fix before shipping", description: "Address Critical findings now" },
+  { label: "Proceed anyway", description: "Ship with known Critical issues (user accepts risk)" }]
 - [ ] Fix Reviewer shut down
 
 ### Ship → Done
 
 - [ ] Debug Summary presented with commit table
-- [ ] User selects: create PR / commit to branch / keep for review
+- [ ] User selects via AskUserQuestion — question: "Debug complete. What next?", header: "Ship",
+  options: [{ label: "Create PR", description: "Open a pull request with the fix" },
+             { label: "Commit to branch", description: "Leave commits on current branch" },
+             { label: "Keep for review", description: "No further action — review later" }]
 - [ ] Team cleaned up (all teammates shut down)
 - [ ] Artifacts optionally archived or deleted
 
@@ -72,8 +77,8 @@ When fix fails 3+ times:
 
 1. Present all fix attempts with what went wrong
 2. Identify pattern: same area failing? coupling issue? architectural problem?
-3. Offer options:
-   - "Continue manually (lead takes over fixing)"
-   - "Rethink approach (re-investigate with new hypothesis)"
-   - "Ship partial fix (user accepts remaining issues)"
-   - "Abort (discard changes)"
+3. Call AskUserQuestion — question: "Fix failed 3 times. How to proceed?",
+   header: "Escalation", options: [{ label: "Continue manually", description: "Lead takes over fixing directly" },
+   { label: "Rethink approach", description: "Re-investigate with a new hypothesis" },
+   { label: "Ship partial fix", description: "User accepts remaining issues" },
+   { label: "Abort", description: "Discard all changes" }]

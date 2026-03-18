@@ -100,7 +100,14 @@ Write `debug-context.md` at **target project root** — format: [artifact-templa
 
 Lead updates the progress checkboxes at the start of each phase.
 
-**GATE:** User confirms mode → proceed. (P0: auto-proceed with Full mode.)
+**GATE:** Call AskUserQuestion to confirm mode (P0: auto-Full, skip this):
+
+- question: "Confirm debug mode?"
+- header: "Mode"
+- options: [{ label: "Full", description: "Multi-file, cross-cutting — includes DX Analyst" },
+             { label: "Quick", description: "P2 / simple fix — skip DX Analyst" }]
+  (pre-select the classified mode as first option)
+→ proceed.
 
 ---
 
