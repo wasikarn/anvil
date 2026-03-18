@@ -107,8 +107,9 @@ The primary workflow for any coding task. Runs Research → Plan → Implement �
 
 | Mode | When to use |
 | --- | --- |
-| _(default)_ | Full loop — research, plan, implement, review |
+| _(default)_ | Auto-classifies based on task scope — research phase included when needed |
 | `--quick` | Small fix with clear scope — skip research phase |
+| `--full` | Force full loop including research — override auto-classification |
 | `--hotfix` | Branches from `main`, creates backport PR to `develop` |
 
 ---
@@ -154,8 +155,9 @@ Two agents run in parallel: an Investigator traces the root cause through logs, 
 
 ```bash
 /claude-code-skills:dlc-debug "NullPointerException in UserService"
-/claude-code-skills:dlc-debug PROJ-5678          # from a Jira bug ticket
-/claude-code-skills:dlc-debug PROJ-5678 --quick  # fix only, skip DX analysis
+/claude-code-skills:dlc-debug PROJ-5678           # from a Jira bug ticket
+/claude-code-skills:dlc-debug PROJ-5678 --quick   # fix only, skip DX analysis
+/claude-code-skills:dlc-debug PROJ-5678 --review  # add Fix Reviewer after Fixer (forced on P0)
 ```
 
 ---
@@ -193,9 +195,8 @@ Scores a CLAUDE.md file across quality dimensions, identifies bloat and gaps, an
 Scans the codebase for all env var references, cross-references against the validation schema and `.env.example`, classifies gaps, auto-fixes discrepancies, and runs tests to verify.
 
 ```bash
-/claude-code-skills:env-heal              # full scan and fix
-/claude-code-skills:env-heal --quick      # schema vs .env.example only
-/claude-code-skills:env-heal --dry-run    # preview changes without applying
+/claude-code-skills:env-heal          # full scan and fix
+/claude-code-skills:env-heal --quick  # schema vs .env.example only
 ```
 
 **Supports:** AdonisJS (`Env.schema`), dotenv (`.env.example`), and any Node.js project.
