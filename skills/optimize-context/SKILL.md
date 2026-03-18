@@ -2,6 +2,7 @@
 name: optimize-context
 description: "Invoke for any request touching a CLAUDE.md or 'context file' — the instructions file that shapes Claude's behavior in a project. Trigger when: the user wants to score or grade their CLAUDE.md quality, clean up a bloated or oversized file, fix a CLAUDE.md that's causing Claude to misbehave or do things wrong, improve messy or ineffective instructions, preview changes without editing (dry-run), create a CLAUDE.md from scratch, or explicitly run /optimize-context. The core signal: something about how Claude is being instructed needs a checkup or fix. Do NOT invoke for AGENTS.md edits, code review, dependency updates, or documentation unrelated to CLAUDE.md."
 argument-hint: "[--dry-run?] [--coverage?]"
+compatibility: "Requires markdownlint-cli2 (npx). Uses standard Unix tools (wc, stat)."
 ---
 
 # /optimize-context
@@ -84,11 +85,11 @@ Detect framework: check `package.json`, `requirements.txt`, `go.mod`, etc. If of
 **Novel content detection:**
 
 1. Identify framework + version from lockfiles/configs
-2. Compare against model training cutoff (Claude: August 2025)
-3. List APIs/features that are post-cutoff → these need detailed documentation
-4. List well-known patterns within training data → candidates for compression/removal
+2. Check framework version against Claude's training data — if uncertain whether docs are within training cutoff, assume they are NOT and flag for documentation
+3. List APIs/features likely post-cutoff → these need detailed documentation
+4. List well-known, stable patterns → candidates for compression/removal
 
-**Output:** State classification explicitly — e.g. "Classification: Hybrid (Next.js 14 + custom domain). Next.js 14 within training cutoff — no post-cutoff docs needed."
+**Output:** State classification explicitly — e.g. "Classification: Hybrid (Next.js 14 + custom domain). Next.js 14 is well-established — no post-cutoff docs needed."
 
 **No CLAUDE.md found?** → Create one using the appropriate template from [references/templates.md](references/templates.md), then continue to phase 2.
 
