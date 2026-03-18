@@ -12,3 +12,19 @@
 - **Noise reduction** — Remove content that doesn't aid decision-making; unused/irrelevant context may distract the agent (Vercel: skills ignored 56% of the time when not relevant)
 - **Passive over active** — For general framework knowledge, embed in CLAUDE.md (passive) rather than relying on skills (active retrieval). Skills are best for action-specific workflows users explicitly trigger
 - **Self-invocation** — Recommend adding staleness reminder in CLAUDE.md (e.g. "Run `/optimize-context` when CLAUDE.md feels outdated") — CLAUDE.md drifts as codebases evolve; a staleness trigger keeps context self-maintaining without requiring the user to remember
+
+## Phase 4 Proposed Changes Format
+
+Show before editing — every finding from phase 3 must appear, even if action is "No action needed":
+
+```markdown
+### Proposed Changes
+
+| # | Finding | Action | Size Impact |
+| --- | --- | --- | --- |
+| 1 | Finding #1: <summary> | <what will change> | +/- XX bytes |
+| 2 | Finding #2: <summary> | <what will change> | +/- XX bytes |
+| 3 | Finding #5: OK | No action needed | — |
+
+Projected: Score XX → XX | Size: XX KB → XX KB
+```

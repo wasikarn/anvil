@@ -35,7 +35,7 @@ Output format:
 ```text
 [Component A] → feeds → [Component B] → triggers → [Component C]
                                        → also affects → [Component D]
-```text
+```
 
 ## Step 2: Find Feedback Loops
 
@@ -45,7 +45,7 @@ Every system has loops. Find them before they find you.
 
 ```text
 [A ↑] →(+) [B ↑] →(+) [A ↑]   ← snowball effect
-```text
+```
 
 Example: AI Speed ↑ → Code Output ↑ → Expectations ↑ → Use AI More ↑
 
@@ -53,7 +53,7 @@ Example: AI Speed ↑ → Code Output ↑ → Expectations ↑ → Use AI More �
 
 ```text
 [A ↑] →(+) [B ↑] →(−) [A ↓]   ← self-correcting
-```text
+```
 
 Example: Code Output ↑ → Review Load ↑ → Throughput ↓
 
@@ -138,7 +138,7 @@ When presenting analysis, use this structure:
 - Why this point: [reasoning]
 - Risk if wrong: [what happens]
 - How to verify: [feedback signal to watch]
-```text
+```
 
 ## Key Principles
 

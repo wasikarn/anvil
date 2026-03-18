@@ -69,3 +69,44 @@ Update this table after each thread fix and after each reply post. Used by crash
 - [ ] Summary review comment posted
 - [ ] Re-review requested from original reviewer(s)
 - [ ] Team cleaned up (all teammates shut down)
+
+## Phase 0: Thread Fetch Commands
+
+Inline review comments:
+
+```bash
+gh api repos/{owner}/{repo}/pulls/{pr}/comments \
+  --jq '[.[] | {id, path, line, body, user: .user.login, html_url}]'
+```
+
+Review-level comments (CHANGES_REQUESTED + COMMENTED):
+
+```bash
+gh pr view {pr} --json reviews \
+  --jq '.reviews[] | select(.state == "CHANGES_REQUESTED" or .state == "COMMENTED") | {id, author: .author.login, body, state}'
+```
+
+## Phase 2: Reply Formats
+
+**Fixed:** `แก้ไขแล้วครับ — {commit_sha_short}: {description}`
+
+**Declined:** `ขอบคุณสำหรับ suggestion ครับ — ไม่ได้แก้เพราะ [เลือก {current_approach} เพราะ {tradeoff}] — ถ้าแก้ตาม suggestion อาจ [specific_consequence] — ถ้า concern ยังอยู่ รบกวน clarify เพิ่มเติมได้ครับ`
+
+**Informational:** `รับทราบครับ — {acknowledgment}`
+
+**PR Summary (post after all thread replies):**
+
+```markdown
+## ตอบ Review Comments ครับ
+
+แก้ไขแล้ว {N} threads:
+- 🔴 {count} Critical issues fixed
+- 🟡 {count} Important issues fixed
+- 🔵 {count} Suggestions acknowledged
+
+Commits: {list of fix commit shas}
+
+**Validate:** {validate_command} ✅
+
+ขอความกรุณา resolve conversation threads ที่ fixed แล้วได้เลยครับ (GitHub ไม่อนุญาตให้ author resolve threads ของ reviewer ผ่าน API)
+```

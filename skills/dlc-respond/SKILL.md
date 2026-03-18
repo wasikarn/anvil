@@ -53,19 +53,7 @@ If `$1` matches `BEP-\d+`, follow `## dlc-respond` section in [../../references/
 
 ### Step 2: Fetch All Open Threads
 
-Inline review comments:
-
-```bash
-gh api repos/{owner}/{repo}/pulls/{pr}/comments \
-  --jq '[.[] | {id, path, line, body, user: .user.login, html_url}]'
-```
-
-Review-level comments (CHANGES_REQUESTED + COMMENTED):
-
-```bash
-gh pr view {pr} --json reviews \
-  --jq '.reviews[] | select(.state == "CHANGES_REQUESTED" or .state == "COMMENTED") | {id, author: .author.login, body, state}'
-```
+Fetch all threads — see [references/operational.md](references/operational.md#phase-0-thread-fetch-commands) for gh API commands. Fetch both: inline review comments (by line) and review-level comments (CHANGES_REQUESTED + COMMENTED).
 
 ### Step 2.5: Check Dismissed Patterns
 
@@ -140,33 +128,12 @@ gh api repos/{owner}/{repo}/pulls/comments/{comment_id}/replies \
 
 **Before posting replies:** Lead verifies `rtk git log --oneline -10` — confirm that the sha in each planned reply matches the commit whose message references that thread. Mismatched sha → fix the reply before posting.
 
-**Reply format (Thai):**
-
-- Fixed: `แก้ไขแล้วครับ — {commit_sha_short}: {description}`
-- Declined: `ขอบคุณสำหรับ suggestion ครับ — ไม่ได้แก้เพราะ [เลือก {current_approach} เพราะ {tradeoff}] — ถ้าแก้ตาม suggestion อาจ [specific_consequence] — ถ้า concern ยังอยู่ รบกวน clarify เพิ่มเติมได้ครับ`
-- Informational: `รับทราบครับ — {acknowledgment}`
+Reply format and PR summary template: [references/operational.md](references/operational.md#phase-2-reply-formats).
 
 After all thread replies, post summary:
 
 ```bash
 gh pr review {pr} --comment --body "{summary}"
-```
-
-**Summary format:**
-
-```markdown
-## ตอบ Review Comments ครับ
-
-แก้ไขแล้ว {N} threads:
-- 🔴 {count} Critical issues fixed
-- 🟡 {count} Important issues fixed
-- 🔵 {count} Suggestions acknowledged
-
-Commits: {list of fix commit shas}
-
-**Validate:** {validate_command} ✅
-
-ขอความกรุณา resolve conversation threads ที่ fixed แล้วได้เลยครับ (GitHub ไม่อนุญาตให้ author resolve threads ของ reviewer ผ่าน API)
 ```
 
 Update `respond-context.md` progress section after each thread reply.

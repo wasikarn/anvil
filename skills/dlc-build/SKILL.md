@@ -24,16 +24,7 @@ Read CLAUDE.md first — auto-loaded, contains project patterns and conventions.
 
 ## Phase Flow
 
-```text
-Phase 0: Triage ──→ Phase 1: Research (Full) ──→ Phase 2: Plan
-                                                      ↓
-                          ┌────────────────────────────────────────────────┐
-                          │  Phase 3: Implement → Phase 4: Review          │
-                          │             ↓                                  │
-                          │  Phase 5: Assess ──→ EXIT → Phase 6: Ship      │
-                          │             └──→ LOOP (max 3 iterations)       │
-                          └────────────────────────────────────────────────┘
-```
+Phase 0→1→2→ [3: Implement ↔ 4: Review ↔ 5: Assess loop (max 3)] →6: Ship
 
 | Iter | Implement | Reviewers | Debate |
 | --- | --- | --- | --- |

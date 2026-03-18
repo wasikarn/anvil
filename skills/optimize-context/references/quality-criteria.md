@@ -155,3 +155,24 @@ Compressed context (8KB) performs identically to verbose (40KB). Passive wins: n
 - **Grade B (70+) + no critical criterion below 10** = good baseline
 - **Grade A (90+)** = ideal for framework-heavy or complex projects
 - Fully autonomous — all 5 phases run without user-confirmation gates
+
+## Phase 2 Output Format
+
+```markdown
+./CLAUDE.md — Score: XX/100 (Grade X) | Size: XX KB
+
+| Criterion | Score | Status | Notes |
+| --- | --- | --- | --- |
+| Commands | XX/15 | ✅ or ⚠️ CRITICAL (if <10) | ... |
+| Architecture | XX/15 | ✅ or ⚠️ CRITICAL (if <10) | ... |
+| Retrieval readiness | XX/15 | ✅ or ⚠️ CRITICAL (if <10, framework only) | ... |
+| Conciseness | XX/15 | ✅ or ⚠️ CRITICAL (if <10) | ... |
+| Non-obvious | XX/10 | ✅ | ... |
+| Novel content | XX/10 | ✅ | ... |
+| Currency | XX/10 | ✅ or ⚠️ CRITICAL (if <5) | ... |
+| Actionability | XX/10 | ✅ | ... |
+
+Critical check: PASS ✅ — all criteria above minimums
+— or —
+Critical check: FAIL ⚠️ — [Criterion] at X/15 (min 10), [Criterion] at X/15 (min 10)
+```

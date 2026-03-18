@@ -22,8 +22,6 @@ Invoke as `/dlc-review [pr-number] [jira-key?] [Author|Reviewer]`
 | [jira-integration.md](../../references/jira-integration.md) — Jira detection, MCP fetch, AC verification (loaded when Jira key detected) |
 | [references/operational.md](references/operational.md) — Graceful Degradation, Context Compression Recovery, Success Criteria |
 
----
-
 **PR:** #$0 | **Mode:** $1 (default: Author)
 **Today:** !`date +%Y-%m-%d`
 **Git branch:** !`git branch --show-current`
@@ -39,8 +37,6 @@ Invoke as `/dlc-review [pr-number] [jira-key?] [Author|Reviewer]`
 Read CLAUDE.md first — auto-loaded, contains project patterns and conventions.
 **Output format:** Follow [review-output-format.md](../../references/review-output-format.md) for base format, with debate additions described below.
 
----
-
 ## Prerequisite Check
 
 Before anything, verify agent teams are available:
@@ -51,52 +47,13 @@ If TeamCreate tool is not available → check graceful degradation:
 - If neither → "Running in solo mode. Lead performs sequential checklist-based review per review-conventions.md."
 ```
 
----
-
 ## Phase 0: Worktree Setup (Reviewer mode only)
 
-In **Reviewer mode**, check out the PR in an isolated worktree to avoid disrupting the current working tree:
-
-```bash
-# Check if PR branch already checked out somewhere
-git worktree list
-
-# If not, create worktree
-gh pr checkout $0 --worktree /tmp/review-pr-$0
-cd /tmp/review-pr-$0
-```
-
-```text
-Worktree already exists for this PR? → use it, skip creation
-On the PR branch already? → skip (no worktree needed)
-Author mode? → skip entirely (fixes happen in-place on current branch)
-```
-
-Clean up after Phase 6:
-
-```bash
-git worktree remove /tmp/review-pr-$0
-```
-
----
+In **Reviewer mode**: `gh pr checkout $0 --worktree /tmp/review-pr-$0`. Skip if already on PR branch or if worktree exists. Skip entirely in Author mode. Clean up after Phase 6: `git worktree remove /tmp/review-pr-$0`.
 
 ## Phase 0.05: Context Bootstrap
 
-Run the `pr-review-bootstrap` agent before creating reviewer teammates — it uses Haiku (cheap) to gather shared context once, preventing 3x redundant fetches:
-
-```text
-Task pr-review-bootstrap agent with:
-  - PR number: $0
-  - Jira key: (if present in $ARGUMENTS)
-
-Capture output: {bootstrap_context} — includes diff summary, file groupings, AC checklist
-```
-
-Inject `{bootstrap_context}` into all 3 teammate prompts in Phase 2.
-
-If bootstrap fails → fallback: instruct Teammate 1 (Correctness) to fetch the full PR diff and post a lightweight context summary to the team before all 3 begin review. Teammates 2 and 3 use that summary instead of fetching independently. Do not block on this.
-
----
+Run `pr-review-bootstrap` agent (Haiku) with PR #$0 and Jira key if present. Capture `{bootstrap_context}` (diff summary, file groupings, AC checklist) — inject into all 3 Phase 2 teammate prompts. If bootstrap fails: Teammate 1 fetches full diff and posts lightweight summary; teammates 2+3 use that instead.
 
 ## Phase 0.1: PR Scope Assessment
 
@@ -107,10 +64,6 @@ Parse `Diff stat` from header. Classify per [review-conventions.md](../../refere
 | Normal | <=400 | Full review with debate |
 | Large | 401-1000 | Full review + suggest split |
 | Massive | >1000 | Hard Rules only, skip debate, warn prominently |
-
-If Massive: skip to simplified single-session review (debate overhead not worth it for scope-limited review).
-
----
 
 ## Phase 0.6: Ticket Understanding (skip if no Jira)
 
@@ -123,8 +76,6 @@ Scan `$ARGUMENTS` for Jira key (`BEP-\d+`). If found, follow [jira-integration.m
 5. Include AC verification table in Phase 4 output
 
 If no Jira key → skip to Phase 1.
-
----
 
 ## Phase 1: Project Detection
 
@@ -152,8 +103,6 @@ If no review-rules found, use generic rules:
 - query inside loop → Critical (N+1)
 - `console.log` in production code → Critical (use structured logger)
 
----
-
 ## Phase 2: Create Team and Independent Review
 
 ### Step 1: Create the team
@@ -176,81 +125,17 @@ All teammates are READ-ONLY.
 
 ### Step 2: Wait for all reviews
 
-Wait for all 3 teammates to complete their independent review. Track progress:
-
-```markdown
-### Phase 2: Independent Review
-
-| Teammate | Status | Findings |
-| --- | --- | --- |
-| Correctness & Security | ... | ... |
-| Architecture & Performance | ... | ... |
-| DX & Testing | ... | ... |
-```
-
-**CHECKPOINT** — all 3 reviews must complete before proceeding to debate.
-
----
+Wait for all 3 teammates to complete. Track progress: show each teammate's status and key finding. **CHECKPOINT** — all 3 reviews must complete before proceeding to debate.
 
 ## Phase 3: Adversarial Debate
 
-Follow [debate-protocol.md](references/debate-protocol.md) exactly.
+Follow [debate-protocol.md](references/debate-protocol.md) exactly:
 
-### Step 0: Pre-Debate Triage
-
-Before broadcasting, classify all findings per [debate-protocol.md](references/debate-protocol.md) Pre-Debate Triage rules:
-
-- **Auto-pass** (skip debate, include directly): Hard Rule + confidence ≥ 90
-- **Auto-drop** (skip debate, drop): Info + confidence < 80
-- **Must-debate** (all others): enter round-robin
-
-Only must-debate findings are sent to teammates. This reduces debate token cost 30-50%.
-
-### Step 1: Broadcast findings
-
-Send each teammate the must-debate findings from all three reviews:
-
-```text
-All reviews are complete. Here are the findings from all teammates:
-
-[Correctness findings]
-[Architecture findings]
-[DX findings]
-
-Your task: Review the findings from the teammate assigned to you.
-For each finding, respond with: Agree, Challenge (with evidence), or Escalate.
-See debate-protocol.md for rules.
-```
-
-### Step 2: Round-robin debate
-
-Create debate tasks per [debate-protocol.md](references/debate-protocol.md):
-
-- Correctness reviews Architecture's findings
-- Architecture reviews DX's findings
-- DX reviews Correctness's findings
-
-### Step 3: Check for consensus
-
-After Round 1:
-
-- If all findings have consensus (agree or clear majority) → proceed to Phase 4
-- If unresolved disagreements exist → Round 2 (targeted debate on those findings only)
-- After Round 2 → lead decides any remaining disputes based on evidence quality
-
-### Step 4: Output debate summary
-
-```markdown
-### Phase 3: Debate Summary
-
-| # | Finding | Raised By | Challenged By | Outcome |
-| --- | --- | --- | --- | --- |
-| 1 | ... | ... | ... | ... |
-```
-
-Show: Consensus (N/3), Dropped (with reason), or Lead decided (with rationale).
-
----
+1. **Pre-Debate Triage:** Auto-pass (Hard Rule + conf ≥90), auto-drop (Info + conf <80), must-debate (all others). Only must-debate findings enter round-robin.
+2. **Broadcast** must-debate findings to all teammates.
+3. **Round-robin:** Correctness reviews Architecture's findings · Architecture reviews DX's · DX reviews Correctness's.
+4. **Consensus check:** Proceed if consensus, else Round 2 on unresolved only. After Round 2, lead decides on evidence quality. Max 2 rounds.
+5. **Output:** Debate summary table — Finding / Raised By / Challenged By / Outcome. Show: Consensus (N/3), Dropped (reason), Lead decided (rationale).
 
 ## Phase 4: Convergence
 
@@ -263,15 +148,7 @@ Consolidate surviving findings per [review-conventions.md](../../references/revi
 
 Output the consolidated findings table per [review-output-format.md](../../references/review-output-format.md).
 
-**Dismissed Findings Log:** After consolidation, if any findings were dropped via debate with clear reasoning, append to `{project_root}/.claude/review-dismissed.md`:
-
-```markdown
-| Date | Pattern | File | Reason dismissed | PR |
-| --- | --- | --- | --- | --- |
-| 2026-03-17 | missing null check | bar.ts:88 | guarded by caller at line 45 | #1234 |
-```
-
-Cap at 50 entries (remove oldest when over limit).
+**Dismissed Findings Log:** After consolidation, append dropped findings to `{project_root}/.claude/review-dismissed.md` (format: date | pattern | file | reason | PR — cap 50 FIFO).
 
 Replace the "Agents" column with "Consensus":
 
@@ -284,8 +161,6 @@ Replace the "Agents" column with "Consensus":
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | Critical | #2 | `src/foo.tsx` | 42 | 3/3 | Uses `as any` — should use type guard |
 ```
-
----
 
 ## Phase 5: Action
 
@@ -307,8 +182,6 @@ As **Tech Lead**: focus on architecture, patterns, team standards, and mentoring
 
 **Comment labels:** Per [review-conventions.md](../../references/review-conventions.md) — prefix every comment with `issue:`/`suggestion:`/`nitpick:`/`praise:`.
 
----
-
 ## Phase 6: Cleanup
 
 After action phase completes:
@@ -318,8 +191,6 @@ After action phase completes:
 
 Output final verdict per [review-output-format.md](../../references/review-output-format.md).
 
----
-
 ## Constraints
 
 - Investigate: read files before making claims — no speculation without evidence
@@ -328,8 +199,6 @@ Output final verdict per [review-output-format.md](../../references/review-outpu
 - Max 3 teammates — more adds cost without proportional value
 - Max 2 debate rounds — prevents infinite discussion
 - Hard Rules cannot be dropped via debate (only reclassified with evidence)
-
----
 
 ## Operational Reference
 

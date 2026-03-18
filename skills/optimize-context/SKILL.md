@@ -111,28 +111,7 @@ Quick checklist:
 
 Grades: A (90-100), B (70-89), C (50-69), D (30-49), F (0-29).
 
-**Output format per file** (must follow exactly):
-
-```markdown
-./CLAUDE.md — Score: XX/100 (Grade X) | Size: XX KB
-
-| Criterion | Score | Status | Notes |
-| --- | --- | --- | --- |
-| Commands | XX/15 | ✅ or ⚠️ CRITICAL (if <10) | ... |
-| Architecture | XX/15 | ✅ or ⚠️ CRITICAL (if <10) | ... |
-| Retrieval readiness | XX/15 | ✅ or ⚠️ CRITICAL (if <10, framework only) | ... |
-| Conciseness | XX/15 | ✅ or ⚠️ CRITICAL (if <10) | ... |
-| Non-obvious | XX/10 | ✅ | ... |
-| Novel content | XX/10 | ✅ | ... |
-| Currency | XX/10 | ✅ or ⚠️ CRITICAL (if <5) | ... |
-| Actionability | XX/10 | ✅ | ... |
-
-Critical check: PASS ✅ — all criteria above minimums
-— or —
-Critical check: FAIL ⚠️ — [Criterion] at X/15 (min 10), [Criterion] at X/15 (min 10)
-```
-
-The Status column is **mandatory** — compare each score against the minimum thresholds table and mark `⚠️ CRITICAL` if below. Any `FAIL` criteria must be addressed in phase 4 before the file can pass.
+**Output format:** See [quality-criteria.md](references/quality-criteria.md#phase-2-output-format) — score table per criterion with Status column showing ✅ or ⚠️ CRITICAL against minimums.
 
 If `--coverage` flag: also assess Project Coverage using the rubric in [references/quality-criteria.md](references/quality-criteria.md). Scan for `.claude/rules/`, `skills/`, `agents/`, `output-styles/`, `.claude/settings.json`, `.mcp.json`, `.claude-plugin/`. Score each applicable category 0-3, normalize to 100.
 
@@ -183,21 +162,7 @@ For templates by project type: [references/templates.md](references/templates.md
 **Size targets:** <8KB optimal, 8-15KB acceptable, >15KB needs compression.
 **Size measurement:** Exclude auto-generated sections (`<claude-mem-context>`, plugin-injected blocks) from byte count — score only human-authored content.
 
-**Output format** (must show before editing):
-
-```markdown
-### Proposed Changes
-
-| # | Finding | Action | Size Impact |
-| --- | --- | --- | --- |
-| 1 | Finding #1: <summary> | <what will change> | +/- XX bytes |
-| 2 | Finding #2: <summary> | <what will change> | +/- XX bytes |
-| 3 | Finding #5: OK | No action needed | — |
-
-Projected: Score XX → XX | Size: XX KB → XX KB
-```
-
-Every finding from phase 3 must appear in this table — if no action needed, state why.
+**Output format:** See [key-rules.md](references/key-rules.md#phase-4-proposed-changes-format) — table of all findings with action and size impact, plus projected score/size.
 
 Proceed directly to phase 5 after outputting the proposed changes table.
 

@@ -28,6 +28,7 @@ Invoke as `/dlc-debug [bug-description-or-jira-key] [--quick?]`
 | [../../references/review-conventions.md](../../references/review-conventions.md) | If adding Fix Review pass |
 | [jira-integration.md](../../references/jira-integration.md) | When Jira key detected in arguments |
 | [references/operational.md](references/operational.md) | On graceful degradation or context compression recovery |
+| [artifact-templates.md](references/artifact-templates.md) | Phase 0 Step 4, Phase 1 Step 3, Phase 3 — artifact format reference |
 
 ---
 
@@ -95,35 +96,7 @@ If no Jira key — skip to Step 2.
 
 ### Step 4: Create Context Artifact
 
-Write `debug-context.md` at **target project root**:
-
-```markdown
-# Debug Context
-
-Bug: {description}
-Severity: {P0/P1/P2}
-Mode: {Full/Quick}
-Project: {project_name}
-Validate: {validate_command}
-Started: {date}
-Branch: {branch_name}
-
-## Reproduction Steps
-{from user description}
-
-## Hard Rules
-{project_hard_rules}
-
-## Jira Context
-{ticket title, priority, and key description — leave blank if no Jira key}
-
-## Progress
-- [ ] Phase 0: Triage
-- [ ] Phase 1: Investigation
-- [ ] Phase 2: Fix + Harden
-- [ ] Phase 2.5: Fix Review (if --review or P0)
-- [ ] Phase 3: Ship
-```
+Write `debug-context.md` at **target project root** — format: [artifact-templates.md](references/artifact-templates.md#debug-context.md). Includes: bug description, severity, mode, project, validate command, reproduction steps, hard rules, Jira context (if applicable), shared context (populated in Phase 1 Bootstrap), and progress checkboxes.
 
 Lead updates the progress checkboxes at the start of each phase.
 
@@ -175,24 +148,7 @@ Lead shuts down all Phase 1 teammates.
 - If all findings are Info-severity → skip DX section in Fix Plan (no actionable improvements)
 - If (Critical + Warning) / Total < 50% → note "low DX signal" to user before proceeding
 
-Then merge findings into `investigation.md` at **target project root**:
-
-```markdown
-# Investigation Report
-
-## Root Cause
-{Investigator findings — hypothesis, evidence, file:line}
-
-## DX Findings
-| # | Sev | Category | File | Line | Issue | Recommendation |
-| --- | --- | --- | --- | --- | --- | --- |
-| 1 | Critical | Silent failure | ... | ... | ... | ... |
-
-## Fix Plan
-1. [Bug] Fix root cause: {description}
-2. [Test] Add regression test: {description}
-3. [DX] {each DX improvement as separate item}
-```
+Then merge findings into `investigation.md` at **target project root** — format: [artifact-templates.md](references/artifact-templates.md#investigation.md). Sections: Root Cause (hypothesis + file:line evidence), DX Findings table (Sev/Category/File/Line/Issue/Recommendation), Fix Plan (numbered: [Bug]/[Test]/[DX] items).
 
 **GATE:** Root cause identified with file:line evidence **and confidence >= Medium** → proceed. If confidence is Low or root cause not found → escalate to user (present alternative hypotheses; do not proceed to Phase 2).
 
@@ -207,15 +163,7 @@ Create Fixer in same team using prompts from [teammate-prompts.md](references/te
 
 Fixer executes Fix Plan from `investigation.md`.
 
-Commit strategy:
-
-```text
-commit 1: fix(area): fix root cause — {description}
-commit 2: test(area): add regression test for {bug}
-commit 3: dx(area): improve error message in {file}
-commit 4: dx(area): add logging at {decision point}
-commit 5: dx(area): add validation for {edge case}
-```
+Commit strategy: one commit per Fix Plan item — `fix(area)`, `test(area)`, `dx(area)`.
 
 ### Verification Loop
 
@@ -265,26 +213,7 @@ After Fix Reviewer completes, Lead shuts down Fix Reviewer.
 
 ### Step 1: Present Summary
 
-```markdown
-## Debug Summary
-
-**Bug:** {description}
-**Root Cause:** {one-line}
-**Fix:** {commit refs}
-**DX Improvements:** {count} items (Critical: X, Warning: Y)
-
-### Commits
-| # | Type | Description |
-| --- | --- | --- |
-| 1 | fix | ... |
-| 2 | test | ... |
-| 3 | dx | ... |
-
-### Completion Options
-1. Create PR
-2. Commit to current branch
-3. Keep for manual review
-```
+Output Debug Summary — format: [artifact-templates.md](references/artifact-templates.md#debug-summary). Shows: bug, root cause, fix commit refs, DX improvements count, commits table, completion options.
 
 ### Step 2: Cleanup
 
