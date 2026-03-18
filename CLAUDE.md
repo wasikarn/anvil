@@ -66,10 +66,10 @@ Current agents (7):
 | `commit-finalizer` | haiku | Fast git commit with conventional commits format |
 | `dev-loop-bootstrap` | haiku | Pre-gather Phase 1 context before dlc-build explorer spawns |
 | `dlc-debug-bootstrap` | haiku | Pre-gather debug context before dlc-debug Investigator spawns |
-| `pr-review-bootstrap` | sonnet | Fetch PR diff + Jira AC in one pass before review |
+| `pr-review-bootstrap` | haiku | Fetch PR diff + Jira AC in one pass before review |
 | `review-consolidator` | haiku | Dedup/sort multi-reviewer findings into single ranked table |
 | `skill-validator` | sonnet | Validates SKILL.md against best practices |
-| `code-reviewer` | sonnet | General-purpose code reviewer with persistent memory + preloaded skills |
+| `code-reviewer` | sonnet | General-purpose code reviewer with cross-session persistent memory |
 
 ## Hooks
 
@@ -134,7 +134,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full step-by-step guide. Key rule
 
 - `description:` must be trigger-complete (what + when + keywords) — max 1024 chars
 - `disable-model-invocation: true` for side-effect skills (deploy, PR review, merge)
-- `compatibility:` must list all required external tools
+- `compatibility:` recommended for skills with external tool dependencies (not required, but contributors need to know what to install)
 - Pre-commit hook auto-fixes staged `.md` files — no manual lint needed before commit
 
 ## Repo Commands
@@ -149,7 +149,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full step-by-step guide. Key rule
 
 ## Gotchas
 
-- `context: fork` + `agent` field runs skills in isolated subagent — available but not used in this repo (removed for real-time streaming visibility and follow-up interaction)
+- `context: fork` + `agent` field runs skills in isolated subagent — used by `env-heal` (haiku, general-purpose). Other skills avoid it for real-time streaming visibility and follow-up interaction
 - Pre-commit hook auto-fixes staged `.md` files — runs `scripts/fix-tables.sh` + `markdownlint-cli2 --fix`; no manual fix needed before commit
 - `disable-model-invocation: true` removes description from context entirely (skill never auto-triggers); `user-invocable: false` hides from menu but keeps context — different effects
 - Run `/optimize-context` when this file feels stale

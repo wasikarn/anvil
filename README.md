@@ -222,10 +222,10 @@ Specialized subagents that the DLC skills and other workflows spawn automaticall
 | `commit-finalizer` | Haiku | Manually | Fast git commit — formats conventional commit messages |
 | `dev-loop-bootstrap` | Haiku | `dlc-build` Phase 1 | Pre-gathers project structure and type definitions |
 | `dlc-debug-bootstrap` | Haiku | `dlc-debug` Phase 0 | Pre-gathers stack trace context and affected files |
-| `pr-review-bootstrap` | Sonnet | `dlc-review` Phase 0 | Fetches PR diff, Jira AC, and groups changed files |
+| `pr-review-bootstrap` | Haiku | `dlc-review` Phase 0 | Fetches PR diff, Jira AC, and groups changed files |
 | `review-consolidator` | Haiku | `dlc-review` Phase 4 | Deduplicates and ranks findings from multiple reviewers |
 | `skill-validator` | Sonnet | Manually | Validates SKILL.md frontmatter and description quality |
-| `code-reviewer` | Sonnet | Manually | General-purpose code reviewer with persistent memory |
+| `code-reviewer` | Sonnet | Manually | General-purpose code reviewer with cross-session persistent memory |
 
 ---
 
