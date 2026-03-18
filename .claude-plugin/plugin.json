@@ -8,6 +8,7 @@
     "name": "kobig",
     "url": "https://github.com/wasikarn"
   },
+  "homepage": "https://github.com/wasikarn/claude-code-skills#readme",
   "repository": "https://github.com/wasikarn/claude-code-skills",
   "skills": "./skills/",
   "agents": "./agents/",

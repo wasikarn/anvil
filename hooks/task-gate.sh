@@ -21,7 +21,7 @@ fi
 
 # Require at least one file:line reference in the output
 if ! echo "$TOOL_OUTPUT" | grep -qE '[a-zA-Z0-9_/.-]+\.[a-zA-Z]+:[0-9]+'; then
-  echo "{\"decision\": \"block\", \"reason\": \"$GATE_MSG\"}" >&2
+  echo "$GATE_MSG" >&2
   exit 2
 fi
 

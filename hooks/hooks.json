@@ -43,6 +43,7 @@
         "hooks": [
           {
             "type": "command",
+            "async": true,
             "command": "command -v jq > /dev/null 2>&1 && FILE=$(jq -r '.tool_input.file_path // empty') && [ -n \"$FILE\" ] && echo \"$FILE\" | grep -qE '\\.md$' && npx markdownlint-cli2 --fix \"$FILE\" 2>/dev/null; exit 0"
           }
         ]

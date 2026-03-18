@@ -26,7 +26,7 @@ if [ "${NUDGE_CHECK_TASKS:-0}" = "1" ]; then
   if [ -d "$TASKS_DIR" ]; then
     PENDING=$(find "$TASKS_DIR" -name "*.json" -exec grep -l '"status":"pending"' {} \; 2>/dev/null | head -1)
     if [ -n "$PENDING" ]; then
-      echo "{\"decision\": \"block\", \"reason\": \"$NUDGE_MSG\"}" >&2
+      echo "$NUDGE_MSG" >&2
       exit 2
     fi
   fi
@@ -34,5 +34,5 @@ if [ "${NUDGE_CHECK_TASKS:-0}" = "1" ]; then
 fi
 
 # Unconditional nudge
-echo "{\"decision\": \"block\", \"reason\": \"$NUDGE_MSG\"}" >&2
+echo "$NUDGE_MSG" >&2
 exit 2

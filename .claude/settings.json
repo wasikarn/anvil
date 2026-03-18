@@ -1,5 +1,15 @@
 {
   "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/skill-routing.sh"
+          }
+        ]
+      }
+    ],
     "TaskCompleted": [
       {
         "matcher": "review-debate",
@@ -73,6 +83,10 @@
         "hooks": [
           {
             "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/check-deps.sh"
+          },
+          {
+            "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/session-start-context.sh"
           }
         ]
@@ -95,7 +109,16 @@
         "hooks": [
           {
             "type": "command",
-            "command": "FILE=$(jq -r '.tool_input.file_path // empty'); if [ -n \"$FILE\" ] && echo \"$FILE\" | grep -qE '\\.md$'; then npx markdownlint-cli2 --fix \"$FILE\" 2>/dev/null; fi"
+            "command": "command -v jq > /dev/null 2>&1 && FILE=$(jq -r '.tool_input.file_path // empty') && [ -n \"$FILE\" ] && echo \"$FILE\" | grep -qE '\\.md$' && npx markdownlint-cli2 --fix \"$FILE\" 2>/dev/null; exit 0"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/shellcheck-written-scripts.sh"
           }
         ]
       }

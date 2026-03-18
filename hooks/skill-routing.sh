@@ -42,11 +42,11 @@ if [[ $PROMPT_LOWER =~ review\ pr|review\ pull\ request|review\ code ]] \
    || [[ $PROMPT =~ ดู\ PR ]]; then
   emit_hint "[skill-hint:review-pr]
 Run IN PARALLEL (all independent):
-  code quality    → dlc-review
-  error handling  → silent-failure-hunter
-  test coverage   → pr-test-analyzer
-  type design     → type-design-analyzer  (only if new types added)
-  polish          → code-simplifier       (run last)
+  code quality    → dlc-review             (this plugin)
+  error handling  → silent-failure-hunter  (pr-review-toolkit plugin)
+  test coverage   → pr-test-analyzer       (pr-review-toolkit plugin)
+  type design     → type-design-analyzer   (pr-review-toolkit plugin, only if new types added)
+  polish          → code-simplifier        (pr-review-toolkit plugin, run last)
 Adversarial option: dlc-review (adversarial debate, 3 reviewers)"
 fi
 

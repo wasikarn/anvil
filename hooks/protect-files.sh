@@ -1,6 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # protect-files.sh — Block edits to sensitive config files
 # Used as a PreToolUse hook for Edit|Write events
+
+set -euo pipefail
 
 command -v jq > /dev/null 2>&1 || exit 0
 

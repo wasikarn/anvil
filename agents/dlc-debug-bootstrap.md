@@ -3,10 +3,11 @@ name: dlc-debug-bootstrap
 description: "Pre-gather shared debug context before dlc-debug Phase 1: reads dlc-build artifacts when present, maps affected files from stack trace or description, collects recent commits and code structure. Run at the start of any debug session to avoid redundant reads by Investigator agents."
 model: haiku
 tools: Read, Glob, Bash, Grep
-compatibility: fd, ast-grep
 ---
 
 # Debug Bootstrap
+
+**Optional tools:** `fd` (faster file search, falls back to Glob), `ast-grep` (structural search, falls back to Grep).
 
 Pre-gather shared context and write `## Shared Context` to `debug-context.md` before
 dlc-debug Phase 1 spawns Investigator and DX Analyst teammates.

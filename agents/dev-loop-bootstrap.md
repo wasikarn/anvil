@@ -4,10 +4,11 @@ description: "Bootstraps dlc-build Phase 1 context by pre-gathering shared proje
 argument-hint: "[task-description-or-jira-key]"
 tools: Read, Glob, Bash, Grep
 model: haiku
-compatibility: fd, ast-grep
 ---
 
 # Dev Loop Bootstrap
+
+**Optional tools:** `fd` (faster file search, falls back to Glob), `ast-grep` (structural search, falls back to Grep).
 
 Pre-gather shared project context in one pass so Phase 1 explorers don't redundantly re-read the same files.
 
