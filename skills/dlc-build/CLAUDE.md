@@ -24,7 +24,6 @@ Uses dynamic team roster (explorers, workers, reviewers) with iterative implemen
 | `references/fixer-prompts.md` | Modifying fixer prompt (Phase 3 iter 2+) |
 | `references/reviewer-prompts.md` | Modifying reviewer prompts (Phase 4) |
 | `references/reviewer-shared-rules.md` | Shared reviewer rules/output format (referenced by each reviewer template) |
-| `references/consolidation-prompt.md` | Haiku consolidation subagent prompt (Phase 4 iter 1) |
 | `references/workflow-modes.md` | Modifying Full/Quick/Hotfix classification + mode decision tree |
 | `references/review-lenses/` | Domain-specific review checklists (security/perf/frontend/DB/TypeScript) |
 | `../../references/review-conventions.md` | Shared review conventions (labels, dedup, strengths) |
@@ -36,7 +35,7 @@ Uses dynamic team roster (explorers, workers, reviewers) with iterative implemen
 
 - `SKILL.md` — overview, phase flow, reference table, constraints, gate summary (~100 lines)
 - `references/phase-{0-6}-*.md` — phase-specific instructions (load on demand)
-- Role-specific prompt files: explorer, worker, fixer, reviewer, consolidation
+- Role-specific prompt files: explorer, worker, fixer, reviewer
 - `references/review-lenses/` — domain checklists injected into reviewer prompts at Phase 4
 - `references/phase-gates.md` — gate conditions for every phase transition
 - `references/explorer-prompts.md`, `references/worker-prompts.md`, `references/fixer-prompts.md`, `references/reviewer-prompts.md` — role-specific prompt templates

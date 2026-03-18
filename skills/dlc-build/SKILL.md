@@ -36,7 +36,7 @@ Phase 0→1→2→ [3: Implement ↔ 4: Review ↔ 5: Assess loop (max 3)] →6:
 
 ## Reference Loading (on demand only)
 
-| File | Load when |
+| File / Agent | Load when |
 | --- | --- |
 | [references/phase-0-triage.md](references/phase-0-triage.md) | Entering Phase 0 |
 | [references/phase-1-research.md](references/phase-1-research.md) | Entering Phase 1 (Full mode) |
@@ -53,7 +53,7 @@ Phase 0→1→2→ [3: Implement ↔ 4: Review ↔ 5: Assess loop (max 3)] →6:
 | [references/worker-prompts.md](references/worker-prompts.md) | Entering Phase 3 iter 1 |
 | [references/fixer-prompts.md](references/fixer-prompts.md) | Entering Phase 3 iter 2+ |
 | [references/reviewer-prompts.md](references/reviewer-prompts.md) | Entering Phase 4 |
-| [references/consolidation-prompt.md](references/consolidation-prompt.md) | Phase 4 iter 1 with 3 reviewers |
+| `review-consolidator` agent | Phase 4 iter 1 (3 reviewers) — consolidate findings |
 | [../../references/review-conventions.md](../../references/review-conventions.md) | Entering Phase 4 |
 | [../../references/review-output-format.md](../../references/review-output-format.md) | Entering Phase 4 |
 | [../dlc-review/references/debate-protocol.md](../dlc-review/references/debate-protocol.md) | Phase 4 iter 1 debate only (check existence first — fallback in phase-4-review.md) |

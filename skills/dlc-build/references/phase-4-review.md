@@ -45,6 +45,6 @@ Drop findings below the role threshold before consolidation. Hard Rule violation
 
 ## Review Output
 
-Write findings to `.claude/dlc-build/review-findings-{iteration}.md` per [../../references/review-output-format.md](../../references/review-output-format.md). Full mode iter 1 with 3 reviewers: load [consolidation-prompt.md](consolidation-prompt.md) and delegate consolidation + dedup to a Haiku subagent — removes main context bias from ranking and saves Sonnet tokens on mechanical dedup work.
+Write findings to `.claude/dlc-build/review-findings-{iteration}.md` per [../../references/review-output-format.md](../../references/review-output-format.md). Full mode iter 1 with 3 reviewers: dispatch `review-consolidator` agent with raw findings inline — removes main context bias from ranking and saves Sonnet tokens on mechanical dedup work. For 1–2 reviewer cases, lead consolidates inline (no agent). If agent errors → dedup, pattern-cap, sort, and signal-check inline per [review-conventions.md](../../references/review-conventions.md).
 
 **GATE:** Findings consolidated → update `Phase: review` in dev-loop-context.md → proceed to Assess.

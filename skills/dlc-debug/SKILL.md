@@ -115,16 +115,22 @@ Lead updates the progress checkboxes at the start of each phase.
 
 ### Bootstrap (Lead — before spawning teammates)
 
-Pre-gather shared context to eliminate duplicate reads across Investigator and DX Analyst:
+Dispatch `dlc-debug-bootstrap` agent. Pass labeled input inline:
 
-1. `rtk git log --oneline -10` — identify recent changes near the affected area
-2. From bug description + triage, list primary affected files (max 5) based on error messages, stack traces, or area described
-3. Read key sections of each file: class/function names, relevant code paths (scan structure — do NOT read entire files)
-4. Append `## Shared Context` to `debug-context.md` with:
-   - Recent commits relevant to the bug
-   - Affected files: `{file:line-range}` — brief description of relevant part
-   - Code notes: key function signatures, patterns in affected area
-5. Add this instruction to both Investigator and DX Analyst prompts when constructing them (see Lead Notes in teammate-prompts.md item 9)
+```text
+Bug: {bug description from $ARGUMENTS}
+Project Root: {project_root from Phase 0 detect-project output}
+```
+
+The agent appends `## Shared Context` to `debug-context.md` — include that section
+path in each teammate's prompt when constructing them (Step 1).
+
+**Call-site fallback:** if agent errors → execute original Steps 1–4 inline:
+
+1. `rtk git log --oneline -10` — recent commits near affected area
+2. List primary affected files (max 5) from error/stack trace
+3. Read key sections of each file (structure only, not full content)
+4. Append `## Shared Context` to `debug-context.md`
 
 ### Step 1: Create Team
 

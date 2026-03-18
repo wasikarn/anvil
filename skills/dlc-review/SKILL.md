@@ -139,12 +139,11 @@ Follow [debate-protocol.md](references/debate-protocol.md) exactly:
 
 ## Phase 4: Convergence
 
-Consolidate surviving findings per [review-conventions.md](../../references/review-conventions.md):
+Dispatch `review-consolidator` agent with the surviving debate findings passed inline in
+the prompt. Capture the agent's output as the consolidated findings table.
 
-1. **Dedup** by file:line — merge evidence from debate
-2. **Pattern cap** — same violation in >3 files → consolidate + "and N more"
-3. **Sort** — Critical → Warning → Info
-4. **Signal check** — if (Critical+Warning)/Total < 60%, review for noise
+If agent errors → perform dedup, pattern-cap, sort, and signal-check inline per
+[review-conventions.md](../../references/review-conventions.md).
 
 Output the consolidated findings table per [review-output-format.md](../../references/review-output-format.md).
 
