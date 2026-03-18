@@ -3,6 +3,7 @@ name: review-consolidator
 description: "Mechanical dedup, pattern-cap, sort, and signal-check for multi-reviewer findings tables. Use after DLC review debate to consolidate raw findings into a single ranked output. Called by dlc-build Phase 4 iter 1 (3 reviewers) and dlc-review Phase 4 Convergence."
 model: haiku
 tools: Read
+maxTurns: 5
 ---
 
 # Review Findings Consolidator

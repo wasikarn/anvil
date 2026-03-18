@@ -6,7 +6,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/skill-routing.sh"
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/skill-routing.sh",
+            "timeout": 10,
+            "statusMessage": "Analyzing prompt..."
           }
         ]
       }
@@ -17,11 +19,14 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/check-deps.sh"
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/check-deps.sh",
+            "timeout": 10,
+            "statusMessage": "Checking dependencies..."
           },
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/session-start-context.sh"
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/session-start-context.sh",
+            "timeout": 10
           }
         ]
       }
@@ -32,7 +37,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/protect-files.sh"
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/protect-files.sh",
+            "timeout": 5
           }
         ]
       }
@@ -53,7 +59,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/shellcheck-written-scripts.sh"
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/shellcheck-written-scripts.sh",
+            "timeout": 10
           }
         ]
       }
@@ -64,7 +71,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "GATE_PATTERN='review|debate|finding' GATE_MSG='Your findings must include file:line evidence for every issue. Please re-review and cite specific code locations.' ${CLAUDE_PLUGIN_ROOT}/hooks/task-gate.sh"
+            "command": "GATE_PATTERN='review|debate|finding' GATE_MSG='Your findings must include file:line evidence for every issue. Please re-review and cite specific code locations.' ${CLAUDE_PLUGIN_ROOT}/hooks/task-gate.sh",
+            "timeout": 10
           }
         ]
       },
@@ -73,7 +81,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "GATE_PATTERN='dev-loop|explore|implement|review|fix|finding' GATE_MSG='Your output must include file:line evidence. Re-examine the code and cite specific locations.' ${CLAUDE_PLUGIN_ROOT}/hooks/task-gate.sh"
+            "command": "GATE_PATTERN='dev-loop|explore|implement|review|fix|finding' GATE_MSG='Your output must include file:line evidence. Re-examine the code and cite specific locations.' ${CLAUDE_PLUGIN_ROOT}/hooks/task-gate.sh",
+            "timeout": 10
           }
         ]
       },
@@ -82,7 +91,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "GATE_PATTERN='respond|fix-thread|reply-thread' GATE_MSG='Your output must include file:line evidence. Cite the specific file and line number you fixed.' ${CLAUDE_PLUGIN_ROOT}/hooks/task-gate.sh"
+            "command": "GATE_PATTERN='respond|fix-thread|reply-thread' GATE_MSG='Your output must include file:line evidence. Cite the specific file and line number you fixed.' ${CLAUDE_PLUGIN_ROOT}/hooks/task-gate.sh",
+            "timeout": 10
           }
         ]
       }
@@ -93,7 +103,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "NUDGE_PATTERN='review-pr' NUDGE_CHECK_TASKS=1 NUDGE_MSG='You still have pending debate tasks. Please review your assigned teammate\\'s findings and respond with Agree, Challenge, or Escalate per the debate protocol.' ${CLAUDE_PLUGIN_ROOT}/hooks/idle-nudge.sh"
+            "command": "NUDGE_PATTERN='review-pr' NUDGE_CHECK_TASKS=1 NUDGE_MSG='You still have pending debate tasks. Please review your assigned teammate\\'s findings and respond with Agree, Challenge, or Escalate per the debate protocol.' ${CLAUDE_PLUGIN_ROOT}/hooks/idle-nudge.sh",
+            "timeout": 10
           }
         ]
       },
@@ -102,7 +113,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "NUDGE_PATTERN='dev-loop' NUDGE_CHECK_TASKS=1 NUDGE_MSG='You have pending tasks. Please continue working on your assigned phase tasks and message the team lead when done.' ${CLAUDE_PLUGIN_ROOT}/hooks/idle-nudge.sh"
+            "command": "NUDGE_PATTERN='dev-loop' NUDGE_CHECK_TASKS=1 NUDGE_MSG='You have pending tasks. Please continue working on your assigned phase tasks and message the team lead when done.' ${CLAUDE_PLUGIN_ROOT}/hooks/idle-nudge.sh",
+            "timeout": 10
           }
         ]
       },
@@ -111,7 +123,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "NUDGE_PATTERN='respond' NUDGE_MSG='You are idle. Continue fixing your assigned threads and message the team lead when done. If blocked, message lead with: thread number, what you tried, and where you are stuck.' ${CLAUDE_PLUGIN_ROOT}/hooks/idle-nudge.sh"
+            "command": "NUDGE_PATTERN='respond' NUDGE_MSG='You are idle. Continue fixing your assigned threads and message the team lead when done. If blocked, message lead with: thread number, what you tried, and where you are stuck.' ${CLAUDE_PLUGIN_ROOT}/hooks/idle-nudge.sh",
+            "timeout": 10
           }
         ]
       },
@@ -120,7 +133,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "NUDGE_PATTERN='^debug-' NUDGE_MSG='You are idle. Continue your investigation and send findings to the team lead when done. If blocked, message the lead with: what you tried, what you found, and where you are stuck.' ${CLAUDE_PLUGIN_ROOT}/hooks/idle-nudge.sh"
+            "command": "NUDGE_PATTERN='^debug-' NUDGE_MSG='You are idle. Continue your investigation and send findings to the team lead when done. If blocked, message the lead with: what you tried, what you found, and where you are stuck.' ${CLAUDE_PLUGIN_ROOT}/hooks/idle-nudge.sh",
+            "timeout": 10
           }
         ]
       }

@@ -5,7 +5,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/skill-routing.sh"
+            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/skill-routing.sh",
+            "timeout": 10,
+            "statusMessage": "Analyzing prompt..."
           }
         ]
       }
@@ -16,7 +18,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "GATE_PATTERN='review|debate|finding' GATE_MSG='Your findings must include file:line evidence for every issue. Please re-review and cite specific code locations.' \"$CLAUDE_PROJECT_DIR\"/hooks/task-gate.sh"
+            "command": "GATE_PATTERN='review|debate|finding' GATE_MSG='Your findings must include file:line evidence for every issue. Please re-review and cite specific code locations.' \"$CLAUDE_PROJECT_DIR\"/hooks/task-gate.sh",
+            "timeout": 10
           }
         ]
       },
@@ -25,7 +28,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "GATE_PATTERN='dev-loop|explore|implement|review|fix|finding' GATE_MSG='Your output must include file:line evidence. Re-examine the code and cite specific locations.' \"$CLAUDE_PROJECT_DIR\"/hooks/task-gate.sh"
+            "command": "GATE_PATTERN='dev-loop|explore|implement|review|fix|finding' GATE_MSG='Your output must include file:line evidence. Re-examine the code and cite specific locations.' \"$CLAUDE_PROJECT_DIR\"/hooks/task-gate.sh",
+            "timeout": 10
           }
         ]
       },
@@ -34,7 +38,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "GATE_PATTERN='respond|fix-thread|reply-thread' GATE_MSG='Your output must include file:line evidence. Cite the specific file and line number you fixed.' \"$CLAUDE_PROJECT_DIR\"/hooks/task-gate.sh"
+            "command": "GATE_PATTERN='respond|fix-thread|reply-thread' GATE_MSG='Your output must include file:line evidence. Cite the specific file and line number you fixed.' \"$CLAUDE_PROJECT_DIR\"/hooks/task-gate.sh",
+            "timeout": 10
           }
         ]
       }
@@ -45,7 +50,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "NUDGE_PATTERN='review-pr' NUDGE_CHECK_TASKS=1 NUDGE_MSG='You still have pending debate tasks. Please review your assigned teammate\\'s findings and respond with Agree, Challenge, or Escalate per the debate protocol.' \"$CLAUDE_PROJECT_DIR\"/hooks/idle-nudge.sh"
+            "command": "NUDGE_PATTERN='review-pr' NUDGE_CHECK_TASKS=1 NUDGE_MSG='You still have pending debate tasks. Please review your assigned teammate\\'s findings and respond with Agree, Challenge, or Escalate per the debate protocol.' \"$CLAUDE_PROJECT_DIR\"/hooks/idle-nudge.sh",
+            "timeout": 10
           }
         ]
       },
@@ -54,7 +60,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "NUDGE_PATTERN='dev-loop' NUDGE_CHECK_TASKS=1 NUDGE_MSG='You have pending tasks. Please continue working on your assigned phase tasks and message the team lead when done.' \"$CLAUDE_PROJECT_DIR\"/hooks/idle-nudge.sh"
+            "command": "NUDGE_PATTERN='dev-loop' NUDGE_CHECK_TASKS=1 NUDGE_MSG='You have pending tasks. Please continue working on your assigned phase tasks and message the team lead when done.' \"$CLAUDE_PROJECT_DIR\"/hooks/idle-nudge.sh",
+            "timeout": 10
           }
         ]
       },
@@ -63,7 +70,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "NUDGE_PATTERN='respond' NUDGE_MSG='You are idle. Continue fixing your assigned threads and message the team lead when done. If blocked, message lead with: thread number, what you tried, and where you are stuck.' \"$CLAUDE_PROJECT_DIR\"/hooks/idle-nudge.sh"
+            "command": "NUDGE_PATTERN='respond' NUDGE_MSG='You are idle. Continue fixing your assigned threads and message the team lead when done. If blocked, message lead with: thread number, what you tried, and where you are stuck.' \"$CLAUDE_PROJECT_DIR\"/hooks/idle-nudge.sh",
+            "timeout": 10
           }
         ]
       },
@@ -72,7 +80,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "NUDGE_PATTERN='^debug-' NUDGE_MSG='You are idle. Continue your investigation and send findings to the team lead when done. If blocked, message the lead with: what you tried, what you found, and where you are stuck.' \"$CLAUDE_PROJECT_DIR\"/hooks/idle-nudge.sh"
+            "command": "NUDGE_PATTERN='^debug-' NUDGE_MSG='You are idle. Continue your investigation and send findings to the team lead when done. If blocked, message the lead with: what you tried, what you found, and where you are stuck.' \"$CLAUDE_PROJECT_DIR\"/hooks/idle-nudge.sh",
+            "timeout": 10
           }
         ]
       }
@@ -83,11 +92,14 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/check-deps.sh"
+            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/check-deps.sh",
+            "timeout": 10,
+            "statusMessage": "Checking dependencies..."
           },
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/session-start-context.sh"
+            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/session-start-context.sh",
+            "timeout": 10
           }
         ]
       }
@@ -98,7 +110,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/protect-files.sh"
+            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/protect-files.sh",
+            "timeout": 5
           }
         ]
       }
@@ -109,7 +122,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "command -v jq > /dev/null 2>&1 && FILE=$(jq -r '.tool_input.file_path // empty') && [ -n \"$FILE\" ] && echo \"$FILE\" | grep -qE '\\.md$' && npx markdownlint-cli2 --fix \"$FILE\" 2>/dev/null; exit 0"
+            "command": "command -v jq > /dev/null 2>&1 && FILE=$(jq -r '.tool_input.file_path // empty') && [ -n \"$FILE\" ] && echo \"$FILE\" | grep -qE '\\.md$' && npx markdownlint-cli2 --fix \"$FILE\" 2>/dev/null; exit 0",
+            "async": true
           }
         ]
       },
@@ -118,7 +132,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/shellcheck-written-scripts.sh"
+            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/shellcheck-written-scripts.sh",
+            "timeout": 10
           }
         ]
       }

@@ -90,6 +90,8 @@ Hooks live at `hooks/`. Two sources of truth:
 
 `task-gate.sh` and `idle-nudge.sh` are parameterized via `GATE_PATTERN`/`NUDGE_PATTERN` env vars set in each matcher's command string.
 
+**Note on matchers:** The official Claude Code spec lists `TaskCompleted` and `TeammateIdle` as "None (always fires)" — meaning matchers on these events may be undocumented/unsupported. Both scripts contain internal `GATE_PATTERN`/`NUDGE_PATTERN` filtering as a fallback, so behavior is correct either way: if the runtime ignores matchers, the scripts self-filter; if the runtime respects them, the scripts get a pre-filtered subset.
+
 ### Project hooks (`.claude/settings.json`) — active only in this repo
 
 These are already configured in `.claude/settings.json` (checked into the repo). They duplicate the plugin hooks above so contributors working via symlinks get the same behavior without having the plugin installed.

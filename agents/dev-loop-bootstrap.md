@@ -3,7 +3,9 @@ name: dev-loop-bootstrap
 description: "Bootstraps dlc-build Phase 1 context by pre-gathering shared project structure, CLAUDE.md conventions, entry points, and key type definitions in one fast pass. Use at the START of Phase 1 before spawning explorers. Output goes to .claude/dlc-build/bootstrap-context.md for injection into explorer prompts."
 argument-hint: "[task-description-or-jira-key]"
 tools: Read, Glob, Bash, Grep
+disallowedTools: Edit, Write
 model: haiku
+maxTurns: 15
 ---
 
 # Dev Loop Bootstrap

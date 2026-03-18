@@ -4,12 +4,7 @@ description: "Automates git-flow merge and deploy for any project. Use /merge-pr
 argument-hint: "[pr-number?] [--hotfix?] [--release?]"
 disable-model-invocation: true
 compatibility: "Requires gh CLI (authenticated) and a git repository with a GitHub remote."
-allowed-tools:
-  - Bash(git *)
-  - Bash(gh *)
-  - Read
-  - Edit
-  - Grep
+allowed-tools: Bash(git *), Bash(gh *), Read, Edit, Grep
 ---
 
 # merge-pr — Git-flow Merge & Deploy

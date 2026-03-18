@@ -2,7 +2,10 @@
 name: dlc-debug-bootstrap
 description: "Pre-gather shared debug context before dlc-debug Phase 1: reads dlc-build artifacts when present, maps affected files from stack trace or description, collects recent commits and code structure. Run at the start of any debug session to avoid redundant reads by Investigator agents."
 model: haiku
+argument-hint: "[bug-description-or-stack-trace] [jira-key?]"
 tools: Read, Glob, Bash, Grep
+disallowedTools: Edit, Write
+maxTurns: 15
 ---
 
 # Debug Bootstrap
