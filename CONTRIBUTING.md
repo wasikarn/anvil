@@ -84,7 +84,7 @@ See [`references/skills-best-practices.md`](references/skills-best-practices.md)
 
 ---
 
-## Linting
+## Linting & Validation
 
 ```bash
 # Lint all markdown
@@ -92,9 +92,12 @@ npx markdownlint-cli2 "**/*.md"
 
 # Lint one skill
 npx markdownlint-cli2 "skills/dlc-build/**/*.md"
+
+# Validate plugin structure (plugin.json, skill/agent frontmatter, hooks.json)
+claude plugin validate
 ```
 
-The pre-commit hook runs `fix-tables.sh` + `markdownlint-cli2 --fix` on staged `.md` files automatically.
+The pre-commit hook runs `fix-tables.sh` + `markdownlint-cli2 --fix` on staged `.md` files automatically. Run `claude plugin validate` before opening a PR to catch frontmatter issues early.
 
 ---
 

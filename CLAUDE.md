@@ -53,6 +53,8 @@ Custom subagents live at `agents/<name>.md` with YAML frontmatter. Distributed a
 
 Key fields: `description` (include "proactively" to auto-trigger), `memory` (`user`/`project`/`local` for cross-session persistence), `skills` (preload into agent context). All fields: `name`, `tools`/`disallowedTools`, `model`, `hooks`, `permissionMode`, `maxTurns`, `background`, `isolation`.
 
+> **Plugin limitation:** `hooks`, `mcpServers`, and `permissionMode` are silently ignored when agents are loaded from a plugin. To use these fields, copy the agent to `.claude/agents/` instead.
+
 Current agents (7):
 
 | Agent | Model | Purpose |
@@ -122,6 +124,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full step-by-step guide. Key rule
 | Task | Command |
 | --- | --- |
 | Lint all markdown | `npx markdownlint-cli2 "**/*.md"` |
+| Validate plugin | `claude plugin validate` (checks plugin.json, frontmatter, hooks.json) |
 
 **Contributor dev mode only** (do not use if plugin is installed — will conflict):
 
