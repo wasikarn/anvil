@@ -50,6 +50,24 @@ You are reviewing PR #[PR_NUMBER] for correctness and security issues.
 
 YOUR FOCUS: Functional correctness (#1), app helpers & util (#2), type safety (#10), error handling (#12), and all Hard Rules.
 
+BUG FIX COMPLETENESS (required when PR title/body matches: fix|bug|patch|repair|resolve|hotfix):
+
+Before writing "confirmed" for any fix:
+1. Trace the stated fix path: file:line → file:line (show the chain)
+2. Enumerate adjacent edge cases — or explain why none exist for this change type
+   - Trivial changes (typo, rename, config): write "no edge cases — cosmetic change"
+   - Business logic / data transformation: enumerate ≥2 edge cases
+3. Semantic verification (required for data transformation changes):
+   - Use PR description / bootstrap context to understand domain — what does each variable represent in the business?
+   - Flag if same variable name is used for different semantic meaning in different contexts
+
+Output format (required before "confirmed"):
+Trace: {start file:line} → {end file:line}
+Edge cases checked: {list or "cosmetic — none"}
+Semantic check: {pass/flag with evidence, or "n/a — no data transformation"}
+
+Qualifier: "business logic / data transformation" = changes touching value calculations, conditional branching on business data, or data format conversions. Pure structural changes (extract method, rename, move file) are exempt from edge case enumeration.
+
 SECURITY (part of Rule #1): If the PR diff contains auth, API, middleware, or session handling code:
 1. Check OWASP Top 10 — flag any matches at Critical severity:
    - A01: Broken Access Control (missing RBAC, missing authorization check)
