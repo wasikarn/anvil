@@ -162,6 +162,54 @@
           }
         ]
       }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "async": true,
+            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/session-end.sh"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "pr-review-bootstrap|dev-loop-bootstrap",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/subagent-start-context.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/permission-auto-approve.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "InstructionsLoaded": [
+      {
+        "matcher": "nested_traversal",
+        "hooks": [
+          {
+            "type": "command",
+            "async": true,
+            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/instructions-loaded-log.sh",
+            "timeout": 3
+          }
+        ]
+      }
     ]
   }
 }
