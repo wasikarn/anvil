@@ -8,17 +8,17 @@
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 [![Skills](https://img.shields.io/badge/skills-8-blue?style=flat-square)](#skills)
 [![Agents](https://img.shields.io/badge/agents-7-purple?style=flat-square)](#agents)
-[![Hooks](https://img.shields.io/badge/hooks-8-orange?style=flat-square)](#hooks)
+[![Hooks](https://img.shields.io/badge/hooks-12-orange?style=flat-square)](#hooks)
 
 <p>
-  <a href="#quick-start">Quick Start</a> •
+  <a href="#installation">Installation</a> •
   <a href="#skills">Skills</a> •
   <a href="#agents">Agents</a> •
   <a href="#hooks">Hooks</a> •
+  <a href="#output-styles">Output Styles</a> •
   <a href="#jira-integration">Jira</a> •
   <a href="#recommended-ecosystem">Ecosystem</a> •
-  <a href="#troubleshooting">Troubleshooting</a> •
-  <a href="CONTRIBUTING.md">Contributing</a>
+  <a href="#troubleshooting">Troubleshooting</a>
 </p>
 
 </div>
@@ -31,30 +31,117 @@
 | --- | --- | --- |
 | **Skills** | 8 | Workflow automation — dev loop, PR review, debugging, utilities |
 | **Agents** | 7 | Specialized subagents for bootstrapping, reviewing, and committing |
-| **Hooks** | 8 | Lifecycle automation — dependency checks, skill routing, quality gates |
+| **Hooks** | 12 | Lifecycle automation — dependency checks, skill routing, quality gates |
 | **Output Styles** | 2 | Senior Software Engineer, Coding Mentor |
 | **Commands** | 1 | `analyze-claude-features` |
 
 ---
 
-## Quick Start
+## Installation
+
+### Option A — Plugin Install (recommended)
+
+The fastest way to get started. Installs the plugin and all assets globally.
+
+#### Step 1 — Install prerequisites
+
+These tools are required for the DLC workflow hooks and skills to function correctly.
 
 ```bash
-# 1. Install prerequisites
-brew install jq gh rtk && gh auth login
+# macOS
+brew install jq gh rtk
 
-# 2. Install the plugin
+# Ubuntu / Debian
+sudo apt install jq && brew install gh rtk
+```
+
+| Tool | Why it's needed |
+| --- | --- |
+| `jq` | JSON parsing used by workflow hooks |
+| `gh` | GitHub CLI — fetches PR diffs, posts review comments, merges PRs |
+| `rtk` | Token-optimized terminal output for Bash commands |
+
+#### Step 2 — Authenticate GitHub CLI
+
+```bash
+gh auth login
+# Follow the prompts: choose GitHub.com → HTTPS → authenticate via browser
+```
+
+#### Step 3 — Install the plugin
+
+```bash
 claude plugin install wasikarn/claude-code-skills
+```
 
-# 3. Enable Agent Teams (required for all DLC skills)
+#### Step 4 — Enable Agent Teams
+
+DLC skills (`dlc-build`, `dlc-review`, `dlc-respond`, `dlc-debug`) require Agent Teams to spawn parallel agents.
+
+```bash
 claude config set env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS 1
 ```
 
-Restart Claude Code. On next session start, the plugin warns you about any missing tools automatically.
+#### Step 5 — Restart Claude Code
+
+Close and reopen Claude Code. On next session start, the plugin automatically checks for missing tools and warns you in context.
+
+#### Step 6 — Verify installation
+
+```bash
+claude plugin list
+# Expected output includes: claude-code-skills
+```
 
 ---
 
-## Prerequisites
+### Option B — Local Development (symlinks)
+
+For contributors or power users who want to edit skills and see changes immediately.
+
+**1.** Clone the repository:
+
+```bash
+git clone git@github.com:wasikarn/claude-code-skills.git
+cd claude-code-skills
+```
+
+**2.** Install prerequisites _(same as Option A above)_
+
+**3.** Symlink everything to `~/.claude/`:
+
+```bash
+bash scripts/link-skill.sh
+```
+
+This creates symlinks for all assets:
+
+```text
+skills/       → ~/.claude/skills/
+agents/       → ~/.claude/agents/
+hooks/        → ~/.claude/hooks/
+output-styles/ → ~/.claude/output-styles/
+commands/     → ~/.claude/commands/
+```
+
+**4.** Enable Agent Teams:
+
+```bash
+claude config set env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS 1
+```
+
+**5.** Verify symlinks:
+
+```bash
+bash scripts/link-skill.sh --list
+# Expected: all assets show as ✓ linked
+```
+
+**6.** Restart Claude Code — skills and agents take effect immediately on file change; restart only needed for settings changes.
+
+---
+
+### Prerequisites Summary
 
 | Tool | Required | Install |
 | --- | --- | --- |
@@ -98,12 +185,16 @@ The primary workflow for any coding task. Runs Research → Plan → Implement �
 
 **When to use:** New features, bug fixes, refactors, Jira tickets, CI failures, production hotfixes.
 
+**Usage:**
+
 ```bash
 /claude-code-skills:dlc-build "add rate limiting to the API"
 /claude-code-skills:dlc-build PROJ-1234           # auto-fetches Jira AC
 /claude-code-skills:dlc-build PROJ-1234 --quick   # skip research for small fixes
 /claude-code-skills:dlc-build PROJ-1234 --hotfix  # urgent production incident
 ```
+
+**Modes:**
 
 | Mode | When to use |
 | --- | --- |
@@ -120,12 +211,16 @@ Three agents independently review a PR, then debate their findings in rounds to 
 
 **When to use:** Reviewing any pull request — quick standards check, architecture review, or thorough multi-perspective analysis.
 
+**Usage:**
+
 ```bash
 /claude-code-skills:dlc-review 42                  # PR number
 /claude-code-skills:dlc-review 42 PROJ-1234        # with Jira AC verification
 /claude-code-skills:dlc-review 42 Author           # apply fixes directly to the branch
 /claude-code-skills:dlc-review 42 Reviewer         # post findings as GitHub review comments
 ```
+
+**Modes:**
 
 | Mode | When to use |
 | --- | --- |
@@ -140,6 +235,8 @@ Fetches all open GitHub review threads on a PR, groups them by file, fixes each 
 
 **When to use:** After receiving PR review feedback and needing to address all comments systematically.
 
+**Usage:**
+
 ```bash
 /claude-code-skills:dlc-respond 42
 /claude-code-skills:dlc-respond 42 PROJ-1234   # with Jira AC context for prioritization
@@ -152,6 +249,8 @@ Fetches all open GitHub review threads on a PR, groups them by file, fixes each 
 Two agents run in parallel: an Investigator traces the root cause through logs, stack traces, and code, while a DX Analyst audits observability, error handling, and test coverage in the affected area. A Fixer agent then applies the fix.
 
 **When to use:** Complex bugs, production incidents, or when you want to harden the affected area alongside the fix.
+
+**Usage:**
 
 ```bash
 /claude-code-skills:dlc-debug "NullPointerException in UserService"
@@ -168,6 +267,8 @@ Two agents run in parallel: an Investigator traces the root cause through logs, 
 
 Automates the full merge and release process following git-flow conventions: version bumps, CHANGELOG updates, tags, backport PRs, and post-merge verification.
 
+**Usage:**
+
 ```bash
 /claude-code-skills:merge-pr 42           # feature/bugfix → develop
 /claude-code-skills:merge-pr --hotfix     # hotfix → main + backport to develop
@@ -182,6 +283,8 @@ Automates the full merge and release process following git-flow conventions: ver
 
 Scores a CLAUDE.md file across quality dimensions, identifies bloat and gaps, and rewrites sections to be more useful for Claude. Safe to run — use `--dry-run` to preview changes.
 
+**Usage:**
+
 ```bash
 /claude-code-skills:optimize-context
 /claude-code-skills:optimize-context --dry-run    # preview without editing
@@ -193,6 +296,8 @@ Scores a CLAUDE.md file across quality dimensions, identifies bloat and gaps, an
 #### `env-heal` — Fix Environment Variables
 
 Scans the codebase for all env var references, cross-references against the validation schema and `.env.example`, classifies gaps, auto-fixes discrepancies, and runs tests to verify.
+
+**Usage:**
 
 ```bash
 /claude-code-skills:env-heal          # full scan and fix
@@ -206,6 +311,8 @@ Scans the codebase for all env var references, cross-references against the vali
 #### `systems-thinking` — Causal Loop Analysis
 
 Helps think through complex architecture decisions by mapping causal loops, identifying feedback cycles, and surfacing second-order effects before committing to a direction.
+
+**Usage:**
 
 ```bash
 /claude-code-skills:systems-thinking "should we move to microservices?"
@@ -244,6 +351,10 @@ These hooks are distributed automatically with the plugin and activate on instal
 | `shellcheck-written-scripts.sh` | `PostToolUse[Write]` | Auto-validates `.sh` files Claude writes |
 | `task-gate.sh` | `TaskCompleted` | Requires `file:line` evidence before agent tasks are marked complete |
 | `idle-nudge.sh` | `TeammateIdle` | Nudges idle Agent Teams teammates back on task |
+| `post-compact-context.sh` | `PostCompact` | Re-injects session context after compaction |
+| `bash-failure-hint.sh` | `PostToolUseFailure[Bash]` | Injects diagnostic hints after Bash tool failures |
+| `stop-failure-log.sh` | `StopFailure` | Logs API errors (rate limit, token overflow) to session log |
+| `subagent-stop-gate.sh` | `SubagentStop` | Blocks reviewer agents that finish without `file:line` evidence |
 
 ### Skill Routing Keywords
 
@@ -335,7 +446,11 @@ claude plugin list
 # Expected: claude-code-skills appears
 ```
 
-If missing, reinstall: `claude plugin install wasikarn/claude-code-skills`
+If missing, reinstall:
+
+```bash
+claude plugin install wasikarn/claude-code-skills
+```
 
 ### Warning about missing tools at session start
 
@@ -355,6 +470,42 @@ Jira is optional. If you want it, configure `mcp-atlassian` or `jira-cache-serve
 ### Plugin skills show as `claude-code-skills:skill-name`
 
 This is correct. Skills installed via plugin are namespaced automatically to avoid conflicts.
+
+### Symlinked hooks not running (local dev)
+
+If hooks registered in `.claude/settings.json` aren't firing, verify the symlinks exist:
+
+```bash
+bash scripts/link-skill.sh --list
+```
+
+Re-run `bash scripts/link-skill.sh` if any are missing.
+
+---
+
+## Repo Structure
+
+```text
+claude-code-skills/
+├── .claude-plugin/
+│   └── plugin.json           # Plugin manifest
+├── skills/                   # Skill entry points (SKILL.md per skill)
+│   ├── dlc-build/
+│   ├── dlc-review/
+│   ├── dlc-respond/
+│   ├── dlc-debug/
+│   ├── merge-pr/
+│   ├── optimize-context/
+│   ├── env-heal/
+│   └── systems-thinking/
+├── agents/                   # Custom subagent definitions (.md files)
+├── hooks/                    # Lifecycle hook scripts
+│   └── hooks.json            # Plugin hook registry
+├── output-styles/            # Custom output styles
+├── commands/                 # Slash commands
+├── scripts/                  # Dev tooling (link-skill.sh, fix-tables.sh, sync-docs.sh)
+└── references/               # Shared reference docs (not symlinked)
+```
 
 ---
 
