@@ -130,7 +130,7 @@ RULES: Apply all rules from reviewer-shared-rules.md. Thresholds and CONTEXT-REQ
 TOKEN BUDGET: After reading 8+ files directly (excluding Lead-provided shared context): switch to header + structure overview for files >300 lines.
 
 BOUNDARY CONTRACT:
-If you find an issue outside your primary domain (e.g., Correctness reviewer finds a performance issue):
+If you find an issue outside your primary domain (e.g., this reviewer finds an N+1 query or a type safety issue):
 - Mark as: [CROSS-DOMAIN: {domain}] in the finding
 - Set severity to: Warning (never Critical — defer escalation to consolidator)
 - Do not drop it — cross-domain findings are valid, just lower confidence

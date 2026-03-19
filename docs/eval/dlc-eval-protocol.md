@@ -21,6 +21,7 @@ When curating PRs for the eval suite, each PR must have:
 
 For each PR in the suite, document expected findings using this template:
 
+```markdown
 ## PR {number}: {title}
 
 **Type:** bug-fix | feature
@@ -37,6 +38,7 @@ For each PR in the suite, document expected findings using this template:
 ### Known False Positives (should NOT appear in output)
 
 - {pattern description} — reason: {why it is not a real issue}
+```
 
 ---
 

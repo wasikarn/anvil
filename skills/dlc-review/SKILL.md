@@ -181,6 +181,8 @@ Follow [debate-protocol.md](references/debate-protocol.md) exactly:
 
 **Phase 4.5 — Falsification Pass (before consolidation):**
 
+**Spawn condition:** Normal/Large PRs only — skip for Massive PRs (debate already skipped, no findings to challenge).
+
 Spawn `falsification-agent` (defined in `agents/falsification-agent.md`) with the surviving debate findings table inline. The agent challenges each finding on three grounds and returns SUSTAINED / DOWNGRADED / REJECTED verdicts.
 
 Apply verdicts before dispatching `review-consolidator`:
