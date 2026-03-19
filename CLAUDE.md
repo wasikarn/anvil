@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Plugin name:** `claude-code-skills` · **Repo:** `wasikarn/claude-code-skills`
 
-A Claude Code plugin — skills, agents, hooks, output styles, and scripts for structured development and PR review workflows. Each skill is a self-contained prompt workflow installed via `claude plugin install wasikarn/claude-code-skills` or symlinked directly to `~/.claude/`.
+A Claude Code plugin — skills, agents, hooks, output styles, and scripts for structured development and PR review workflows. Each skill is a self-contained prompt workflow installed via `claude plugin install wasikarn/claude-code-skills`.
 
 ## Docs Index
 
@@ -45,11 +45,11 @@ skills/<name>/
 | `dlc-debug` | Parallel root cause analysis + DX hardening |
 | `systems-thinking` | Causal Loop Diagram analysis for architecture decisions |
 
-Commands live at `commands/<name>.md` (symlinked to `~/.claude/commands/`). Current: `analyze-claude-features`.
+Commands live at `commands/<name>.md`. Current: `analyze-claude-features`.
 
 ## Agents
 
-Custom subagents live at `agents/<name>.md` with YAML frontmatter. Symlinked to `~/.claude/agents/` via `link-skill.sh`.
+Custom subagents live at `agents/<name>.md` with YAML frontmatter. Distributed automatically via plugin.
 
 Key fields: `description` (include "proactively" to auto-trigger), `memory` (`user`/`project`/`local` for cross-session persistence), `skills` (preload into agent context). All fields: `name`, `tools`/`disallowedTools`, `model`, `hooks`, `permissionMode`, `maxTurns`, `background`, `isolation`.
 
@@ -67,9 +67,7 @@ Current agents (7):
 
 ## Hooks
 
-Hooks live at `hooks/`. Two sources of truth:
-
-### Plugin hooks (`hooks/hooks.json`) — distributed automatically with the plugin
+Hooks live at `hooks/`. All hooks are registered in `hooks/hooks.json` and distributed automatically when the plugin is installed — no manual configuration required.
 
 | Event | Matcher | Script |
 | --- | --- | --- |
@@ -85,21 +83,15 @@ Hooks live at `hooks/`. Two sources of truth:
 | `StopFailure` | `rate_limit\|...` | `stop-failure-log.sh` |
 | `SubagentStop` | reviewer agent names | `subagent-stop-gate.sh` |
 
-`task-gate.sh` and `idle-nudge.sh` use `GATE_PATTERN`/`NUDGE_PATTERN` env vars for filtering. `TaskCompleted`/`TeammateIdle` matchers may be unsupported — scripts self-filter as fallback.
+Notes:
 
-### Project hooks (`.claude/settings.json`) — active only in this repo
-
-These are already configured in `.claude/settings.json` (checked into the repo). They duplicate the plugin hooks above so contributors working via symlinks get the same behavior without having the plugin installed.
-
-### Personal hooks (not distributed with plugin)
-
-The following scripts exist in `hooks/` but are **not registered in `hooks.json`**. They are configured in the author's global `~/.claude/settings.json` for personal use and should NOT be added to the plugin manifest:
-
-`play-sound.sh`, `qmd-pre-search.sh`, `bash-blockers.sh`, `auto-test-env.sh`, `patch-plugin-skills.sh`, `session-start-mcp-cleanup.sh`, `session-summary-hook.sh`, `session-end.sh`, `subagent-start-context.sh`, `permission-auto-approve.sh`, `instructions-loaded-log.sh`
+- `task-gate.sh` and `idle-nudge.sh` use `GATE_PATTERN`/`NUDGE_PATTERN` env vars for filtering. `TaskCompleted`/`TeammateIdle` matchers may be unsupported — scripts self-filter as fallback.
+- `stop-failure-log.sh` — file logging is opt-in via `LOG=1` env var; macOS notification via `NOTIFY=1`
+- `patch-plugin-skills.sh` — personal utility script, not registered in `hooks.json`, not distributed
 
 ## Output Styles
 
-Custom output styles live at `output-styles/<name>.md` with frontmatter (`name`, `description`, `keep-coding-instructions`). Symlinked to `~/.claude/output-styles/` via `link-skill.sh`.
+Custom output styles live at `output-styles/<name>.md` with frontmatter (`name`, `description`, `keep-coding-instructions`). Distributed automatically via plugin.
 
 Output styles replace the default system prompt's coding instructions unless `keep-coding-instructions: true`. Use for consistent formatting/tone across sessions.
 
@@ -130,10 +122,12 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full step-by-step guide. Key rule
 | Task | Command |
 | --- | --- |
 | Lint all markdown | `npx markdownlint-cli2 "**/*.md"` |
-| Link one skill | `bash scripts/link-skill.sh <name>` |
-| Link everything | `bash scripts/link-skill.sh` (skills, agents, hooks, output-styles) |
-| Check all links | `bash scripts/link-skill.sh --list` |
 | Sync docs cache | `bash scripts/sync-docs.sh` (fetches Claude Code official docs to `~/.claude/docs/`) |
+| Dev mode — link one skill | `bash scripts/link-skill.sh <name>` |
+| Dev mode — link everything | `bash scripts/link-skill.sh` (skills, agents, hooks, output-styles) |
+| Dev mode — check links | `bash scripts/link-skill.sh --list` |
+
+> `link-skill.sh` is for local development only. After `claude plugin install`, symlinks are not needed.
 
 ## Gotchas
 

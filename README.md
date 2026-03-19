@@ -46,7 +46,7 @@ claude config set env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS 1
 
 Claude Code installs all skills, agents, hooks, and output styles automatically.
 
-> Requires Claude Code with plugin support. If `claude plugin install` is unavailable, see [Manual Installation](#option-b--local-development-symlinks).
+> Requires Claude Code with plugin support. If `claude plugin install` is unavailable, see [Manual Installation](#option-b--local-development-contributors-only).
 
 ---
 
@@ -108,9 +108,9 @@ claude plugin list
 
 ---
 
-### Option B — Local Development (symlinks)
+### Option B — Local Development (contributors only)
 
-For contributors or power users who want to edit skills and see changes immediately.
+For contributors who want to edit skills and see changes immediately without reinstalling the plugin.
 
 **1.** Clone the repository:
 
@@ -634,12 +634,12 @@ claude-code-skills/
 │   ├── env-heal/
 │   └── systems-thinking/
 ├── agents/                   # Custom subagent definitions (.md files)
-├── hooks/                    # Lifecycle hook scripts
-│   └── hooks.json            # Plugin hook registry
+├── hooks/                    # Plugin-distributed lifecycle hook scripts
+│   └── hooks.json            # Plugin hook registry (auto-loaded on install)
 ├── output-styles/            # Custom output styles
 ├── commands/                 # Slash commands
-├── scripts/                  # Dev tooling (link-skill.sh, fix-tables.sh, sync-docs.sh)
-└── references/               # Shared reference docs (not symlinked)
+├── scripts/                  # Dev tooling (link-skill.sh, fix-tables.sh, sync-docs.sh, detect-project.sh)
+└── references/               # Shared reference docs
 ```
 
 ---
