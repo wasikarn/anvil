@@ -40,13 +40,18 @@
 ## Quick Start
 
 ```bash
-claude plugin install wasikarn/dev-loop
+# 1. Install prerequisites (macOS)
+brew install jq gh && gh auth login
+
+# 2. Add marketplace and install plugin
+claude plugin marketplace add wasikarn/dev-loop
+claude plugin install dev-loop
+
+# 3. Enable Agent Teams (required for DLC skills)
 claude config set env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS 1
 ```
 
-Claude Code installs all skills, agents, hooks, and output styles automatically.
-
-> Requires Claude Code with plugin support. If `claude plugin install` is unavailable, see [Manual Installation](#option-b--local-development-contributors-only).
+Restart Claude Code — the plugin is ready.
 
 ---
 
@@ -54,9 +59,9 @@ Claude Code installs all skills, agents, hooks, and output styles automatically.
 
 ### Option A — Plugin Install (recommended)
 
-The fastest way to get started. Installs the plugin and all assets globally.
-
 #### Step 1 — Install prerequisites
+
+**Required — plugin will not function without these:**
 
 ```bash
 # macOS
@@ -66,39 +71,40 @@ brew install jq gh
 sudo apt install jq && brew install gh
 ```
 
-**Required — plugin will not function without these:**
-
 | Tool | Why it's needed |
 | --- | --- |
-| `jq` | Every lifecycle hook uses it — missing breaks all hooks |
-| `gh` (authenticated) | DLC skills: fetch PR diffs, post comments, merge PRs — no fallback |
+| `jq` | All lifecycle hooks depend on it — missing breaks every hook |
+| `gh` (authenticated) | DLC skills need it to fetch PR diffs, post comments, and merge PRs |
 
-**Recommended — plugin degrades gracefully without:**
+**Recommended — plugin degrades gracefully without these:**
 
 | Tool | Without it | Install |
 | --- | --- | --- |
-| `rtk` | DLC skills still work but use raw git/gh output (higher token cost) | `brew install rtk` |
+| `rtk` | DLC skills work but produce higher token usage | `brew install rtk` |
 | `shellcheck` | Auto-validation skipped when Claude writes `.sh` files | `brew install shellcheck` |
 | `node` + `markdownlint-cli2` | Auto-lint skipped when Claude edits `.md` files | `brew install node && npm i -g markdownlint-cli2` |
 | `fd` | Bootstrap agents fall back to slower Glob search | `brew install fd` |
-| `ast-grep` | Bootstrap agents fall back to Grep (less precise) | `brew install ast-grep` |
+| `ast-grep` | Bootstrap agents fall back to less precise Grep | `brew install ast-grep` |
 
 #### Step 2 — Authenticate GitHub CLI
 
 ```bash
 gh auth login
-# Follow the prompts: choose GitHub.com → HTTPS → authenticate via browser
+# Choose: GitHub.com → HTTPS → authenticate via browser
 ```
 
 #### Step 3 — Install the plugin
 
+`claude plugin install` requires a registered marketplace. Add this plugin's marketplace first, then install:
+
 ```bash
-claude plugin install wasikarn/dev-loop
+claude plugin marketplace add wasikarn/dev-loop
+claude plugin install dev-loop
 ```
 
 #### Step 4 — Enable Agent Teams
 
-DLC skills (`dlc-build`, `dlc-review`, `dlc-respond`, `dlc-debug`) require Agent Teams to spawn parallel agents.
+DLC skills (`dlc-build`, `dlc-review`, `dlc-respond`, `dlc-debug`) spawn parallel agents using Agent Teams. Without this flag, they degrade to solo mode.
 
 ```bash
 claude config set env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS 1
@@ -106,62 +112,39 @@ claude config set env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS 1
 
 #### Step 5 — Restart Claude Code
 
-Close and reopen Claude Code. On next session start, the plugin automatically checks for missing tools and warns you in context.
+On next startup, the plugin automatically checks for missing dependencies and warns you in context.
 
 #### Step 6 — Verify installation
 
 ```bash
 claude plugin list
-# Expected output includes: dev-loop
+# Expected: dev-loop appears in the list
 ```
 
 ---
 
 ### Option B — Local Development (contributors only)
 
-For contributors who want to edit skills and see changes immediately without reinstalling the plugin.
-
-> **Warning:** Do not use this if you already installed via Option A. Both methods write to the same `~/.claude/` directories and will conflict. Use one or the other.
-
-**1.** Clone the repository:
+> **Warning:** Do not use this if you already installed via Option A — both methods write to the same `~/.claude/` directories and will conflict.
 
 ```bash
-git clone git@github.com:wasikarn/dev-loop.git
-cd dev-loop
-```
+# 1. Clone and enter the repo
+git clone git@github.com:wasikarn/dev-loop.git && cd dev-loop
 
-**2.** Install prerequisites _(same as Option A above)_
+# 2. Install prerequisites (same as Option A)
 
-**3.** Symlink everything to `~/.claude/`:
-
-```bash
+# 3. Symlink all assets to ~/.claude/
 bash scripts/link-skill.sh
-```
 
-This creates symlinks for all assets:
-
-```text
-skills/       → ~/.claude/skills/
-agents/       → ~/.claude/agents/
-hooks/        → ~/.claude/hooks/
-output-styles/ → ~/.claude/output-styles/
-commands/     → ~/.claude/commands/
-```
-
-**4.** Enable Agent Teams:
-
-```bash
+# 4. Enable Agent Teams
 claude config set env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS 1
-```
 
-**5.** Verify symlinks:
-
-```bash
+# 5. Verify symlinks
 bash scripts/link-skill.sh --list
 # Expected: all assets show as ✓ linked
 ```
 
-**6.** Restart Claude Code — skills and agents take effect immediately on file change; restart only needed for settings changes.
+Skills and agents take effect immediately on file change. Restart Claude Code only for settings changes.
 
 ---
 
@@ -169,11 +152,11 @@ bash scripts/link-skill.sh --list
 
 | Tool | Status | Install |
 | --- | --- | --- |
-| `git` | Required | pre-installed on most systems |
+| `git` | Required | Pre-installed on most systems |
 | `jq` | Required — all hooks fail without it | `brew install jq` |
-| `gh` CLI (authenticated) | Required — DLC skills + merge-pr | `brew install gh && gh auth login` |
-| `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` | Required — enables DLC Agent Teams | `claude config set env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS 1` |
-| `rtk` | Recommended — token savings (DLC skills fall back to raw output) | `brew install rtk` |
+| `gh` (authenticated) | Required — DLC skills + merge-pr | `brew install gh && gh auth login` |
+| `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` | Required — enables Agent Teams for DLC skills | `claude config set env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS 1` |
+| `rtk` | Recommended — reduces token usage in DLC output | `brew install rtk` |
 | `shellcheck` | Recommended — auto-validates `.sh` files Claude writes | `brew install shellcheck` |
 | `node` + `markdownlint-cli2` | Recommended — auto-lints `.md` files Claude edits | `brew install node && npm i -g markdownlint-cli2` |
 | `fd` | Recommended — faster file search in bootstrap agents | `brew install fd` |
@@ -205,11 +188,9 @@ The four DLC skills form a complete development loop. Each runs a team of specia
 
 #### `dlc-build` — Full Development Loop
 
-The primary workflow for any coding task. Runs Research → Plan → Implement → Review → Ship with an iterative fix-review loop.
+The primary workflow for any coding task. Runs Research → Plan → Implement → Review → Ship with an iterative fix-review loop (max 3 iterations).
 
 **When to use:** New features, bug fixes, refactors, Jira tickets, CI failures, production hotfixes.
-
-**Usage:**
 
 ```bash
 /dev-loop:dlc-build "add rate limiting to the API"
@@ -218,24 +199,20 @@ The primary workflow for any coding task. Runs Research → Plan → Implement �
 /dev-loop:dlc-build PROJ-1234 --hotfix  # urgent production incident
 ```
 
-**Modes:**
-
 | Mode | When to use |
 | --- | --- |
-| _(default)_ | Auto-classifies based on task scope — research phase included when needed |
-| `--quick` | Small fix with clear scope — skip research phase |
-| `--full` | Force full loop including research — override auto-classification |
+| _(default)_ | Auto-classifies based on task scope |
+| `--quick` | Small fix with clear scope — skips research phase |
+| `--full` | Forces full loop including research |
 | `--hotfix` | Branches from `main`, creates backport PR to `develop` |
 
 ---
 
 #### `dlc-review` — Adversarial PR Review
 
-Three agents independently review a PR, then debate their findings in rounds to eliminate false positives. Final output is a single ranked table with evidence-backed findings.
+Three agents independently review a PR, then debate their findings to eliminate false positives. Output is a single ranked findings table with evidence-backed verdicts.
 
-**When to use:** Reviewing any pull request — quick standards check, architecture review, or thorough multi-perspective analysis.
-
-**Usage:**
+**When to use:** Any pull request — quick standards check, architecture review, or multi-perspective analysis.
 
 ```bash
 /dev-loop:dlc-review 42                  # PR number
@@ -244,22 +221,18 @@ Three agents independently review a PR, then debate their findings in rounds to 
 /dev-loop:dlc-review 42 Reviewer         # post findings as GitHub review comments
 ```
 
-**Modes:**
-
 | Mode | When to use |
 | --- | --- |
-| `Author` | You own the PR and want fixes applied automatically |
-| `Reviewer` | You are reviewing someone else's PR and want GitHub comments posted |
+| `Author` | You own the PR — Claude applies fixes automatically |
+| `Reviewer` | You are reviewing someone else's PR — Claude posts GitHub comments |
 
 ---
 
 #### `dlc-respond` — Address PR Review Comments
 
-Fetches all open GitHub review threads on a PR, groups them by file, fixes each issue in parallel, commits changes, and posts replies to close each thread.
+Fetches all open GitHub review threads on a PR, fixes each issue in parallel, commits the changes, and posts replies to close every thread.
 
-**When to use:** After receiving PR review feedback and needing to address all comments systematically.
-
-**Usage:**
+**When to use:** After receiving PR review feedback.
 
 ```bash
 /dev-loop:dlc-respond 42
@@ -270,11 +243,9 @@ Fetches all open GitHub review threads on a PR, groups them by file, fixes each 
 
 #### `dlc-debug` — Parallel Root Cause Analysis
 
-Two agents run in parallel: an Investigator traces the root cause through logs, stack traces, and code, while a DX Analyst audits observability, error handling, and test coverage in the affected area. A Fixer agent then applies the fix.
+Two agents run in parallel: an Investigator traces the root cause, while a DX Analyst audits observability, error handling, and test coverage in the affected area. A Fixer agent then applies the fix.
 
 **When to use:** Complex bugs, production incidents, or when you want to harden the affected area alongside the fix.
-
-**Usage:**
 
 ```bash
 /dev-loop:dlc-debug "NullPointerException in UserService"
@@ -289,9 +260,7 @@ Two agents run in parallel: an Investigator traces the root cause through logs, 
 
 #### `merge-pr` — Git-flow Merge & Deploy
 
-Automates the full merge and release process following git-flow conventions: version bumps, CHANGELOG updates, tags, backport PRs, and post-merge verification.
-
-**Usage:**
+Automates the merge and release process: version bumps, CHANGELOG updates, tags, backport PRs, and post-merge verification.
 
 ```bash
 /dev-loop:merge-pr 42           # feature/bugfix → develop
@@ -305,9 +274,7 @@ Automates the full merge and release process following git-flow conventions: ver
 
 #### `optimize-context` — Audit CLAUDE.md
 
-Scores a CLAUDE.md file across quality dimensions, identifies bloat and gaps, and rewrites sections to be more useful for Claude. Safe to run — use `--dry-run` to preview changes.
-
-**Usage:**
+Scores a CLAUDE.md across quality dimensions, identifies bloat and gaps, and rewrites sections to be more useful for Claude.
 
 ```bash
 /dev-loop:optimize-context
@@ -319,9 +286,7 @@ Scores a CLAUDE.md file across quality dimensions, identifies bloat and gaps, an
 
 #### `env-heal` — Fix Environment Variables
 
-Scans the codebase for all env var references, cross-references against the validation schema and `.env.example`, classifies gaps, auto-fixes discrepancies, and runs tests to verify.
-
-**Usage:**
+Scans for all env var references, cross-references against the validation schema and `.env.example`, classifies gaps, auto-fixes discrepancies, and runs tests to verify.
 
 ```bash
 /dev-loop:env-heal          # full scan and fix
@@ -334,9 +299,7 @@ Scans the codebase for all env var references, cross-references against the vali
 
 #### `systems-thinking` — Causal Loop Analysis
 
-Helps think through complex architecture decisions by mapping causal loops, identifying feedback cycles, and surfacing second-order effects before committing to a direction.
-
-**Usage:**
+Maps causal loops, identifies feedback cycles, and surfaces second-order effects before committing to an architecture decision.
 
 ```bash
 /dev-loop:systems-thinking "should we move to microservices?"
@@ -347,138 +310,82 @@ Helps think through complex architecture decisions by mapping causal loops, iden
 
 ## Full Workflow Example — Jira Ticket to Merged PR
 
-A typical feature cycle using the DLC skills together.
-
-### Scenario
-
 > **PROJ-1234** — "Add rate limiting to auth endpoints"
-> Your team wants to prevent brute-force attacks on `/login` and `/refresh`.
-
----
-
-### Step 1 — Build the feature
 
 ```bash
+# 1. Build the feature
 /dev-loop:dlc-build PROJ-1234
-```
+# Claude fetches Jira AC → maps auth middleware → writes plan.md →
+# implements with tests → 3-reviewer debate → opens PR
 
-Claude fetches the Jira acceptance criteria, spawns Explorer agents to map the existing auth middleware, produces a `plan.md`, implements the feature with tests, then runs a 3-reviewer debate on the diff. If reviewers flag issues, the Fixer agent iterates until the loop passes. A PR is opened automatically.
-
----
-
-### Step 2 — Address reviewer comments
-
-Your teammate leaves inline comments on the PR.
-
-```bash
+# 2. Address reviewer comments
 /dev-loop:dlc-respond 42
-```
+# Fetches open threads → fixes in parallel → commits → posts replies
 
-Claude fetches all open review threads on PR #42, groups them by file, fixes each in parallel, commits the changes, and posts replies to close every thread.
-
----
-
-### Step 3 — Final review pass before merge
-
-```bash
+# 3. Final review before merge
 /dev-loop:dlc-review 42 PROJ-1234 Author
-```
+# Three agents re-examine PR against AC → debate → apply remaining fixes
 
-Three agents independently re-examine the updated PR against the Jira AC, debate their findings, and apply any remaining fixes. You get a final verdict with signal percentage.
-
----
-
-### Step 4 — Merge
-
-```bash
+# 4. Merge
 /dev-loop:merge-pr 42
+# Squash into develop → version bump → CHANGELOG → post-merge verification
 ```
-
-Claude handles the git-flow merge: squash into `develop`, version bump, CHANGELOG update, and post-merge verification.
 
 ---
 
 ## dlc-review Example Output
 
-What a typical `dlc-review` run produces (condensed):
-
 ```markdown
----
-
 ## 📋 PR #42 — PROJ-1234 | Author Mode | 🟡
 
 **PR:** feat: add rate limiting to auth endpoints
-**Author:** kobig | **Files changed:** 6 | **Lines changed:** +142 −18 | **Today:** 2026-03-19
+**Files changed:** 6 | **Lines:** +142 −18
 
----
+### AC Verification
 
-### Phase 1: Ticket Understanding
+| AC  | Status      | File                           | Note                    |
+| --- | ----------- | ------------------------------ | ----------------------- |
+| AC1 | ✅ Done     | `app/middleware/rate-limit.ts` | 5 req/min enforced      |
+| AC2 | ✅ Done     | `app/middleware/rate-limit.ts` | 10 req/min enforced     |
+| AC3 | 🔴 Partial  | `app/middleware/rate-limit.ts` | Headers set only on 429 |
 
-**Problem:** Auth endpoints have no rate limiting — vulnerable to brute-force
-**AC Checklist:**
-- [ ] AC1: /login limited to 5 requests per minute per IP
-- [ ] AC2: /refresh limited to 10 requests per minute per IP
-- [ ] AC3: Rate limit headers returned in all responses
+### Findings (after debate)
 
-### Phase 2: AC Verification
+| #  | Sev | File                           | Line | Consensus | Issue                                         |
+| -- | --- | ------------------------------ | ---- | --------- | --------------------------------------------- |
+| 1  | 🔴  | `app/middleware/rate-limit.ts` | 47   | 3/3       | Rate limit headers missing on success (AC3)   |
+| 2  | 🟡  | `app/middleware/rate-limit.ts` | 12   | 2/3       | In-memory store resets on restart — use Redis |
+| 3  | 🟡  | `tests/rate-limit.spec.ts`     | 88   | 2/3       | Only 429 tested — add success + burst cases   |
 
-| AC  | Status         | File                              | Note                    |
-| --- | -------------- | --------------------------------- | ----------------------- |
-| AC1 | ✅ Implemented  | `app/middleware/rate-limit.ts:24` | 5 req/min enforced      |
-| AC2 | ✅ Implemented  | `app/middleware/rate-limit.ts:31` | 10 req/min enforced     |
-| AC3 | 🔴 Partial      | `app/middleware/rate-limit.ts`    | Headers set only on 429 |
+### Fixes Applied
 
-### Phase 3: 12-Point Review
-
-#### Reviewer Progress
-
-| Reviewer                   | Status  | 🔴 | 🟡 | 🔵 |
-| -------------------------- | ------- | -- | -- | -- |
-| Correctness & Security     | ✅ Done | 1  | 1  | 0  |
-| Architecture & Performance | ✅ Done | 0  | 1  | 1  |
-| DX & Testing               | ✅ Done | 0  | 0  | 2  |
-
-**Summary: 🔴 1 · 🟡 2 · 🔵 3** (after dedup)
-
-#### Findings
-
-| #  | Sev | Rule | File                              | Line | Consensus | Issue                                              |
-| -- | --- | ---- | --------------------------------- | ---- | --------- | -------------------------------------------------- |
-| 1  | 🔴  | #2   | `app/middleware/rate-limit.ts`    | 47   | 3/3       | Rate limit headers missing on success responses (AC3 partial) |
-| 2  | 🟡  | #8   | `app/middleware/rate-limit.ts`    | 12   | 2/3       | In-memory store resets on restart — use Redis for production |
-| 3  | 🟡  | #9   | `tests/rate-limit.spec.ts`        | 88   | 2/3       | Only 429 case tested — add success path + edge (burst) cases |
-
-### Phase 4: Fixes Applied
-
-| #  | Fix                                              | File                             |
-| -- | ------------------------------------------------ | -------------------------------- |
-| 1  | Add X-RateLimit-* headers to all responses       | `app/middleware/rate-limit.ts:47` |
-| 2  | Add Redis store note in TODO + env guard          | `app/middleware/rate-limit.ts:12` |
-| 3  | Add success path + burst edge case tests         | `tests/rate-limit.spec.ts:88`    |
+| #  | Fix                                        | File                              |
+| -- | ------------------------------------------ | --------------------------------- |
+| 1  | Add X-RateLimit-* headers to all responses | `app/middleware/rate-limit.ts:47` |
+| 2  | Add Redis store note + env guard           | `app/middleware/rate-limit.ts:12` |
+| 3  | Add success path + burst edge case tests   | `tests/rate-limit.spec.ts:88`     |
 
 ✅ **Validate:** `node ace test --filter rate-limit` — PASS
 
----
-
 ### Final Verdict
 
-✅ **APPROVE** — Fixed 🔴 1, 🟡 2 issues | AC: 3/3 ✅ | Validate: PASS | Signal: 50%
+✅ **APPROVE** — Fixed 🔴 1, 🟡 2 | AC: 3/3 ✅ | Signal: 50%
 ```
 
 ---
 
 ## Agents
 
-Specialized subagents that the DLC skills and other workflows spawn automatically. You can also invoke them directly.
+Specialized subagents spawned automatically by DLC skills. Can also be invoked directly.
 
 | Agent | Model | Invoked by | Purpose |
 | --- | --- | --- | --- |
-| `commit-finalizer` | Haiku | Manually | Fast git commit — formats conventional commit messages |
+| `commit-finalizer` | Haiku | Manually | Fast git commit with conventional commit formatting |
 | `dev-loop-bootstrap` | Haiku | `dlc-build` Phase 1 | Pre-gathers project structure and type definitions |
 | `dlc-debug-bootstrap` | Haiku | `dlc-debug` Phase 0 | Pre-gathers stack trace context and affected files |
 | `pr-review-bootstrap` | Haiku | `dlc-review` Phase 0 | Fetches PR diff, Jira AC, and groups changed files |
 | `review-consolidator` | Haiku | `dlc-review` Phase 4 | Deduplicates and ranks findings from multiple reviewers |
-| `falsification-agent` | Sonnet | `dlc-build` Phase 4.5, `dlc-review` Phase 4 | Challenges every finding before consolidation — outputs SUSTAINED/DOWNGRADED/REJECTED verdict per finding |
+| `falsification-agent` | Sonnet | `dlc-build` Phase 4.5, `dlc-review` Phase 4 | Challenges every finding — outputs SUSTAINED/DOWNGRADED/REJECTED per finding |
 | `skill-validator` | Sonnet | Manually | Validates SKILL.md frontmatter and description quality |
 | `code-reviewer` | Sonnet | Manually | General-purpose code reviewer with cross-session persistent memory |
 
@@ -486,16 +393,16 @@ Specialized subagents that the DLC skills and other workflows spawn automaticall
 
 ## Hooks
 
-These hooks are distributed automatically with the plugin and activate on install. No manual configuration required.
+Distributed automatically with the plugin — no manual configuration required.
 
 | Hook | Event | What it does |
 | --- | --- | --- |
-| `check-deps.sh` | `SessionStart` | Warns in context if `jq`, `git`, or `gh` are missing; notes if `rtk` is absent |
+| `check-deps.sh` | `SessionStart` | Warns in context if `jq`, `git`, or `gh` are missing |
 | `session-start-context.sh` | `SessionStart` | Injects current git branch and uncommitted file count |
-| `skill-routing.sh` | `UserPromptSubmit` | Detects workflow keywords and suggests the right skill before responding |
+| `skill-routing.sh` | `UserPromptSubmit` | Detects workflow keywords and suggests the matching skill |
 | `protect-files.sh` | `PreToolUse[Edit\|Write]` | Blocks Claude from editing `.claude/settings.json` directly |
-| _(inline)_ | `PostToolUse[Edit\|Write]` | Auto-lints `.md` files with `markdownlint-cli2 --fix` — skips silently if not installed |
-| `shellcheck-written-scripts.sh` | `PostToolUse[Write]` | Auto-validates `.sh` files Claude writes — skips silently if `shellcheck` not installed |
+| _(inline)_ | `PostToolUse[Edit\|Write]` | Auto-lints `.md` files with `markdownlint-cli2 --fix` |
+| `shellcheck-written-scripts.sh` | `PostToolUse[Write]` | Auto-validates `.sh` files Claude writes |
 | `task-gate.sh` | `TaskCompleted` | Requires `file:line` evidence before agent tasks are marked complete |
 | `idle-nudge.sh` | `TeammateIdle` | Nudges idle Agent Teams teammates back on task |
 | `post-compact-context.sh` | `PostCompact` | Re-injects session context after compaction |
@@ -505,7 +412,7 @@ These hooks are distributed automatically with the plugin and activate on instal
 
 ### Skill Routing Keywords
 
-`skill-routing.sh` detects these patterns and injects a skill hint before Claude responds:
+`skill-routing.sh` detects these patterns and suggests a skill before Claude responds:
 
 | Pattern | Suggested skill |
 | --- | --- |
@@ -520,55 +427,55 @@ These hooks are distributed automatically with the plugin and activate on instal
 
 Activate an output style to change how Claude communicates throughout a session.
 
-| Style | How to activate | Description |
+| Style | Activate with | Description |
 | --- | --- | --- |
-| `senior-software-engineer` | `/output-style senior-software-engineer` | Thai language, English for code and technical terms. Pragmatic senior engineer tone — trade-offs, production quality, practical solutions. |
-| `coding-mentor` | `/output-style coding-mentor` | Thai language, teaches through doing. Adds concise "Why" explanations after significant changes. Good for onboarding and exploring new codebases. |
+| `senior-software-engineer` | `/output-style senior-software-engineer` | Thai language. Pragmatic senior engineer tone — trade-offs, production quality, practical solutions. |
+| `coding-mentor` | `/output-style coding-mentor` | Thai language. Teaches through doing — adds concise "Why" explanations after significant changes. Good for onboarding. |
 
 ---
 
 ## Jira Integration
 
-DLC skills auto-fetch Jira context when you pass a ticket key (e.g. `PROJ-123`). Configure one MCP server to enable:
+Pass a Jira ticket key (e.g. `PROJ-123`) to any DLC skill and it auto-fetches the issue's acceptance criteria. Requires one of these MCP servers:
 
 | MCP Server | Notes | Install |
 | --- | --- | --- |
 | `mcp-atlassian` | Direct Jira API | [sooperset/mcp-atlassian](https://github.com/sooperset/mcp-atlassian) |
-| `jira-cache-server` | Cached, faster | [wasikarn/jira-cache-server](https://github.com/wasikarn/jira-cache-server) |
+| `jira-cache-server` | Cached, faster for large projects | [wasikarn/jira-cache-server](https://github.com/wasikarn/jira-cache-server) |
 
-> If neither is configured, skills skip Jira context silently and continue normally. Jira is never a blocker.
+> Jira is optional — skills skip it silently and continue normally if not configured.
 
 ---
 
 ## Recommended Ecosystem
 
-The plugin works standalone, but these tools are worth installing to get the most out of the DLC workflow.
-
 ### Complementary Claude Code Plugins
 
-Install via `claude plugin install <name>`:
+```bash
+claude plugin install <name>
+```
 
 | Plugin | Why it's worth installing |
 | --- | --- |
-| `superpowers@claude-plugins-official` | Structured workflow skills — brainstorming before building, TDD, systematic debugging, verification before claiming done. Prevents the common failure modes that make AI-generated code unreliable. |
-| `claude-mem@thedotmack` | Cross-session persistent memory. Claude remembers past decisions, recurring patterns, and project context across conversations — no more re-explaining the same constraints every session. |
-| `qmd@qmd` | Local semantic search over your codebase and docs. Index `.ts`/`.tsx`/`.md` files; Claude searches by meaning, not just keywords. Speeds up `dlc-build` research phase significantly. |
-| `feature-dev@claude-plugins-official` | Specialized subagents for feature exploration and architecture analysis. Pairs well with `dlc-build` for larger features. |
-| `commit-commands@claude-plugins-official` | Quick `/commit` and `/commit-push-pr` skills. Saves friction for the Ship phase of `dlc-build`. |
-| `playwright@claude-plugins-official` | Browser automation via MCP. Useful for `dlc-debug` when diagnosing UI bugs or end-to-end test failures. |
-| `typescript-lsp@claude-plugins-official` | TypeScript language server integration. Claude gets real-time type errors, go-to-definition, and rename-symbol — reduces hallucinated type signatures in TypeScript projects. |
-| `pr-review-toolkit@claude-plugins-official` | Additional review agents (silent-failure hunter, type-design analyzer, test coverage analyzer). Complements `dlc-review`'s three-reviewer debate. |
+| `superpowers@claude-plugins-official` | Core workflow skills — TDD, systematic debugging, verification before claiming done. Prevents common AI failure modes. |
+| `claude-mem@thedotmack` | Cross-session persistent memory. Claude remembers past decisions and project context across conversations. |
+| `qmd@qmd` | Local semantic search over your codebase and docs. Speeds up `dlc-build` research phase significantly. |
+| `feature-dev@claude-plugins-official` | Specialized subagents for feature exploration and architecture analysis. Pairs well with `dlc-build`. |
+| `commit-commands@claude-plugins-official` | Quick `/commit` and `/commit-push-pr` skills for the Ship phase of `dlc-build`. |
+| `playwright@claude-plugins-official` | Browser automation via MCP. Useful for `dlc-debug` when diagnosing UI or end-to-end failures. |
+| `typescript-lsp@claude-plugins-official` | TypeScript language server — real-time type errors and go-to-definition. Reduces hallucinated types in TypeScript projects. |
+| `pr-review-toolkit@claude-plugins-official` | Additional review agents (silent-failure hunter, type-design analyzer, test coverage analyzer). Complements `dlc-review`. |
 
-### Nice to Have: MCP Servers
+### Complementary MCP Servers
 
-These MCP servers integrate directly with the DLC skills when present. All are optional — skills degrade gracefully if absent.
+All optional — skills degrade gracefully if absent.
 
 | MCP Server | When it helps | Install |
 | --- | --- | --- |
-| `context7` | Auto-fetches up-to-date library docs during `dlc-build` research phase. No more hallucinated API signatures — Claude reads the actual current docs for any npm/PyPI package. | [upstash/context7-mcp](https://github.com/upstash/context7-mcp) |
-| `sequential-thinking` | Structured multi-step reasoning for complex architecture decisions. Useful in `systems-thinking` skill and `dlc-build` planning phase when the problem has many unknowns. | `claude mcp add sequential-thinking` |
-| `figma` | Pulls Figma frames and component data directly into context. If your team designs in Figma before coding, this lets `dlc-build` use the actual design spec rather than a description of it. | [GLips/Figma-Context-MCP](https://github.com/GLips/Figma-Context-MCP) |
-| `mcp-atlassian` | Already covered in [Jira Integration](#jira-integration) — also gives access to Confluence pages, which `dlc-build` uses as additional acceptance criteria context. | [sooperset/mcp-atlassian](https://github.com/sooperset/mcp-atlassian) |
+| `context7` | Fetches up-to-date library docs during `dlc-build` research — no more hallucinated API signatures. | [upstash/context7-mcp](https://github.com/upstash/context7-mcp) |
+| `sequential-thinking` | Structured reasoning for complex decisions. Useful in `systems-thinking` and `dlc-build` planning. | `claude mcp add sequential-thinking` |
+| `figma` | Pulls Figma frames into context. Lets `dlc-build` use actual design specs instead of descriptions. | [GLips/Figma-Context-MCP](https://github.com/GLips/Figma-Context-MCP) |
+| `mcp-atlassian` | Jira + Confluence access. `dlc-build` uses Confluence pages as additional AC context. | [sooperset/mcp-atlassian](https://github.com/sooperset/mcp-atlassian) |
 
 ---
 
@@ -586,41 +493,38 @@ Restart Claude Code after setting.
 
 ### Skills not triggering automatically
 
-`skill-routing.sh` detects keywords and suggests skills. If it's not triggering, verify the plugin is installed:
+Verify the plugin is installed:
 
 ```bash
-claude plugin list
-# Expected: dev-loop appears
+claude plugin list   # dev-loop should appear
 ```
 
 If missing, reinstall:
 
 ```bash
-claude plugin install wasikarn/dev-loop
+claude plugin marketplace add wasikarn/dev-loop
+claude plugin install dev-loop
 ```
 
 ### Warning about missing tools at session start
 
-Install the flagged tools:
+Install the flagged tools, then restart Claude Code:
 
 ```bash
-brew install jq gh
-gh auth login
+brew install jq gh && gh auth login
 ```
-
-Then restart Claude Code to dismiss the warning.
 
 ### Jira context not loading
 
-Jira is optional. If you want it, configure `mcp-atlassian` or `jira-cache-server`. See [Jira Integration](#jira-integration).
+Jira is optional. Configure `mcp-atlassian` or `jira-cache-server` if you want it. See [Jira Integration](#jira-integration).
 
 ### Plugin skills show as `dev-loop:skill-name`
 
-This is correct. Skills installed via plugin are namespaced automatically to avoid conflicts.
+This is correct — skills installed via plugin are namespaced automatically to avoid conflicts with other plugins.
 
 ### Symlinked hooks not running (local dev)
 
-If hooks registered in `.claude/settings.json` aren't firing, verify the symlinks exist:
+Verify symlinks exist:
 
 ```bash
 bash scripts/link-skill.sh --list
