@@ -37,6 +37,19 @@
 
 ---
 
+## Quick Start
+
+```bash
+claude plugin install wasikarn/claude-code-skills
+claude config set env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS 1
+```
+
+Claude Code installs all skills, agents, hooks, and output styles automatically.
+
+> Requires Claude Code with plugin support. If `claude plugin install` is unavailable, see [Manual Installation](#option-b--local-development-symlinks).
+
+---
+
 ## Installation
 
 ### Option A — Plugin Install (recommended)
