@@ -7,6 +7,8 @@ Prompt templates for the 3 reviewer teammates. Lead inserts project Hard Rules a
 All teammates share these rules (insert into each prompt):
 
 ```text
+HARD RULES: [insert project Hard Rules here]
+
 SCOPE: Only review files in the PR diff. Do NOT flag issues in unchanged files.
 
 CONTEXT:
@@ -15,7 +17,6 @@ CONTEXT:
 RULES:
 - READ-ONLY — do not modify any files
 - Every finding MUST cite file:line with actual code evidence
-- Hard Rules: [insert project Hard Rules here]
 - Non-Hard-Rule findings require confidence >= 80 (scale 0-100) — flat threshold for all roles; dlc-build uses per-role thresholds (75/80/85) but dlc-review relies on adversarial debate to filter noise post-review
 
 CRITICAL MINDSET: Existing tests passing does NOT mean the implementation is correct.
@@ -39,6 +40,19 @@ OUTPUT FORMAT: For each finding, provide:
 4. What's wrong + evidence (quote the code)
 5. Why it matters
 6. Concrete fix
+
+BOUNDARY CONTRACT:
+If you find an issue outside your primary domain (e.g., this reviewer finds an issue outside their listed YOUR FOCUS items):
+- Mark as: [CROSS-DOMAIN: {domain}] in the finding
+- Set severity to: Warning (never Critical — defer escalation to consolidator)
+- Do not drop it — cross-domain findings are valid, just lower confidence
+- Consolidator may escalate after seeing full findings set
+
+OBSERVATION MASKING:
+After reading a file and extracting findings:
+- Retain: file path, line refs, finding text, reasoning chain
+- Discard: full file content from working memory
+- Do not re-read a file you have already processed unless Lead explicitly requests it
 
 After review, message your findings to the team lead.
 ```
