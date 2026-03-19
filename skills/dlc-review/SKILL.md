@@ -13,14 +13,21 @@ Invoke as `/dlc-review [pr-number] [jira-key?] [Author|Reviewer]`
 
 ## References
 
+**Load immediately** (needed for Phase 0–1):
+
 | File |
 | --- |
 | [debate-protocol.md](references/debate-protocol.md) |
 | [teammate-prompts.md](references/teammate-prompts.md) |
 | [review-output-format.md](../../references/review-output-format.md) |
 | [review-conventions.md](../../references/review-conventions.md) |
-| [jira-integration.md](../../references/jira-integration.md) — Jira detection, MCP fetch, AC verification (loaded when Jira key detected) |
-| [references/operational.md](references/operational.md) — Graceful Degradation, Context Compression Recovery, Success Criteria |
+
+**Load on-demand:**
+
+| File | When |
+| --- | --- |
+| [jira-integration.md](../../references/jira-integration.md) | When Jira key detected in arguments |
+| [references/operational.md](references/operational.md) | On graceful degradation or context compression recovery |
 
 **PR:** #$0 | **Mode:** $2 (default: Author)
 **Today:** !`date +%Y-%m-%d`

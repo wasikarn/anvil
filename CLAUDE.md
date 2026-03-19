@@ -32,12 +32,6 @@ skills/<name>/
   scripts/          # Helper scripts referenced from SKILL.md or CLAUDE.md
 ```
 
-### SKILL.md Frontmatter
-
-Required: `name`, `description` (max 1024 chars, cover what + when + triggers). Optional: `argument-hint`, `disable-model-invocation`, `user-invocable`, `allowed-tools`, `model`, `context`, `agent`, `hooks`, `compatibility`. Substitutions: `$ARGUMENTS`, `$N`, `${CLAUDE_SKILL_DIR}`, `` !`command` ``.
-
-Full spec + examples: [references/skills-best-practices.md](references/skills-best-practices.md)
-
 ## Skills in This Repo
 
 | Skill | Purpose |
@@ -77,24 +71,21 @@ Hooks live at `hooks/`. Two sources of truth:
 
 ### Plugin hooks (`hooks/hooks.json`) — distributed automatically with the plugin
 
-| Event | Matcher | Script | What it does |
-| --- | --- | --- | --- |
-| `SessionStart` | `startup` | `check-deps.sh` | Warn if required tools (`jq`, `gh`, `rtk`) are missing |
-| `SessionStart` | `startup` | `session-start-context.sh` | Inject git branch + uncommitted changes into context |
-| `UserPromptSubmit` | — | `skill-routing.sh` | Detect keywords, suggest relevant skill before responding |
-| `PreToolUse` | `Edit\|Write` | `protect-files.sh` | Block edits to `.claude/settings.json` |
-| `PostToolUse` | `Edit\|Write` | _(inline)_ | Auto-lint `.md` files with `markdownlint-cli2 --fix` |
-| `PostToolUse` | `Write` | `shellcheck-written-scripts.sh` | Auto-validate `.sh` files Claude writes |
-| `TaskCompleted` | `review-debate\|dev-loop\|respond` | `task-gate.sh` | Require file:line evidence before agent tasks complete |
-| `TeammateIdle` | `review-pr\|dev-loop\|respond\|debug-` | `idle-nudge.sh` | Nudge idle Agent Teams teammates back on task |
-| `PostCompact` | — | `post-compact-context.sh` | Re-inject context after compaction |
-| `PostToolUseFailure` | `Bash` | `bash-failure-hint.sh` | Inject diagnostic hints after Bash failures |
-| `StopFailure` | `rate_limit\|max_output_tokens\|...` | `stop-failure-log.sh` | Log API errors to session log (async) |
-| `SubagentStop` | reviewer agent names | `subagent-stop-gate.sh` | Block review agents without file:line evidence |
+| Event | Matcher | Script |
+| --- | --- | --- |
+| `SessionStart` | `startup` | `check-deps.sh`, `session-start-context.sh` |
+| `UserPromptSubmit` | — | `skill-routing.sh` |
+| `PreToolUse` | `Edit\|Write` | `protect-files.sh` |
+| `PostToolUse` | `Edit\|Write` | _(inline markdownlint)_ |
+| `PostToolUse` | `Write` | `shellcheck-written-scripts.sh` |
+| `TaskCompleted` | `review-debate\|dev-loop\|respond` | `task-gate.sh` |
+| `TeammateIdle` | `review-pr\|dev-loop\|respond\|debug-` | `idle-nudge.sh` |
+| `PostCompact` | — | `post-compact-context.sh` |
+| `PostToolUseFailure` | `Bash` | `bash-failure-hint.sh` |
+| `StopFailure` | `rate_limit\|...` | `stop-failure-log.sh` |
+| `SubagentStop` | reviewer agent names | `subagent-stop-gate.sh` |
 
-`task-gate.sh` and `idle-nudge.sh` are parameterized via `GATE_PATTERN`/`NUDGE_PATTERN` env vars set in each matcher's command string.
-
-**Note on matchers:** The official Claude Code spec lists `TaskCompleted` and `TeammateIdle` as "None (always fires)" — meaning matchers on these events may be undocumented/unsupported. Both scripts contain internal `GATE_PATTERN`/`NUDGE_PATTERN` filtering as a fallback, so behavior is correct either way: if the runtime ignores matchers, the scripts self-filter; if the runtime respects them, the scripts get a pre-filtered subset. `SubagentStop` uses the same dual-filter pattern via `subagent-stop-gate.sh` — matcher targets reviewer agent names, and the script self-filters if the runtime ignores the matcher.
+`task-gate.sh` and `idle-nudge.sh` use `GATE_PATTERN`/`NUDGE_PATTERN` env vars for filtering. `TaskCompleted`/`TeammateIdle` matchers may be unsupported — scripts self-filter as fallback.
 
 ### Project hooks (`.claude/settings.json`) — active only in this repo
 
@@ -104,19 +95,7 @@ These are already configured in `.claude/settings.json` (checked into the repo).
 
 The following scripts exist in `hooks/` but are **not registered in `hooks.json`**. They are configured in the author's global `~/.claude/settings.json` for personal use and should NOT be added to the plugin manifest:
 
-| Script | Purpose |
-| --- | --- |
-| `play-sound.sh` | Play sound effects on hook events (async, no perf impact) |
-| `qmd-pre-search.sh` | Inject QMD search results before Grep tool calls |
-| `bash-blockers.sh` | Block dangerous bash commands |
-| `auto-test-env.sh` | Auto-detect test environment |
-| `patch-plugin-skills.sh` | Patch plugin skills after install |
-| `session-start-mcp-cleanup.sh` | Clean up stale MCP connections on session start |
-| `session-summary-hook.sh` | Generate session summary on session end |
-| `session-end.sh` | Log session end timestamp and reason |
-| `subagent-start-context.sh` | Inject project context at agent spawn (pr-review-bootstrap, dev-loop-bootstrap) |
-| `permission-auto-approve.sh` | Auto-allow known safe read-only commands |
-| `instructions-loaded-log.sh` | Audit cross-project CLAUDE.md loads (nested_traversal only) |
+`play-sound.sh`, `qmd-pre-search.sh`, `bash-blockers.sh`, `auto-test-env.sh`, `patch-plugin-skills.sh`, `session-start-mcp-cleanup.sh`, `session-summary-hook.sh`, `session-end.sh`, `subagent-start-context.sh`, `permission-auto-approve.sh`, `instructions-loaded-log.sh`
 
 ## Output Styles
 

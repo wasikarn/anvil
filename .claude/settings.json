@@ -1,215 +1,215 @@
 {
-  "hooks": {
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/skill-routing.sh",
-            "timeout": 10,
-            "statusMessage": "Analyzing prompt..."
-          }
-        ]
-      }
-    ],
-    "TaskCompleted": [
-      {
-        "matcher": "review-debate",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "GATE_PATTERN='review|debate|finding' GATE_MSG='Your findings must include file:line evidence for every issue. Please re-review and cite specific code locations.' \"$CLAUDE_PROJECT_DIR\"/hooks/task-gate.sh",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "matcher": "dev-loop",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "GATE_PATTERN='dev-loop|explore|implement|review|fix|finding' GATE_MSG='Your output must include file:line evidence. Re-examine the code and cite specific locations.' \"$CLAUDE_PROJECT_DIR\"/hooks/task-gate.sh",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "matcher": "respond",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "GATE_PATTERN='respond|fix-thread|reply-thread' GATE_MSG='Your output must include file:line evidence. Cite the specific file and line number you fixed.' \"$CLAUDE_PROJECT_DIR\"/hooks/task-gate.sh",
-            "timeout": 10
-          }
-        ]
-      }
-    ],
-    "TeammateIdle": [
-      {
-        "matcher": "review-pr",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "NUDGE_PATTERN='review-pr' NUDGE_CHECK_TASKS=1 NUDGE_MSG='You still have pending debate tasks. Please review your assigned teammate\\'s findings and respond with Agree, Challenge, or Escalate per the debate protocol.' \"$CLAUDE_PROJECT_DIR\"/hooks/idle-nudge.sh",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "matcher": "dev-loop",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "NUDGE_PATTERN='dev-loop' NUDGE_CHECK_TASKS=1 NUDGE_MSG='You have pending tasks. Please continue working on your assigned phase tasks and message the team lead when done.' \"$CLAUDE_PROJECT_DIR\"/hooks/idle-nudge.sh",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "matcher": "respond",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "NUDGE_PATTERN='respond' NUDGE_MSG='You are idle. Continue fixing your assigned threads and message the team lead when done. If blocked, message lead with: thread number, what you tried, and where you are stuck.' \"$CLAUDE_PROJECT_DIR\"/hooks/idle-nudge.sh",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "matcher": "debug-",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "NUDGE_PATTERN='^debug-' NUDGE_MSG='You are idle. Continue your investigation and send findings to the team lead when done. If blocked, message the lead with: what you tried, what you found, and where you are stuck.' \"$CLAUDE_PROJECT_DIR\"/hooks/idle-nudge.sh",
-            "timeout": 10
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "matcher": "startup",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/check-deps.sh",
-            "timeout": 10,
-            "statusMessage": "Checking dependencies..."
-          },
-          {
-            "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/session-start-context.sh",
-            "timeout": 10
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/protect-files.sh",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "command -v jq > /dev/null 2>&1 && FILE=$(jq -r '.tool_input.file_path // empty') && [ -n \"$FILE\" ] && echo \"$FILE\" | grep -qE '\\.md$' && npx markdownlint-cli2 --fix \"$FILE\" 2>/dev/null; exit 0",
-            "async": true
-          }
-        ]
-      },
-      {
-        "matcher": "Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/shellcheck-written-scripts.sh",
-            "timeout": 10
-          }
-        ]
-      }
-    ],
-    "PostToolUseFailure": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/bash-failure-hint.sh",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "StopFailure": [
-      {
-        "matcher": "rate_limit|max_output_tokens|billing_error|server_error",
-        "hooks": [
-          {
-            "type": "command",
-            "async": true,
-            "command": "NOTIFY=1 \"$CLAUDE_PROJECT_DIR\"/hooks/stop-failure-log.sh",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "SessionEnd": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "async": true,
-            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/session-end.sh"
-          }
-        ]
-      }
-    ],
-    "SubagentStart": [
-      {
-        "matcher": "pr-review-bootstrap|dev-loop-bootstrap",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/subagent-start-context.sh",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "PermissionRequest": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/permission-auto-approve.sh",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "InstructionsLoaded": [
-      {
-        "matcher": "nested_traversal",
-        "hooks": [
-          {
-            "type": "command",
-            "async": true,
-            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/instructions-loaded-log.sh",
-            "timeout": 3
-          }
-        ]
-      }
-    ]
-  }
+	"hooks": {
+		"UserPromptSubmit": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "\"$CLAUDE_PROJECT_DIR\"/hooks/skill-routing.sh",
+						"timeout": 10,
+						"statusMessage": "Analyzing prompt..."
+					}
+				]
+			}
+		],
+		"TaskCompleted": [
+			{
+				"matcher": "review-debate",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "GATE_PATTERN='review|debate|finding' GATE_MSG='Your findings must include file:line evidence for every issue. Please re-review and cite specific code locations.' \"$CLAUDE_PROJECT_DIR\"/hooks/task-gate.sh",
+						"timeout": 10
+					}
+				]
+			},
+			{
+				"matcher": "dev-loop",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "GATE_PATTERN='dev-loop|explore|implement|review|fix|finding' GATE_MSG='Your output must include file:line evidence. Re-examine the code and cite specific locations.' \"$CLAUDE_PROJECT_DIR\"/hooks/task-gate.sh",
+						"timeout": 10
+					}
+				]
+			},
+			{
+				"matcher": "respond",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "GATE_PATTERN='respond|fix-thread|reply-thread' GATE_MSG='Your output must include file:line evidence. Cite the specific file and line number you fixed.' \"$CLAUDE_PROJECT_DIR\"/hooks/task-gate.sh",
+						"timeout": 10
+					}
+				]
+			}
+		],
+		"TeammateIdle": [
+			{
+				"matcher": "review-pr",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "NUDGE_PATTERN='review-pr' NUDGE_CHECK_TASKS=1 NUDGE_MSG='You still have pending debate tasks. Please review your assigned teammate\\'s findings and respond with Agree, Challenge, or Escalate per the debate protocol.' \"$CLAUDE_PROJECT_DIR\"/hooks/idle-nudge.sh",
+						"timeout": 10
+					}
+				]
+			},
+			{
+				"matcher": "dev-loop",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "NUDGE_PATTERN='dev-loop' NUDGE_CHECK_TASKS=1 NUDGE_MSG='You have pending tasks. Please continue working on your assigned phase tasks and message the team lead when done.' \"$CLAUDE_PROJECT_DIR\"/hooks/idle-nudge.sh",
+						"timeout": 10
+					}
+				]
+			},
+			{
+				"matcher": "respond",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "NUDGE_PATTERN='respond' NUDGE_MSG='You are idle. Continue fixing your assigned threads and message the team lead when done. If blocked, message lead with: thread number, what you tried, and where you are stuck.' \"$CLAUDE_PROJECT_DIR\"/hooks/idle-nudge.sh",
+						"timeout": 10
+					}
+				]
+			},
+			{
+				"matcher": "debug-",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "NUDGE_PATTERN='^debug-' NUDGE_MSG='You are idle. Continue your investigation and send findings to the team lead when done. If blocked, message the lead with: what you tried, what you found, and where you are stuck.' \"$CLAUDE_PROJECT_DIR\"/hooks/idle-nudge.sh",
+						"timeout": 10
+					}
+				]
+			}
+		],
+		"SessionStart": [
+			{
+				"matcher": "startup",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "\"$CLAUDE_PROJECT_DIR\"/hooks/check-deps.sh",
+						"timeout": 10,
+						"statusMessage": "Checking dependencies..."
+					},
+					{
+						"type": "command",
+						"command": "\"$CLAUDE_PROJECT_DIR\"/hooks/session-start-context.sh",
+						"timeout": 10
+					}
+				]
+			}
+		],
+		"PreToolUse": [
+			{
+				"matcher": "Edit|Write",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "\"$CLAUDE_PROJECT_DIR\"/hooks/protect-files.sh",
+						"timeout": 5
+					}
+				]
+			}
+		],
+		"PostToolUse": [
+			{
+				"matcher": "Edit|Write",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "command -v jq > /dev/null 2>&1 && FILE=$(jq -r '.tool_input.file_path // empty') && [ -n \"$FILE\" ] && echo \"$FILE\" | grep -qE '\\.md$' && npx markdownlint-cli2 --fix \"$FILE\" 2>/dev/null; exit 0",
+						"async": true
+					}
+				]
+			},
+			{
+				"matcher": "Write",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "\"$CLAUDE_PROJECT_DIR\"/hooks/shellcheck-written-scripts.sh",
+						"timeout": 10
+					}
+				]
+			}
+		],
+		"PostToolUseFailure": [
+			{
+				"matcher": "Bash",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "\"$CLAUDE_PROJECT_DIR\"/hooks/bash-failure-hint.sh",
+						"timeout": 5
+					}
+				]
+			}
+		],
+		"StopFailure": [
+			{
+				"matcher": "rate_limit|max_output_tokens|billing_error|server_error",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "NOTIFY=1 \"$CLAUDE_PROJECT_DIR\"/hooks/stop-failure-log.sh",
+						"timeout": 5,
+						"async": true
+					}
+				]
+			}
+		],
+		"SessionEnd": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "\"$CLAUDE_PROJECT_DIR\"/hooks/session-end.sh",
+						"async": true
+					}
+				]
+			}
+		],
+		"SubagentStart": [
+			{
+				"matcher": "pr-review-bootstrap|dev-loop-bootstrap",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "\"$CLAUDE_PROJECT_DIR\"/hooks/subagent-start-context.sh",
+						"timeout": 5
+					}
+				]
+			}
+		],
+		"PermissionRequest": [
+			{
+				"matcher": "Bash",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "\"$CLAUDE_PROJECT_DIR\"/hooks/permission-auto-approve.sh",
+						"timeout": 5
+					}
+				]
+			}
+		],
+		"InstructionsLoaded": [
+			{
+				"matcher": "nested_traversal",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "\"$CLAUDE_PROJECT_DIR\"/hooks/instructions-loaded-log.sh",
+						"timeout": 3,
+						"async": true
+					}
+				]
+			}
+		]
+	}
 }
