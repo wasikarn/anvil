@@ -90,6 +90,7 @@ Notes:
 
 - `task-gate.sh` and `idle-nudge.sh` use `GATE_PATTERN`/`NUDGE_PATTERN` env vars for filtering. `TaskCompleted`/`TeammateIdle` matchers may be unsupported — scripts self-filter as fallback.
 - `stop-failure-log.sh` — file logging is opt-in via `LOG=1` env var; macOS notification via `NOTIFY=1`
+- `shellcheck-written-scripts.sh` and the inline markdownlint hook both degrade gracefully — they `exit 0` silently if `shellcheck`/`markdownlint-cli2` are not installed. No noise for end-users who skip these optional tools.
 
 ## Output Styles
 

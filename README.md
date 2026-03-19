@@ -58,21 +58,30 @@ The fastest way to get started. Installs the plugin and all assets globally.
 
 #### Step 1 — Install prerequisites
 
-These tools are required for the DLC workflow hooks and skills to function correctly.
-
 ```bash
 # macOS
-brew install jq gh rtk
+brew install jq gh
 
 # Ubuntu / Debian
-sudo apt install jq && brew install gh rtk
+sudo apt install jq && brew install gh
 ```
+
+**Required — plugin will not function without these:**
 
 | Tool | Why it's needed |
 | --- | --- |
-| `jq` | JSON parsing used by workflow hooks |
-| `gh` | GitHub CLI — fetches PR diffs, posts review comments, merges PRs |
-| `rtk` | Token-optimized terminal output for Bash commands |
+| `jq` | Every lifecycle hook uses it — missing breaks all hooks |
+| `gh` (authenticated) | DLC skills: fetch PR diffs, post comments, merge PRs — no fallback |
+
+**Recommended — plugin degrades gracefully without:**
+
+| Tool | Without it | Install |
+| --- | --- | --- |
+| `rtk` | DLC skills still work but use raw git/gh output (higher token cost) | `brew install rtk` |
+| `shellcheck` | Auto-validation skipped when Claude writes `.sh` files | `brew install shellcheck` |
+| `node` + `markdownlint-cli2` | Auto-lint skipped when Claude edits `.md` files | `brew install node && npm i -g markdownlint-cli2` |
+| `fd` | Bootstrap agents fall back to slower Glob search | `brew install fd` |
+| `ast-grep` | Bootstrap agents fall back to Grep (less precise) | `brew install ast-grep` |
 
 #### Step 2 — Authenticate GitHub CLI
 
@@ -158,17 +167,17 @@ bash scripts/link-skill.sh --list
 
 ### Prerequisites Summary
 
-| Tool | Required | Install |
+| Tool | Status | Install |
 | --- | --- | --- |
-| `jq` | Yes — all workflow hooks | `brew install jq` / `apt install jq` |
-| `git` | Yes — all DLC skills | pre-installed on most systems |
-| `gh` CLI | Yes — DLC skills + merge-pr | `brew install gh` → `gh auth login` |
-| `rtk` | Yes — token-optimized output | `brew install rtk` |
-| `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` | Yes — enables Agent Teams | `claude config set env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS 1` |
-| `shellcheck` | Optional | `brew install shellcheck` |
-| `node` / `npx` | Optional — auto markdown lint | `brew install node` |
-
-> Hooks degrade gracefully — missing optional tools are skipped silently.
+| `git` | Required | pre-installed on most systems |
+| `jq` | Required — all hooks fail without it | `brew install jq` |
+| `gh` CLI (authenticated) | Required — DLC skills + merge-pr | `brew install gh && gh auth login` |
+| `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` | Required — enables DLC Agent Teams | `claude config set env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS 1` |
+| `rtk` | Recommended — token savings (DLC skills fall back to raw output) | `brew install rtk` |
+| `shellcheck` | Recommended — auto-validates `.sh` files Claude writes | `brew install shellcheck` |
+| `node` + `markdownlint-cli2` | Recommended — auto-lints `.md` files Claude edits | `brew install node && npm i -g markdownlint-cli2` |
+| `fd` | Recommended — faster file search in bootstrap agents | `brew install fd` |
+| `ast-grep` | Recommended — structural code search in bootstrap agents | `brew install ast-grep` |
 
 ---
 
@@ -481,12 +490,12 @@ These hooks are distributed automatically with the plugin and activate on instal
 
 | Hook | Event | What it does |
 | --- | --- | --- |
-| `check-deps.sh` | `SessionStart` | Warns in context if `jq`, `gh`, or `rtk` are missing |
+| `check-deps.sh` | `SessionStart` | Warns in context if `jq`, `git`, or `gh` are missing; notes if `rtk` is absent |
 | `session-start-context.sh` | `SessionStart` | Injects current git branch and uncommitted file count |
 | `skill-routing.sh` | `UserPromptSubmit` | Detects workflow keywords and suggests the right skill before responding |
 | `protect-files.sh` | `PreToolUse[Edit\|Write]` | Blocks Claude from editing `.claude/settings.json` directly |
-| _(inline)_ | `PostToolUse[Edit\|Write]` | Auto-lints `.md` files with `markdownlint-cli2 --fix` |
-| `shellcheck-written-scripts.sh` | `PostToolUse[Write]` | Auto-validates `.sh` files Claude writes |
+| _(inline)_ | `PostToolUse[Edit\|Write]` | Auto-lints `.md` files with `markdownlint-cli2 --fix` — skips silently if not installed |
+| `shellcheck-written-scripts.sh` | `PostToolUse[Write]` | Auto-validates `.sh` files Claude writes — skips silently if `shellcheck` not installed |
 | `task-gate.sh` | `TaskCompleted` | Requires `file:line` evidence before agent tasks are marked complete |
 | `idle-nudge.sh` | `TeammateIdle` | Nudges idle Agent Teams teammates back on task |
 | `post-compact-context.sh` | `PostCompact` | Re-injects session context after compaction |
@@ -595,7 +604,7 @@ claude plugin install wasikarn/dev-loop
 Install the flagged tools:
 
 ```bash
-brew install jq gh rtk
+brew install jq gh
 gh auth login
 ```
 

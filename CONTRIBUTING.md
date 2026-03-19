@@ -12,14 +12,29 @@ For contributors who want to edit skills and see changes take effect immediately
 
 ### Prerequisites
 
-| Tool | Required | Install |
+**Required — plugin will not function without these:**
+
+| Tool | Why | Install |
 | --- | --- | --- |
-| `git` | Yes | `brew install git` |
-| `jq` | Yes | `brew install jq` |
-| `gh` CLI | Yes | `brew install gh` then `gh auth login` |
-| `rtk` | Yes | `brew install rtk` |
-| `node` / `npm` | Optional — markdown linting | `brew install node` |
-| `shellcheck` | Optional — shell script validation | `brew install shellcheck` |
+| `git` | Session hooks + all DLC skills | pre-installed / `xcode-select --install` |
+| `jq` | Every hook uses it — missing breaks all hooks | `brew install jq` |
+| `gh` CLI (authenticated) | DLC skills (`dlc-build`, `dlc-review`, `dlc-respond`, `dlc-debug`, `merge-pr`) — no fallback | `brew install gh && gh auth login` |
+
+**Required for auto-quality hooks (fire on every file edit):**
+
+| Tool | Why | Install |
+| --- | --- | --- |
+| `node` / `npm` + `markdownlint-cli2` | PostToolUse hook auto-lints every `.md` Claude edits | `brew install node && npm install -g markdownlint-cli2` |
+| `shellcheck` | PostToolUse hook auto-lints every `.sh` Claude writes | `brew install shellcheck` |
+
+**Recommended — degrades gracefully without:**
+
+| Tool | Without it | Install |
+| --- | --- | --- |
+| `rtk` | DLC skills still work but use raw git/gh output (higher token cost) | `brew install rtk` |
+| `python3` | `optimize-context` skill cannot detect project framework | pre-installed on macOS |
+| `fd` | Bootstrap agents fall back to Glob (slower) | `brew install fd` |
+| `ast-grep` | Bootstrap agents fall back to Grep (less precise) | `brew install ast-grep` |
 
 ### Step 1 — Clone the repo
 
