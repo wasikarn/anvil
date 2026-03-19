@@ -11,20 +11,6 @@
 
 Search before answering: QMD for project docs/notes, claude-mem for past decisions, context7 for library docs, web for current info. Use training knowledge only as last resort.
 
-## Projects & Stack
-
-| Project | Stack | Test |
-| --- | --- | --- |
-| tathep-platform-api | AdonisJS 5.9 + Effect-TS + Clean Architecture | `node ace test` (Japa) |
-| tathep-website | Next.js 14 Pages Router + Chakra UI + React Query v3 | `bun run test` |
-| tathep-admin | Next.js 14 Pages Router + Tailwind + Headless UI | `bun run test` (Vitest) |
-
-- All three share a monorepo-like workflow; API is the backend for both frontends
-- Commit messages in English, PR reviews in Thai
-- Clean Architecture layers: Domain (no deps) → Application (use cases) → Infrastructure (adapters, DB, HTTP)
-- Effect-TS in API: `pipe`, `Effect.gen`, `Layer` for dependency injection — never use raw try/catch in Effect code
-- QMD collections mirror project names (`tathep-platform-api`, `tathep-website`, `tathep-admin`) — search with `collection` parameter
-
 ## Project Exploration
 
 Use `tree` instead of multiple Glob/LS calls:
@@ -115,17 +101,6 @@ Never commit secrets/credentials, never skip tests, never suppress errors silent
 
 - Extremely concise; sacrifice grammar.
 - End with unresolved questions, if any.
-
-## DLC Workflows
-
-| Task | Command |
-| --- | --- |
-| Feature / bug fix | `/dlc-build BEP-XXXX` |
-| Urgent production fix | `/dlc-build BEP-XXXX --hotfix` |
-| PR review (as reviewer) | `/dlc-review {pr} Reviewer` |
-| PR review (as author) | `/dlc-review {pr} Author` |
-| Address review comments | `/dlc-respond {pr}` |
-| Debug production issue | `/dlc-debug` |
 
 ## PR Reviews
 
