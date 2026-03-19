@@ -11,8 +11,11 @@ command -v jq > /dev/null 2>&1 || exit 0
 
 INPUT=$(cat)
 
-AGENT_TYPE=$(echo "$INPUT" | jq -r '.agent_type // empty')
-LAST_MSG=$(echo "$INPUT" | jq -r '.last_assistant_message // empty')
+# Fail-safe: empty GATE_PATTERN means no filtering — pass through
+[ -z "${GATE_PATTERN:-}" ] && exit 0
+
+AGENT_TYPE=$(echo "$INPUT" | jq -r '.agent_type // empty' 2>/dev/null || true)
+LAST_MSG=$(echo "$INPUT" | jq -r '.last_assistant_message // empty' 2>/dev/null || true)
 
 # Skip agents that don't match this gate's pattern
 if ! echo "$AGENT_TYPE" | grep -qiE "${GATE_PATTERN:-}"; then
