@@ -21,6 +21,7 @@ Uses 3 reviewer teammates that challenge each other's findings instead of 7 para
 | `../../references/review-conventions.md` | Shared review conventions (labels, dedup, strengths) |
 | `../../references/review-output-format.md` | Output format template |
 | `references/operational.md` | Graceful Degradation, Context Compression Recovery, Success Criteria |
+| `../../docs/superpowers/specs/2026-03-19-dlc-workflow-quality-improvements-round2-design.md` | Behavioral anchor rubric for scoring dimensions — see Round 2 spec |
 
 ## Skill Architecture
 

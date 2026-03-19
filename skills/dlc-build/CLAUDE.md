@@ -30,6 +30,7 @@ Uses dynamic team roster (explorers, workers, reviewers) with iterative implemen
 | `references/operational.md` | Graceful Degradation, Crash Recovery, Regression Gate, Solo findings |
 | `../../references/review-output-format.md` | Review output format template |
 | `../dlc-review/references/debate-protocol.md` | Adversarial debate rules (check existence — fallback in phase-4-review.md) |
+| `../../docs/superpowers/specs/2026-03-19-dlc-workflow-quality-improvements-round2-design.md` | Behavioral anchor rubric for scoring dimensions — see Round 2 spec |
 
 ## Skill Architecture
 
