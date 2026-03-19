@@ -21,7 +21,10 @@ ASSET_TYPES=(
 
 # Dotfiles: individual repo_file:claude_target pairs (space-separated, pipe-delimited entries)
 # Note: zshrc is intentionally excluded — use link-skill.sh --zshrc to opt-in
-DOTFILES="statusline.sh:$HOME/.claude/statusline.sh|global-CLAUDE.md:$HOME/.claude/CLAUDE.md"
+DOTFILES="statusline.sh:$HOME/.claude/statusline.sh"
+
+# Copy-dotfiles: copied (not symlinked) so ~/.claude/CLAUDE.md stays independent from repo
+COPY_DOTFILES="global-CLAUDE.md:$HOME/.claude/CLAUDE.md"
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 link_item() {
@@ -79,6 +82,36 @@ link_dotfiles() {
   done
 }
 
+copy_item() {
+  local src="$1"
+  local dst="$2"
+  local name
+  name=$(basename "$src")
+
+  if [ -L "$dst" ]; then
+    echo "  ~ $name — replacing symlink with copy"
+    rm "$dst"
+    cp "$src" "$dst"
+  elif [ -e "$dst" ]; then
+    echo "  ~ $name — updating copy"
+    cp "$src" "$dst"
+  else
+    cp "$src" "$dst"
+    echo "  + $name — copied"
+  fi
+}
+
+copy_dotfiles() {
+  IFS='|' read -ra PAIRS <<< "$COPY_DOTFILES"
+  for pair in "${PAIRS[@]}"; do
+    local src_rel="${pair%%:*}"
+    local dst="${pair#*:}"
+    local src="$REPO_ROOT/$src_rel"
+    [ -f "$src" ] || continue
+    copy_item "$src" "$dst"
+  done
+}
+
 list_status() {
   for entry in "${ASSET_TYPES[@]}"; do
     local type="${entry%%:*}"
@@ -102,7 +135,7 @@ list_status() {
   done
 
   echo ""
-  echo "dotfiles:"
+  echo "dotfiles (symlinked):"
   IFS='|' read -ra PAIRS <<< "$DOTFILES"
   for pair in "${PAIRS[@]}"; do
     local src_rel="${pair%%:*}"
@@ -111,6 +144,21 @@ list_status() {
     target=$(readlink "$dst" 2>/dev/null) \
       && echo "  ✓ $src_rel → $target" \
       || echo "  ✗ $src_rel (not linked at $dst)"
+  done
+
+  echo ""
+  echo "dotfiles (copied):"
+  IFS='|' read -ra PAIRS <<< "$COPY_DOTFILES"
+  for pair in "${PAIRS[@]}"; do
+    local src_rel="${pair%%:*}"
+    local dst="${pair#*:}"
+    if [ -e "$dst" ] && [ ! -L "$dst" ]; then
+      echo "  ✓ $src_rel → $dst (copy)"
+    elif [ -L "$dst" ]; then
+      echo "  ! $src_rel → $dst (still a symlink — run link-skill.sh to fix)"
+    else
+      echo "  ✗ $src_rel (not copied to $dst)"
+    fi
   done
 }
 
@@ -151,6 +199,11 @@ case "${1:-}" in
     echo ""
     echo "[dotfiles]"
     link_dotfiles
+
+    # Copy-dotfiles: copied (not symlinked)
+    echo ""
+    echo "[copy-dotfiles]"
+    copy_dotfiles
 
     ;;
   *)
