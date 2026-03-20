@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.12] — 2026-03-20
+
+### Artifact Path Refactor
+
+- refactor(docs): make artifact-dir.sh single source of truth for artifact path
+- fix(scripts): move artifact storage out of ~/.claude/projects/ namespace
+
 ## [0.6.11] — 2026-03-20
 
 ### Add QA check script and integrate with bump-version
