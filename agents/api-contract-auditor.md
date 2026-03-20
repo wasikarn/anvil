@@ -1,6 +1,6 @@
 ---
 name: api-contract-auditor
-description: "Detects API-breaking changes in PR diffs: removed or renamed response fields, changed HTTP status codes, new required parameters on existing endpoints, type narrowing on public interfaces, and reordered enum values. Spawned conditionally in dlc-review Phase 2 when controller/route/handler/interface files are detected. Reports breaking vs non-breaking changes with semver impact classification."
+description: "Detects API-breaking changes in PR diffs (A1–A10): removed/renamed response fields, changed HTTP status codes, new required parameters, type narrowing on interfaces, reordered enums, idempotency violations on mutating endpoints, pagination envelope inconsistencies, error shape mismatches, deprecation without migration path. Spawned conditionally in dlc-review Phase 2 when controller/route/handler/interface files are detected. Reports breaking vs non-breaking with semver impact classification."
 tools: Read, Grep, Glob, Bash
 model: sonnet
 disallowedTools: Edit, Write
@@ -68,6 +68,20 @@ Renamed path segment, changed method (GET → POST), or removed endpoint entirel
 **A6 — Type Narrowing on Public Interfaces**
 An interface property type changes from wide to narrow (`string | number` → `string`), or from
 nullable to non-nullable (`T | null` → `T`). Consumers sending the wider type will fail validation.
+
+**A7 — Idempotency on Mutating Endpoints**
+Mutating endpoints must handle retries safely. Check for deduplication / `Idempotency-Key` support on POST (creating resources) and PATCH. 🟡 Warning; 🔴 Critical if endpoint touches payment/financial/inventory.
+
+**A8 — Pagination Contract Inconsistency**
+New collection endpoint — verify field names match existing list endpoints. Must match: `data`/`meta`/`total`/`page`/`limit`/`cursor`/`hasNextPage`. Different envelope breaks SDK/client generators (🔴 Breaking). Missing `limit` on unbounded endpoint is a DoS vector (🟡 Warning).
+
+**A9 — Error Envelope Inconsistency**
+New error responses — compare against project error middleware output. New shape (`{ error: 'msg' }`) when project uses `{ errors: [{code, message}] }` → 🔴 Breaking. 500 leaking stack trace / internal detail → 🔴 Security.
+
+**A10 — Deprecation Without Migration Path**
+Endpoint removed/changed without prior `Deprecation` header in earlier version, or no migration path documented for breaking changes in PR description.
+
+> A7–A10 require `conf ≥80` before reporting (same threshold as A1–A6).
 
 ### 3. Classify Each Change
 

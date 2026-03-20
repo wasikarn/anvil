@@ -1,6 +1,6 @@
 ---
 name: migration-reviewer
-description: "Reviews database migration files and schema changes for safety, reversibility, and performance impact. Checks: irreversible DDL without rollback path, missing indexes on foreign keys, table-lock risk on large tables, zero-downtime migration violations, and constraint correctness. Spawned conditionally in dlc-review Phase 2 when infrastructure/migration files are detected in the PR diff."
+description: "Reviews database migration files for safety, reversibility, and performance impact (M1–M10): irreversible DDL, missing FK indexes, table-lock risk, zero-downtime violations, constraint correctness, expand/contract completeness, data migration batching, index type correctness (GIN/partial), sequence exhaustion, and deadlock risk. Spawned conditionally in dlc-review Phase 2 when infrastructure/migration files are detected in the PR diff."
 tools: Read, Grep, Glob, Bash
 model: sonnet
 disallowedTools: Edit, Write
@@ -77,6 +77,36 @@ Multi-step deployments (old code + new code running simultaneously) require:
 - Unique constraint on column that may have existing duplicates → migration will fail at runtime
 - FK to a column that is not indexed in the parent table
 
+**M7 — Expand/Contract Completeness**
+When a column is both added and removed in the same PR:
+
+- New column added AND old column removed in same PR → ZDT violation
+- Search source files for usages of the removed column name before approving removal
+- Removal must be separate migration/PR after code cutover is deployed
+
+**M8 — Data Migration Batching**
+Large tables require batched loop. Flag when:
+
+- Single `UPDATE ... WHERE condition` (no LIMIT) → lock for full duration
+  Fix: `WHERE id IN (SELECT id ... LIMIT 1000)` loop — must be idempotent
+- Data migration inside same TX as DDL → DDL lock held for entire backfill
+
+**M9 — Index Type Correctness**
+Beyond "FK has an index":
+
+- JSONB filtered/searched → `USING gin(col)`, not default B-tree
+- Full-text on `text` → `GIN + to_tsvector`; `LIKE '%term%'` = full scan
+- Composite: equality columns first, range last
+  (`WHERE status='active' AND created_at > X` → index on `(status, created_at)`)
+- Partial index when query always includes same predicate (e.g. `WHERE deleted_at IS NULL`)
+
+**M10 — Deadlock Risk**
+When TX modifies multiple tables:
+
+- Check if other code paths lock same tables in reverse order
+  (TX-A: users→orders; TX-B: orders→users → deadlock)
+- Fix: canonical lock order across all code paths (alphabetical or dependency-based)
+
 ### 3. Read Related Model Files
 
 Cross-reference with the ORM model/entity to confirm:
@@ -96,4 +126,4 @@ Cross-reference with the ORM model/entity to confirm:
 ## Confidence Threshold
 
 M1 (missing down) and M2 (destructive DDL) are always reported regardless of confidence.
-M3–M6 require confidence >= 80.
+M3–M10 require confidence >= 80.

@@ -1,6 +1,6 @@
 ---
 name: test-quality-reviewer
-description: "Dedicated test quality reviewer for PR diffs. Checks: behavior-over-implementation testing, mock fidelity, edge case coverage, missing tests for new logic, and test naming clarity. Spawned conditionally in dlc-review Phase 2 when test files or new exported functions without spec changes are detected. Also usable standalone after any test-writing session."
+description: "Dedicated test quality reviewer for PR diffs. Checks (T1–T9): behavior-over-implementation, mock fidelity, edge case coverage, missing tests for new logic, test naming clarity, zero-assertion/mock-call-only/not.toThrow() detection (T6 Hard Rule), boundary operator coverage, stale mock contracts, and test isolation. Spawned conditionally in dlc-review Phase 2 when test files or new exported functions without spec changes are detected. Also usable standalone after any test-writing session."
 tools: Read, Grep, Glob, Bash
 model: sonnet
 disallowedTools: Edit, Write
@@ -75,6 +75,34 @@ Test names should be readable specifications:
 - Preferred: `"should return empty array when no users match the filter"`
 - Avoid: `"test1"`, `"works"`, `"handles edge case"` (no specifics)
 
+**T6 — Assertion Presence** 🔴 Hard Rule (all three sub-cases bypass confidence gate)
+
+- Test with zero `expect()` / `assert()` calls — always passes, catches nothing
+- Only assertion is mock call count (`toHaveBeenCalledWith`) — verifies call, not correctness
+- `expect(fn).not.toThrow()` as sole assertion — does not verify output value
+
+**T7 — Boundary Operator Coverage**
+Flag when only one representative value tested per comparison in changed logic:
+
+- `> N` → test `=== N` (excluded boundary); `>= N` → test `N - 1`
+- Early-return: assert the early-return value, not only happy path
+- Arithmetic: test 0, negative, large values — not only mid-range
+
+**T8 — Stale Mock Contracts**
+When source function signature changes in same PR:
+
+- Mock return type no longer matches updated signature
+- Mock omits new error path introduced in updated function
+- Snapshot not updated after output shape change
+
+**T9 — Test Isolation**
+Flag when tests share mutable state without cleanup:
+
+- `beforeAll` sets mutable shared variable without `afterAll` cleanup → order-dependent
+- Module-level variable mutated across tests without per-test reset
+- DB state written without transaction rollback or `afterEach` truncation
+- Global mock without `afterEach` restore (`jest.restoreAllMocks()` / `vi.restoreAllMocks()`)
+
 ### 4. Output Findings
 
 Use the standard findings table format, same as dlc-review teammates:
@@ -92,4 +120,4 @@ Sev labels: 🔴 Critical (test gives false confidence) · 🟡 Warning (coverag
 ## Confidence Threshold
 
 Same as dlc-review teammates: confidence >= 80 for non-trivial findings.
-Hard Rule violations (empty catch in tests, console.log in test output) bypass threshold.
+Hard Rule violations (T6: zero assertions / mock-call-only assertion / not.toThrow() as sole assertion) bypass threshold.
