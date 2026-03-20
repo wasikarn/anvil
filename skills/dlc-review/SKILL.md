@@ -33,6 +33,8 @@ Invoke as `/dlc-review [pr-number] [jira-key?] [Author|Reviewer]`
 **Today:** !`date +%Y-%m-%d`
 **Git branch:** !`git branch --show-current`
 **Project:** !`bash "${CLAUDE_SKILL_DIR}/../../scripts/detect-project.sh" 2>/dev/null || true`
+**Artifacts dir:** !`bash "${CLAUDE_SKILL_DIR}/../../scripts/artifact-dir.sh" dlc-review "pr-$0" 2>/dev/null || echo ""`
+**Review memory dir:** !`bash "${CLAUDE_SKILL_DIR}/../../scripts/artifact-dir.sh" dlc-review 2>/dev/null || echo ""`
 **Diff stat:** !`gh pr diff $0 --stat 2>/dev/null || git diff main...HEAD --stat 2>/dev/null || true`
 **PR title:** !`gh pr view $0 --json title,body,labels,author --jq '{title,body,labels: [.labels[].name],author: .author.login}' 2>/dev/null || true`
 **Changed files:** !`gh pr diff $0 --name-only 2>/dev/null || true`
@@ -128,8 +130,8 @@ Use the file count from `PR diff stat` in the skill header (`!gh pr diff $0 --st
 
 Before creating the team, construct the `SEVERITY CALIBRATION` block to inject into each reviewer prompt:
 
-1. Read `{project_root}/.claude/review-confirmed.md` if it exists — find the most recent **confirmed** finding per severity level and use the `Finding` column as the positive anchor (what a real finding looks like at that severity).
-2. Read `{project_root}/.claude/review-dismissed.md` if it exists — find the most recent dismissed entry per severity level for the `KNOWN FALSE POSITIVES` suppression block.
+1. Read `{review_memory_dir}/review-confirmed.md` if it exists — find the most recent **confirmed** finding per severity level and use the `Finding` column as the positive anchor (what a real finding looks like at that severity).
+2. Read `{review_memory_dir}/review-dismissed.md` if it exists — find the most recent dismissed entry per severity level for the `KNOWN FALSE POSITIVES` suppression block.
 3. If files are absent or a severity level has no entries, use hardcoded fallbacks:
    - Critical: "SQL injection via unsanitized user input in query builder"
    - Warning: "Missing null check on optional field that is null in 10% of production calls"
@@ -171,7 +173,7 @@ Insert into each teammate prompt:
 - PR number
 - `{bootstrap_context}` from Phase 0.05 (if available)
 - AC summary if Jira AC was parsed (Phase 0.6)
-- Known dismissed patterns: if `{project_root}/.claude/review-dismissed.md` exists, include last 10 entries as `{dismissed_patterns}` — teammates skip re-raising these patterns without new evidence
+- Known dismissed patterns: if `{review_memory_dir}/review-dismissed.md` exists, include last 10 entries as `{dismissed_patterns}` — teammates skip re-raising these patterns without new evidence
 
 All teammates are READ-ONLY.
 
@@ -216,7 +218,7 @@ If agent errors → perform dedup, pattern-cap, sort, and signal-check inline pe
 
 Output the consolidated findings table per [review-output-format.md](../../references/review-output-format.md).
 
-**Confirmed Findings Log:** After consolidation, append Critical and Warning findings that survived falsification to `{project_root}/.claude/review-confirmed.md` (cap 30 FIFO). Format:
+**Confirmed Findings Log:** After consolidation, append Critical and Warning findings that survived falsification to `{review_memory_dir}/review-confirmed.md` (cap 30 FIFO). Format:
 
 | Date | Finding | File:Line | Severity | Source | Workflow |
 | --- | --- | --- | --- | --- | --- |
@@ -224,7 +226,7 @@ Output the consolidated findings table per [review-output-format.md](../../refer
 
 These become positive severity anchors in future reviews (Step 0.9).
 
-**Dismissed Findings Log:** After consolidation, append dropped findings to `{project_root}/.claude/review-dismissed.md` (cap 50 FIFO). Use this canonical format:
+**Dismissed Findings Log:** After consolidation, append dropped findings to `{review_memory_dir}/review-dismissed.md` (cap 50 FIFO). Use this canonical format:
 
 | Date | Finding | File:Line | Reason | Source | Workflow |
 | --- | --- | --- | --- | --- | --- |
