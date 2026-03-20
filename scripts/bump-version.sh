@@ -1,108 +1,163 @@
 #!/usr/bin/env bash
-# bump-version.sh — Bump plugin version, commit, push, and create GitHub release.
+# bump-version.sh — Bump plugin version across all files, tag, push, and create GitHub release.
 #
 # Usage:
-#   bash scripts/bump-version.sh <version>   # explicit: 0.5.1
-#   bash scripts/bump-version.sh patch       # auto-increment: 0.5.0 → 0.5.1
-#   bash scripts/bump-version.sh minor       # auto-increment: 0.5.0 → 0.6.0
-#   bash scripts/bump-version.sh major       # auto-increment: 0.5.0 → 1.0.0
+#   ./scripts/bump-version.sh <version>   # explicit: 0.6.0
+#   ./scripts/bump-version.sh patch       # auto-increment patch: 0.5.0 → 0.5.1
+#   ./scripts/bump-version.sh minor       # auto-increment minor: 0.5.0 → 0.6.0
+#   ./scripts/bump-version.sh major       # auto-increment major: 0.5.0 → 1.0.0
 #
-# What it does:
-#   1. Updates version in .claude-plugin/plugin.json and marketplace.json
-#   2. Commits the version bump
-#   3. Pushes to origin
-#   4. Creates a GitHub release with auto-generated notes
+# Steps:
+#   1. Validate version + working tree clean
+#   2. Update plugin.json and marketplace.json
+#   3. Commit, tag v<new>, push --tags
+#   4. Create GitHub release with auto-generated notes
 
 set -euo pipefail
 
-REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-PLUGIN_JSON="$REPO_ROOT/.claude-plugin/plugin.json"
-MARKETPLACE_JSON="$REPO_ROOT/.claude-plugin/marketplace.json"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$REPO_ROOT"
 
-# ── helpers ──────────────────────────────────────────────────────────────────
+# ── color helpers ─────────────────────────────────────────────────────────────
+
+RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; CYAN='\033[0;36m'; NC='\033[0m'
+info() { echo -e "${CYAN}→${NC} $*"; }
+ok()   { echo -e "${GREEN}✓${NC} $*"; }
+warn() { echo -e "${YELLOW}!${NC} $*"; }
+die()  { echo -e "${RED}✗${NC} $*" >&2; exit 1; }
+
+# ── helpers ───────────────────────────────────────────────────────────────────
 
 current_version() {
-  grep '"version"' "$PLUGIN_JSON" | head -1 | sed 's/.*"version": *"\([^"]*\)".*/\1/'
+  python3 -c "import json; print(json.load(open('.claude-plugin/plugin.json'))['version'])" \
+    || die "Could not read version from .claude-plugin/plugin.json"
 }
 
 auto_bump() {
   local current="$1" bump_type="$2"
-  local major minor patch
-  IFS='.' read -r major minor patch <<< "$current"
-  case "$bump_type" in
-    major) echo "$((major + 1)).0.0" ;;
-    minor) echo "${major}.$((minor + 1)).0" ;;
-    patch) echo "${major}.${minor}.$((patch + 1))" ;;
-  esac
+  python3 - "$current" "$bump_type" <<'PY'
+import sys
+parts = sys.argv[1].split('.')
+major, minor, patch = int(parts[0]), int(parts[1]), int(parts[2])
+t = sys.argv[2]
+if t == 'major':   print(f"{major+1}.0.0")
+elif t == 'minor': print(f"{major}.{minor+1}.0")
+elif t == 'patch': print(f"{major}.{minor}.{patch+1}")
+PY
 }
 
-die() { echo "error: $*" >&2; exit 1; }
+update_json_version() {
+  local file="$1" version="$2"
+  python3 - "$file" "$version" <<'PY'
+import json, sys
+path, version = sys.argv[1], sys.argv[2]
+data = json.load(open(path))
+# Handle both top-level and nested plugins[0] structures
+if 'version' in data:
+    data['version'] = version
+if 'plugins' in data and data['plugins']:
+    data['plugins'][0]['version'] = version
+with open(path, 'w') as f:
+    json.dump(data, f, indent=2)
+    f.write('\n')
+PY
+}
 
-# ── parse arg ────────────────────────────────────────────────────────────────
+# ── parse arg ─────────────────────────────────────────────────────────────────
 
 ARG="${1:-}"
-if [[ -z "$ARG" ]]; then
-  echo "Usage: bump-version.sh <version|patch|minor|major>"
-  exit 1
-fi
+[[ -n "$ARG" ]] || die "Usage: $0 <version|patch|minor|major>"
 
 CURRENT=$(current_version)
-[[ -n "$CURRENT" ]] || die "could not read current version from $PLUGIN_JSON"
 
 case "$ARG" in
   patch|minor|major)
     NEW_VERSION=$(auto_bump "$CURRENT" "$ARG")
     ;;
   [0-9]*)
+    [[ "$ARG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] \
+      || die "Invalid version '$ARG' — must be semver X.Y.Z"
     NEW_VERSION="$ARG"
     ;;
   *)
-    die "invalid argument '$ARG' — expected a version number or patch/minor/major"
+    die "Invalid argument '$ARG' — expected a version number or patch/minor/major"
     ;;
 esac
 
-# ── pre-flight ───────────────────────────────────────────────────────────────
+[[ "$NEW_VERSION" != "$CURRENT" ]] || die "Already at version $CURRENT"
 
-# Warn if working tree is dirty (uncommitted changes other than the version files)
-if ! git -C "$REPO_ROOT" diff --quiet HEAD; then
-  echo "warning: working tree has uncommitted changes — they will NOT be included in the version bump commit."
-  read -r -p "Continue anyway? [y/N] " confirm
-  [[ "$confirm" =~ ^[Yy]$ ]] || exit 0
+# ── working tree must be clean ────────────────────────────────────────────────
+
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  die "Working tree has uncommitted changes — commit or stash first"
 fi
 
+# ── preview ───────────────────────────────────────────────────────────────────
+
 echo ""
-echo "  Current version : $CURRENT"
-echo "  New version     : $NEW_VERSION"
-echo "  Tag             : v${NEW_VERSION}"
+echo -e "  ${CYAN}dev-loop${NC}  ${YELLOW}$CURRENT${NC} → ${GREEN}$NEW_VERSION${NC}"
 echo ""
 read -r -p "Release title (e.g. 'Centralized Artifact Paths'): " RELEASE_TITLE
-[[ -n "$RELEASE_TITLE" ]] || die "release title cannot be empty"
+[[ -n "$RELEASE_TITLE" ]] || die "Release title cannot be empty"
 echo ""
 
-# ── update JSON files ─────────────────────────────────────────────────────────
+# ── 1. update JSON files ──────────────────────────────────────────────────────
 
-# macOS sed requires '' after -i; GNU sed accepts it too
-sed -i '' "s/\"version\": \"${CURRENT}\"/\"version\": \"${NEW_VERSION}\"/" "$PLUGIN_JSON"
-sed -i '' "s/\"version\": \"${CURRENT}\"/\"version\": \"${NEW_VERSION}\"/" "$MARKETPLACE_JSON"
+info "Updating .claude-plugin/plugin.json..."
+update_json_version ".claude-plugin/plugin.json" "$NEW_VERSION"
+ok "plugin.json → $NEW_VERSION"
 
-echo "✓ Updated $PLUGIN_JSON"
-echo "✓ Updated $MARKETPLACE_JSON"
+info "Updating .claude-plugin/marketplace.json..."
+update_json_version ".claude-plugin/marketplace.json" "$NEW_VERSION"
+ok "marketplace.json → $NEW_VERSION"
 
-# ── commit + push ─────────────────────────────────────────────────────────────
+# ── 2. confirm ────────────────────────────────────────────────────────────────
 
-git -C "$REPO_ROOT" add "$PLUGIN_JSON" "$MARKETPLACE_JSON"
-git -C "$REPO_ROOT" commit -m "chore: bump version to ${NEW_VERSION}"
-git -C "$REPO_ROOT" push
-echo "✓ Pushed version bump commit"
+echo ""
+echo "────────────────────────────────────────────"
+echo "  Files to commit:"
+git diff --name-only | sed 's/^/    /'
+echo ""
+echo -e "  Tag    : ${GREEN}v${NEW_VERSION}${NC}"
+echo -e "  Title  : v${NEW_VERSION} — ${RELEASE_TITLE}"
+echo "────────────────────────────────────────────"
+echo ""
+read -r -p "Commit, tag v$NEW_VERSION, push, and create GitHub release? [y/N] " CONFIRM
+[[ "$CONFIRM" =~ ^[Yy]$ ]] || { warn "Aborted — changes left unstaged"; exit 0; }
 
-# ── GitHub release ────────────────────────────────────────────────────────────
+# ── 3. commit + tag + push ────────────────────────────────────────────────────
 
-REPO=$(gh -C "$REPO_ROOT" repo view --json nameWithOwner --jq '.nameWithOwner')
+info "Committing..."
+git add .claude-plugin/plugin.json .claude-plugin/marketplace.json
+git commit -m "chore: bump version to $NEW_VERSION"
+ok "Committed"
 
-gh release create "v${NEW_VERSION}" \
+info "Tagging v$NEW_VERSION..."
+git tag "v$NEW_VERSION"
+ok "Tagged"
+
+info "Pushing..."
+git push origin main --tags
+ok "Pushed"
+
+# ── 4. GitHub release ─────────────────────────────────────────────────────────
+
+REPO=$(gh repo view --json nameWithOwner --jq '.nameWithOwner')
+
+info "Creating GitHub release v$NEW_VERSION..."
+RELEASE_URL=$(gh release create "v$NEW_VERSION" \
   --repo "$REPO" \
-  --title "v${NEW_VERSION} — ${RELEASE_TITLE}" \
-  --generate-notes
+  --title "v$NEW_VERSION — $RELEASE_TITLE" \
+  --generate-notes)
+ok "Release: $RELEASE_URL"
+
+# ── done ──────────────────────────────────────────────────────────────────────
 
 echo ""
-echo "✓ Released: https://github.com/${REPO}/releases/tag/v${NEW_VERSION}"
+echo -e "${GREEN}✅ $CURRENT → v$NEW_VERSION complete${NC}"
+echo ""
+echo "  Next:"
+echo "  1. claude plugin marketplace update dev-loop"
+echo "  2. claude plugin update dev-loop@dev-loop"
+echo "  3. Restart Claude Code to load v$NEW_VERSION"
