@@ -36,6 +36,7 @@ Invoke as `/dlc-debug [bug-description-or-jira-key] [--quick?]`
 **Git branch:** !`git branch --show-current`
 **Recent commits:** !`git log --oneline -5 2>/dev/null || true`
 **Project:** !`bash "${CLAUDE_SKILL_DIR}/../../scripts/detect-project.sh" 2>/dev/null || true`
+**Artifacts dir:** !`bash "${CLAUDE_SKILL_DIR}/../../scripts/artifact-dir.sh" dlc-debug "$(date +%Y-%m-%d)" 2>/dev/null || echo ""`
 
 **Args:** `$0`=bug description (required) · `$1`=`--quick` (optional, skip DX Analyst) · `$2`=`--review` (optional, add Fix Reviewer after Fixer)
 **Modes:** Full = Investigator + DX Analyst + Fixer · Quick = Investigator + Fixer (DX checklist only)
@@ -96,7 +97,7 @@ If no Jira key — skip to Step 2.
 
 ### Step 4: Create Context Artifact
 
-Write `debug-context.md` at **target project root** — format: [artifact-templates.md](references/artifact-templates.md#debug-context.md). Includes: bug description, severity, mode, project, validate command, reproduction steps, hard rules, Jira context (if applicable), shared context (populated in Phase 1 Bootstrap), and progress checkboxes.
+Write `{artifacts_dir}/debug-context.md` — format: [artifact-templates.md](references/artifact-templates.md#debug-context.md). Includes: bug description, severity, mode, project, validate command, reproduction steps, hard rules, Jira context (if applicable), shared context (populated in Phase 1 Bootstrap), and progress checkboxes.
 
 Lead updates the progress checkboxes at the start of each phase.
 
@@ -161,7 +162,7 @@ Lead shuts down all Phase 1 teammates.
 - If all findings are Info-severity → skip DX section in Fix Plan (no actionable improvements)
 - If (Critical + Warning) / Total < 50% → note "low DX signal" to user before proceeding
 
-Then merge findings into `investigation.md` at **target project root** — format: [artifact-templates.md](references/artifact-templates.md#investigation.md). Sections: Root Cause (hypothesis + file:line evidence), DX Findings table (Sev/Category/File/Line/Issue/Recommendation), Fix Plan (numbered: [Bug]/[Test]/[DX] items).
+Then merge findings into `{artifacts_dir}/investigation.md` — format: [artifact-templates.md](references/artifact-templates.md#investigation.md). Sections: Root Cause (hypothesis + file:line evidence), DX Findings table (Sev/Category/File/Line/Issue/Recommendation), Fix Plan (numbered: [Bug]/[Test]/[DX] items).
 
 **GATE:** Root cause identified with file:line evidence **and confidence >= Medium** → proceed. If confidence is Low or root cause not found → escalate to user (present alternative hypotheses; do not proceed to Phase 2).
 
@@ -238,7 +239,7 @@ Output Debug Summary — format: [artifact-templates.md](references/artifact-tem
 
 If a Jira key was identified in Phase 0 Step 1.5 context:
 
-1. Run `jira-sync` agent — pass `debug-context.md` path explicitly as `$ARGUMENTS` (the agent reads from
+1. Run `jira-sync` agent — pass `{artifacts_dir}/debug-context.md` as `$ARGUMENTS` (the agent reads from
    project root but explicit path avoids any ambiguity).
 2. The agent posts an implementation summary to the ticket automatically — no manual drafting needed.
 
@@ -262,7 +263,7 @@ Append one JSON line to `~/.claude/dlc-metrics.jsonl`:
 - **DX scope = affected area only** — not codebase-wide improvements
 - **3 fix attempts max** — beyond that is an architectural problem, escalate to user
 - **Hard Rules from project detection** — loaded dynamically, cannot be skipped
-- **Artifacts at target project root** — `debug-context.md`, `investigation.md` (not this skills repo)
+- **Artifacts at** `{artifacts_dir}` — `debug-context.md`, `investigation.md` (centralized, not the project repo)
 - **Team name convention** — `debug-{branch}` (e.g., `debug-fix/null-check`)
 
 ---
