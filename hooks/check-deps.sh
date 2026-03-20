@@ -23,17 +23,16 @@ if [ -n "$MISSING" ]; then
 fi
 
 # Optional: atlassian-pm plugin
-# Detection: jira-cache-server MCP server is bundled with atlassian-pm.
-# If it appears in Claude settings, the plugin is installed.
+# Detection: check enabledPlugins in settings files for atlassian-pm@atlassian-pm.
 SETTINGS_FILES="$HOME/.claude/settings.json $HOME/.claude/settings.local.json"
 ATLASSIAN_PM_FOUND=0
 for f in $SETTINGS_FILES; do
-  if [ -f "$f" ] && grep -q "jira-cache-server" "$f" 2>/dev/null; then
+  if [ -f "$f" ] && grep -q "atlassian-pm@atlassian-pm" "$f" 2>/dev/null; then
     ATLASSIAN_PM_FOUND=1
     break
   fi
 done
 
 if [ "$ATLASSIAN_PM_FOUND" -eq 0 ]; then
-  printf "\n## 💡 dev-loop: Optional Enhancement\n\n- \`atlassian-pm\` (not installed) — \`claude plugin install wasikarn/atlassian-pm\`\n  Unlocks: Jira context in all DLC skills, ADF comment formatting, sprint digest in work-context.\n"
+  printf "\n## 💡 dev-loop: Optional Enhancement\n\n- \`atlassian-pm\` (not installed)\n  Install: \`claude plugin marketplace add wasikarn/atlassian-pm && claude plugin install atlassian-pm\`\n  Unlocks: Jira context in all DLC skills, ADF comment formatting, sprint digest in work-context.\n"
 fi
