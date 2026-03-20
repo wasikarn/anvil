@@ -10,7 +10,7 @@ Update progress tracker checkboxes (iteration N: Implement tasks, Review Critica
 
 When dropping a finding (false positive, accepted risk), append it to the `## Dismissed` section in `review-findings-{N}.md` using the table format — prevents re-raising in subsequent iterations.
 
-**Cross-session persistence:** Additionally, append the dismissed finding to the centralized dlc-review dismissed log (`~/.claude/plugins/data/dev-loop-dev-loop/<encoded>/dlc-review/review-dismissed.md` — compute with `bash "${CLAUDE_SKILL_DIR}/../../scripts/artifact-dir.sh" dlc-review`, create if absent). Use this canonical format shared with dlc-review:
+**Cross-session persistence:** Additionally, append the dismissed finding to the centralized dlc-review dismissed log — path: `bash "${CLAUDE_SKILL_DIR}/../../scripts/artifact-dir.sh" dlc-review` → `review-dismissed.md` (create if absent). Use this canonical format shared with dlc-review:
 
 | Date | Finding | File:Line | Reason | Source | Workflow |
 | --- | --- | --- | --- | --- | --- |

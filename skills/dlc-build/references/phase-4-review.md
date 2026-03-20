@@ -104,7 +104,7 @@ Anchor to these before assigning any severity. When in doubt, use Warning over C
 
 **Example source priority:**
 
-1. Read the centralized dlc-review dismissed log (`~/.claude/plugins/data/dev-loop-dev-loop/<encoded>/dlc-review/review-dismissed.md` — compute encoded path with `bash "${CLAUDE_SKILL_DIR}/../../scripts/artifact-dir.sh" dlc-review`) if it exists — find the most recent entry per severity level (Critical, Warning, Suggestion) and use the `Finding` column text as the example.
+1. Read the centralized dlc-review dismissed log — path: `bash "${CLAUDE_SKILL_DIR}/../../scripts/artifact-dir.sh" dlc-review` → `review-dismissed.md` — if it exists, find the most recent entry per severity level (Critical, Warning, Suggestion) and use the `Finding` column text as the example.
 2. If the file does not exist or has no entry for a severity level, use hardcoded fallback:
    - Critical: "SQL injection via unsanitized user input in query builder"
    - Warning: "Missing null check on optional field that is null in 10% of production calls"

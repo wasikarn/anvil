@@ -1,6 +1,6 @@
 ---
 name: project-onboarder
-description: "Bootstraps a new project into the dev-loop ecosystem. Detects the project stack, scaffolds .claude/skills/review-rules/hard-rules.md with stack-appropriate starter rules, and writes .claude/dlc-build/validate-command.md as project config. Artifacts are stored centrally at ~/.claude/plugins/data/dev-loop-dev-loop/ (created on-demand). Run once on a new project before the first dlc-build or dlc-review invocation."
+description: "Bootstraps a new project into the dev-loop ecosystem. Detects the project stack, scaffolds .claude/skills/review-rules/hard-rules.md with stack-appropriate starter rules, and writes .claude/dlc-build/validate-command.md as project config. Artifact paths are managed by scripts/artifact-dir.sh. Run once on a new project before the first dlc-build or dlc-review invocation."
 tools: Read, Glob, Grep, Bash, Write
 model: sonnet
 maxTurns: 15
@@ -50,8 +50,8 @@ mkdir -p .claude/skills/review-rules
 mkdir -p .claude/dlc-build
 ```
 
-Note: Skill artifacts (research.md, debug-context.md, etc.) are stored centrally at
-`~/.claude/plugins/data/dev-loop-dev-loop/<encoded>/` — created automatically by `artifact-dir.sh` on first use.
+Note: Skill artifacts (research.md, debug-context.md, etc.) are stored at the path
+returned by `scripts/artifact-dir.sh <skill-name>` — created automatically on first use.
 `.claude/dlc-build/` is for project-level config only (validate-command.md).
 
 ### 4. Write Hard Rules

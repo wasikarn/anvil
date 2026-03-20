@@ -53,7 +53,7 @@ ls -la ~/.claude/skills/dlc-debug
 - Max 2 teammates concurrent (Investigator + DX Analyst), then 1 (Fixer)
 - DX scope = affected area only — not codebase-wide improvements
 - 3 fix attempts max — beyond that is an architectural problem, escalate to user
-- Artifacts written to `{artifacts_dir}` (centralized at `~/.claude/plugins/data/dev-loop-dev-loop/<encoded>/dlc-debug/<date>/`): `debug-context.md`, `investigation.md`
+- Artifacts written to `{artifacts_dir}` (path from `scripts/artifact-dir.sh dlc-debug`): `debug-context.md`, `investigation.md`
 - Team cleanup must be done by lead in Phase 3 — teammates don't self-terminate
 - One team per session — cannot run multiple dlc-debug in parallel
 - Quick mode still has DX awareness via condensed checklist — not zero DX

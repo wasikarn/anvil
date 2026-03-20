@@ -92,7 +92,7 @@ See [references/operational.md](references/operational.md) for degradation behav
 - **Lead is sole writer of dev-loop-context.md** — workers SendMessage; lead updates the file
 - **Artifacts persist on disk** — `dev-loop-context.md`, plan file, `research.md`, `review-findings-*.md` survive context compression
 - **YAGNI** — implement only what the task requires; speculative abstractions are review findings
-- **Artifacts path** — `{artifacts_dir}` from header (centralized at `~/.claude/plugins/data/dev-loop-dev-loop/<encoded>/dlc-build/`); plan file → `~/.claude/plans/`
+- **Artifacts path** — `{artifacts_dir}` from header (path from `scripts/artifact-dir.sh dlc-build`); plan file → `~/.claude/plans/`
 
 ---
 
