@@ -41,8 +41,7 @@ If `pr-description-writer` is not available, fall back to `pr-template.md` manua
 
 If a Jira key is present in `dev-loop-context.md`:
 
-1. Run `jira-sync` agent — posts implementation summary comment (what was built, files changed, AC deviations).
-   The agent reads the context artifact and posts automatically — no manual drafting needed.
+1. Run `jira-sync` agent — pass `{artifacts_dir}/dev-loop-context.md` as `$ARGUMENTS`. The agent reads the context artifact and posts implementation summary comment (what was built, files changed, AC deviations) automatically.
 2. **After the PR is merged** (by CI or manually) — if `pr-review-jira-sync` agent (atlassian-pm plugin)
    is available, run it with the Jira key to: transition the subtask to Done, post the PR link, and
    check whether all sibling subtasks are complete (signal for parent story closure).

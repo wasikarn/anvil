@@ -17,9 +17,9 @@ context artifacts — no re-reading of source files required.
 
 Look for the context artifact in this order:
 
-1. `.claude/dlc-build/dev-loop-context.md` — dlc-build artifact
-2. `debug-context.md` — dlc-debug artifact (written to project root)
-3. `$ARGUMENTS` — caller may pass explicit path
+1. `$ARGUMENTS` — caller passes explicit path (preferred: `{artifacts_dir}/dev-loop-context.md` or `{artifacts_dir}/debug-context.md`)
+2. The most recent dlc-build artifact: run `bash "${CLAUDE_SKILL_DIR}/../../scripts/artifact-dir.sh" dlc-build 2>/dev/null` to get base dir, then glob `*/dev-loop-context.md` for the latest ticket
+3. The most recent dlc-debug artifact: run `bash "${CLAUDE_SKILL_DIR}/../../scripts/artifact-dir.sh" dlc-debug 2>/dev/null` to get base dir, then glob `*/debug-context.md` for the latest date
 
 If none found, output: `No context artifact found — cannot post Jira comment.` and exit.
 

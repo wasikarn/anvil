@@ -25,7 +25,7 @@ Every phase transition has explicit gate conditions. No phase proceeds until its
 - [ ] All open inline review threads fetched (`gh api`)
 - [ ] All review-level CHANGES_REQUESTED comments fetched (`gh pr view`)
 - [ ] Threads classified by severity (Critical / Important / Suggestion)
-- [ ] Dismissed patterns checked (`{project_root}/.claude/review-dismissed.md`)
+- [ ] Dismissed patterns checked (`{review_memory_dir}/review-dismissed.md`)
 - [ ] Triage table presented then AskUserQuestion — question: "Triage complete. Proceed or override severity first?",
   header: "Triage", options: [{ label: "Looks good, proceed", description: "Start fixing in severity order" },
   { label: "Override severity / skip some", description: "Edit triage before fixing — lead adjusts then re-confirms" }]

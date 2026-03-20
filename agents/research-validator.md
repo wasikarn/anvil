@@ -16,8 +16,7 @@ produced concrete evidence, not just section headers.
 
 ### 1. Locate research.md
 
-Read `.claude/dlc-build/research.md`. If not found, output `FAIL: research.md not found at
-.claude/dlc-build/research.md` and exit.
+Read the file path passed via `$ARGUMENTS` (the lead passes `{artifacts_dir}/research.md` when dispatching). If `$ARGUMENTS` is empty, fallback: compute path via `bash "${CLAUDE_SKILL_DIR}/../../scripts/artifact-dir.sh" dlc-build 2>/dev/null`, then read the most recent `*/research.md` under that base dir. If not found, output `FAIL: research.md not found` and exit.
 
 ### 2. Check Required Sections
 
