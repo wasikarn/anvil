@@ -19,7 +19,7 @@ Source material:
 7. Task list — tag each task `[P]` (parallelizable) or `[S]` (sequential)
 8. Task granularity — each task must specify: exact file(s) to modify, what to change (specific — not "update the logic"), expected behavior after change, how to verify (test to run or output to check). Each task must be completable in one worker turn — if not, split further.
 
-Present plan to user — iterate via annotations until approved. Call `ExitPlanMode` after user approves. **Immediately update `plan_file:` in `.claude/dlc-build/dev-loop-context.md`** with the path returned by the plan system.
+Present plan to user — iterate via annotations until approved. Call `ExitPlanMode` after user approves. **Immediately update `plan_file:` in `{artifacts_dir}/dev-loop-context.md`** with the path returned by the plan system.
 
 **Adversarial Gate:** Run `plan-challenger` agent with the plan file path and `research.md` path. Review its challenge table — address CHALLENGED items before proceeding:
 

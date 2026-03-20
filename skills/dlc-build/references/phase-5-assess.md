@@ -1,6 +1,6 @@
 # Phase 5: Assess (Lead Only)
 
-Read ONLY `.claude/dlc-build/review-findings-{N}.md` (the consolidated file) — do not re-read raw reviewer outputs. Raw findings are available on-demand if a specific finding needs deeper investigation.
+Read ONLY `{artifacts_dir}/review-findings-{N}.md` (the consolidated file) — do not re-read raw reviewer outputs. Raw findings are available on-demand if a specific finding needs deeper investigation.
 
 Count Critical/Warning/Info from the `## Summary` header. If Jira: verify each AC has implementation + test (unverified AC = Critical).
 

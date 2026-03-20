@@ -53,7 +53,7 @@ Drop findings below the role threshold before consolidation. Hard Rule violation
 
 ## Review Output
 
-Write findings to `.claude/dlc-build/review-findings-{iteration}.md` per [../../references/review-output-format.md](../../references/review-output-format.md). Full mode iter 1 with 3 reviewers: dispatch `review-consolidator` agent with raw findings inline — removes main context bias from ranking and saves Sonnet tokens on mechanical dedup work. For 1–2 reviewer cases, lead consolidates inline (no agent). If agent errors → dedup, pattern-cap, sort, and signal-check inline per [review-conventions.md](../../references/review-conventions.md).
+Write findings to `{artifacts_dir}/review-findings-{iteration}.md` per [../../references/review-output-format.md](../../references/review-output-format.md). Full mode iter 1 with 3 reviewers: dispatch `review-consolidator` agent with raw findings inline — removes main context bias from ranking and saves Sonnet tokens on mechanical dedup work. For 1–2 reviewer cases, lead consolidates inline (no agent). If agent errors → dedup, pattern-cap, sort, and signal-check inline per [review-conventions.md](../../references/review-conventions.md).
 
 **Phase 4 status line** (output before findings table — no prose paragraph):
 `### Phase 4 Complete — N findings consolidated · Proceeding to Phase 5`

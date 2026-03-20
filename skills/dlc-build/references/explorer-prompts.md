@@ -168,4 +168,4 @@ When constructing explorer prompts:
 3. Insert validate command from [phase-gates.md](phase-gates.md) project detection (for reference context)
 4. Explorer 3 is optional — spawn only if similar existing features exist
 5. **Assign non-overlapping scopes** — set `{assigned_files_or_dirs}` for each explorer. Example: Explorer 1 → `src/controllers/`, Explorer 2 → `src/models/ + migrations/`, Explorer 3 → `src/services/`. Prevents duplicate reads and conflicting findings.
-6. All explorer findings are merged by lead into `.claude/dlc-build/research.md` — every section must cite file:line references
+6. All explorer findings are merged by lead into `{artifacts_dir}/research.md` — every section must cite file:line references

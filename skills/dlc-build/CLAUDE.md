@@ -67,6 +67,6 @@ ls -la ~/.claude/skills/dlc-build
 - Review scope narrows each iteration: 3 reviewers → 2 → 1, full debate → focused → spot-check
 - Hard Rules cannot be dropped via debate — only reclassified with evidence
 - Max 3 loop iterations enforced — prevents runaway token usage
-- Artifacts written to **target project's `.claude/dlc-build/`** (not this skills repo): `dev-loop-context.md`, `research.md`, `review-findings-*.md`. Plan file goes to `~/.claude/plans/`.
+- Artifacts written to **`{artifacts_dir}`** (centralized at `~/.claude/projects/<encoded>/dev-loop/dlc-build/`): `dev-loop-context.md`, `research.md`, `review-findings-*.md`. Plan file goes to `~/.claude/plans/`.
 - Team cleanup must be done by lead in Phase 6 — teammates don't self-terminate
 - One team per session — cannot run multiple dlc-build in parallel

@@ -15,6 +15,7 @@ Invoke as `/dlc-build [task-description-or-jira-key] [--quick?] [--full?] [--hot
 **Git branch:** !`git branch --show-current`
 **Recent commits:** !`git log --oneline -5 2>/dev/null || true`
 **Project:** !`bash "${CLAUDE_SKILL_DIR}/../../scripts/detect-project.sh" 2>/dev/null || true`
+**Artifacts dir:** !`bash "${CLAUDE_SKILL_DIR}/../../scripts/artifact-dir.sh" dlc-build "$0" 2>/dev/null || echo ""`
 
 **Args:** `$0`=task description or Jira key (required) · `$1`=`--quick` · `$1`=`--full` · `$1`=`--hotfix`
 
@@ -91,7 +92,7 @@ See [references/operational.md](references/operational.md) for degradation behav
 - **Lead is sole writer of dev-loop-context.md** — workers SendMessage; lead updates the file
 - **Artifacts persist on disk** — `dev-loop-context.md`, plan file, `research.md`, `review-findings-*.md` survive context compression
 - **YAGNI** — implement only what the task requires; speculative abstractions are review findings
-- **Artifacts path** — target project's `.claude/dlc-build/` (NOT this skills repo); plan file → `~/.claude/plans/`
+- **Artifacts path** — `{artifacts_dir}` from header (centralized at `~/.claude/projects/<encoded>/dev-loop/dlc-build/`); plan file → `~/.claude/plans/`
 
 ---
 

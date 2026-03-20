@@ -171,7 +171,7 @@ When constructing reviewer prompts:
 1. Replace all `{placeholders}` with actual values
 2. Insert project-specific Hard Rules from `.claude/skills/review-rules/hard-rules.md` (if exists) or use Generic Hard Rules — Hard Rule violations bypass confidence filter and are always reported
 3. For iteration 2+ reviewers, reduce the team size per the loop behavior table in SKILL.md
-4. Set `{dismissed_findings_path}` to: (1) `.claude/review-dismissed.md` (cross-session, all iterations — load if exists), then (2) `.claude/dlc-build/review-findings-{N-1}.md` (current session iter 2+). Reviewers check both sources; before applying any dismissed entry, verify the file:line still exists in the current codebase.
+4. Set `{dismissed_findings_path}` to: (1) the dlc-review artifacts dir `review-dismissed.md` (`~/.claude/projects/<encoded>/dev-loop/dlc-review/review-dismissed.md` — load if exists), then (2) `{artifacts_dir}/review-findings-{N-1}.md` (current session iter 2+). Reviewers check both sources; before applying any dismissed entry, verify the file:line still exists in the current codebase.
 5. **Domain lenses:** Set `{domain_lenses}` to the relevant lens content from `references/review-lenses/` based on file extensions and Jira labels detected in Phase 0. Leave empty if no domain lens applies.
 6. **Confidence thresholds by role:** per `reviewer-shared-rules.md` — Security/Correctness: 70/75, Architecture: 80, DX: 85. Hard Rules bypass all thresholds.
 

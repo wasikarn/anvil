@@ -21,19 +21,19 @@ Step 4: Initialize progress tracker ←─────────────�
 
 ## Step 0: Resume Check
 
-Check if `.claude/dlc-build/dev-loop-context.md` exists in the current project:
+Check if `{artifacts_dir}/dev-loop-context.md` exists:
 
 ```text
-.claude/dlc-build/dev-loop-context.md exists AND Phase != "complete"?
+{artifacts_dir}/dev-loop-context.md exists AND Phase != "complete"?
 ├→ Yes: Show context summary then call AskUserQuestion:
 │   question: "Resume from Phase {N} — {task_description}?"
 │   header: "Resume"
 │   options: [{ label: "Resume", description: "Continue from Phase N" },
 │              { label: "Start fresh", description: "Overwrite context file with new task" }]
 │   ├→ Resume: Skip to the recorded phase. Re-read artifacts in order:
-│   │       1. .claude/dlc-build/dev-loop-context.md
+│   │       1. {artifacts_dir}/dev-loop-context.md
 │   │       2. Plan file: read plan_file: from YAML; fallback to ~/.claude/plans/ most recently modified .md
-│   │       3. .claude/dlc-build/review-findings-*.md (if exists)
+│   │       3. {artifacts_dir}/review-findings-*.md (if exists)
 │   └→ Start fresh: Overwrite context file with new task.
 └→ No: Proceed with triage normally.
 ```
@@ -122,7 +122,7 @@ The mode file contains branch strategy and mode-specific phase pre-steps. Read i
 
 ## Step 3: Create Context Artifact
 
-`mkdir -p .claude/dlc-build` and write `.claude/dlc-build/dev-loop-context.md` with YAML frontmatter + Markdown body:
+Write `{artifacts_dir}/dev-loop-context.md` with YAML frontmatter + Markdown body:
 
 ```yaml
 ---

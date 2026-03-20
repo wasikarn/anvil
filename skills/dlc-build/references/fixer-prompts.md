@@ -11,8 +11,8 @@ HARD RULES:
 You are fixing review findings from iteration {iteration_number}.
 
 PROJECT: {project_name}
-FINDINGS: Read `.claude/dlc-build/review-findings-{N-1}.md` for the list of issues to fix.
-PLAN CONTEXT: Read `.claude/dlc-build/dev-loop-context.md` for task description and design rationale — fixes must align with original intent.
+FINDINGS: Read `{artifacts_dir}/review-findings-{N-1}.md` for the list of issues to fix.
+PLAN CONTEXT: Read `{artifacts_dir}/dev-loop-context.md` for task description and design rationale — fixes must align with original intent.
 
 WORKER CONTEXT:
 {worker_context}

@@ -4,7 +4,7 @@ Skip this phase entirely in Quick mode → go to Phase 2.
 
 ## Step 0: Bootstrap (before explorers)
 
-Dispatch `dev-loop-bootstrap` agent (Haiku) with the task description as argument. Wait for completion (timeout: 60s) — output written to `.claude/dlc-build/bootstrap-context.md`. Read that file and inject its contents into ALL explorer prompts as a `BOOTSTRAP CONTEXT:` section. This eliminates redundant project-structure reads across explorers.
+Dispatch `dev-loop-bootstrap` agent (Haiku) with the task description as argument. Wait for completion (timeout: 60s) — output written to `{artifacts_dir}/bootstrap-context.md`. Read that file and inject its contents into ALL explorer prompts as a `BOOTSTRAP CONTEXT:` section. This eliminates redundant project-structure reads across explorers.
 
 **Bootstrap fallback:** If bootstrap doesn't complete within 60s or crashes: proceed without it. Set `BOOTSTRAP CONTEXT: (not available — explorers gather context independently)` in explorer prompts. Explorers are self-sufficient; bootstrap is an optimization, not a requirement.
 
@@ -22,11 +22,11 @@ Track status in conversation (pending/done/crashed) for each explorer. Wait unti
 
 ## Step 3: Merge Findings
 
-Lead merges all explorer findings into `.claude/dlc-build/research.md`. Structure: trace execution paths, map data flow, document conventions, identify reusable code, note constraints. Every section must cite file:line references.
+Lead merges all explorer findings into `{artifacts_dir}/research.md`. Structure: trace execution paths, map data flow, document conventions, identify reusable code, note constraints. Every section must cite file:line references.
 
 Update `Phase: research` in dev-loop-context.md.
 
-**GATE:** Run `research-validator` agent with path `.claude/dlc-build/research.md`. If result is FAIL, re-dispatch the relevant explorer with a targeted prompt before proceeding. If result is PASS → proceed.
+**GATE:** Run `research-validator` agent with path `{artifacts_dir}/research.md`. If result is FAIL, re-dispatch the relevant explorer with a targeted prompt before proceeding. If result is PASS → proceed.
 
 ## Phase 1 Output Format
 

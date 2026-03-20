@@ -17,7 +17,7 @@ On validate failure: see Checkpoint Recovery in [operational.md](operational.md)
 
 ## Iteration 2+: Fix Findings
 
-Load [fixer-prompts.md](fixer-prompts.md) now. Create 1 fixer. Fixer receives ONLY unresolved findings from `.claude/dlc-build/review-findings-{N-1}.md`. Fix order: Critical → Warning. Each fix = separate commit.
+Load [fixer-prompts.md](fixer-prompts.md) now. Create 1 fixer. Fixer receives ONLY unresolved findings from `{artifacts_dir}/review-findings-{N-1}.md`. Fix order: Critical → Warning. Each fix = separate commit.
 
 If fixer introduces a NEW Critical: revert + message lead.
 If same finding fails 3× → see 3-Fix Rule in [operational.md](operational.md).

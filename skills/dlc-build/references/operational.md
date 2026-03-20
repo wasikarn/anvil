@@ -89,7 +89,7 @@ If a teammate stops responding or crashes mid-phase:
 
 | Teammate | Recovery action |
 | --- | --- |
-| **Explorer crash** | Proceed with remaining explorers — min 1 required. Note gap in `.claude/dlc-build/research.md`. |
+| **Explorer crash** | Proceed with remaining explorers — min 1 required. Note gap in `{artifacts_dir}/research.md`. |
 | **Worker crash** | Run `git log --oneline {base_branch}..HEAD` to identify completed tasks. Re-spawn worker with remaining tasks only. |
 | **Reviewer crash** | Re-spawn with identical prompt and same diff scope. Previous findings not affected. |
 | **Fixer crash** | Check which findings were committed (git log). Re-spawn with only unresolved findings. |
@@ -100,9 +100,9 @@ If no response after ~3 minutes: kill teammate via TeamDelete, analyze state fro
 
 If session compacts mid-workflow, re-read in order:
 
-1. `.claude/dlc-build/dev-loop-context.md` — read YAML frontmatter for phase/iteration/tasks_completed/plan_file, Markdown body for Hard Rules
+1. `{artifacts_dir}/dev-loop-context.md` — read YAML frontmatter for phase/iteration/tasks_completed/plan_file, Markdown body for Hard Rules
 2. Plan file — read `plan_file:` from dev-loop-context.md YAML. If `plan_file:` is empty (pre-Phase 2 crash), fall back to `~/.claude/plans/` most recently modified `.md`.
-3. Latest `.claude/dlc-build/review-findings-*.md` — current iteration findings (if in loop)
+3. Latest `{artifacts_dir}/review-findings-*.md` — current iteration findings (if in loop)
 4. Progress tracker in conversation — iteration count and phase
 
 ## Success Criteria

@@ -41,13 +41,13 @@ English, under 70 chars, start with verb — derived from the plan problem state
 {BEP-XXXX หรือ N/A}
 
 ## AC Checklist
-{แสดงก็ต่อเมื่อมี Jira key — ดึงจาก .claude/dlc-build/dev-loop-context.md}
+{แสดงก็ต่อเมื่อมี Jira key — ดึงจาก {artifacts_dir}/dev-loop-context.md}
 - [x] {AC1 description}
 - [x] {AC2 description}
 
 ## Build Context (สำหรับ reviewer) {ลบส่วนนี้ถ้าไม่ต้องการให้ reviewer เห็น}
 - Plan: `~/.claude/plans/{plan_filename}` (ถ้ายังมีอยู่)
-- Research: `.claude/dlc-build/research.md` (ถ้ายังมีอยู่)
+- Research: `{artifacts_dir}/research.md` (ถ้ายังมีอยู่)
 ```
 
 Run: `gh pr create --title "{title}" --body "{description}" --base {base_branch}`
