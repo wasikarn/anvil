@@ -94,6 +94,13 @@ if ! git diff --quiet || ! git diff --cached --quiet; then
   die "Working tree has uncommitted changes — commit or stash first"
 fi
 
+# ── qa check ──────────────────────────────────────────────────────────────────
+
+info "Running QA checks..."
+if ! bash "$SCRIPT_DIR/qa-check.sh" 2>&1; then
+  die "QA checks failed — fix issues before releasing"
+fi
+
 # ── preview ───────────────────────────────────────────────────────────────────
 
 echo ""
