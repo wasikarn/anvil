@@ -70,7 +70,7 @@ Parse `Diff stat` from header. Classify per [review-conventions.md](../../refere
 | --- | --- | --- |
 | Normal | <=400 | Full review with debate |
 | Large | 401-1000 | Full review + suggest split |
-| Massive | >1000 | Hard Rules only, skip debate, warn prominently |
+| Massive | >1000 | Spawn Correctness reviewer (Hard Rules + confidence ≥85 only) · skip debate · lightweight falsification on Hard Rule findings · warn prominently |
 
 ## Phase 0.6: Ticket Understanding (skip if no Jira)
 
@@ -128,13 +128,15 @@ Use the file count from `PR diff stat` in the skill header (`!gh pr diff $0 --st
 
 Before creating the team, construct the `SEVERITY CALIBRATION` block to inject into each reviewer prompt:
 
-1. Read `{project_root}/.claude/review-dismissed.md` if it exists — find the most recent entry per severity level and use the `Finding` column as the example text.
-2. If file is absent or a severity level has no entries, use hardcoded fallback:
+1. Read `{project_root}/.claude/review-confirmed.md` if it exists — find the most recent **confirmed** finding per severity level and use the `Finding` column as the positive anchor (what a real finding looks like at that severity).
+2. Read `{project_root}/.claude/review-dismissed.md` if it exists — find the most recent dismissed entry per severity level for the `KNOWN FALSE POSITIVES` suppression block.
+3. If files are absent or a severity level has no entries, use hardcoded fallbacks:
    - Critical: "SQL injection via unsanitized user input in query builder"
    - Warning: "Missing null check on optional field that is null in 10% of production calls"
    - Suggestion: `Variable name 'data' is ambiguous — rename to reflect content type`
 
-Inject into each teammate prompt (append after `{bootstrap_context}` block):
+Inject into each teammate prompt (append after `{bootstrap_context}` block) — use confirmed
+examples as positive anchors, dismissed as suppression:
 
 ```text
 SEVERITY CALIBRATION — examples from this project:
@@ -191,7 +193,10 @@ Follow [debate-protocol.md](references/debate-protocol.md) exactly:
 
 **Phase 4.5 — Falsification Pass (before consolidation):**
 
-**Spawn condition:** Normal/Large PRs only — skip for Massive PRs (debate already skipped, no findings to challenge).
+**Spawn condition:**
+
+- Normal/Large PRs → full falsification pass on all debate-surviving findings
+- Massive PRs → lightweight falsification on Hard Rule findings only (no debate findings — pass only the single Correctness reviewer's Hard Rule violations inline)
 
 Spawn `falsification-agent` (defined in `agents/falsification-agent.md`) with the surviving debate findings table inline. The agent challenges each finding on three grounds and returns SUSTAINED / DOWNGRADED / REJECTED verdicts.
 
@@ -210,6 +215,14 @@ If agent errors → perform dedup, pattern-cap, sort, and signal-check inline pe
 [review-conventions.md](../../references/review-conventions.md).
 
 Output the consolidated findings table per [review-output-format.md](../../references/review-output-format.md).
+
+**Confirmed Findings Log:** After consolidation, append Critical and Warning findings that survived falsification to `{project_root}/.claude/review-confirmed.md` (cap 30 FIFO). Format:
+
+| Date | Finding | File:Line | Severity | Source | Workflow |
+| --- | --- | --- | --- | --- | --- |
+| YYYY-MM-DD | {brief} | {file}:{line} | Critical/Warning | PR #{number} | dlc-review |
+
+These become positive severity anchors in future reviews (Step 0.9).
 
 **Dismissed Findings Log:** After consolidation, append dropped findings to `{project_root}/.claude/review-dismissed.md` (cap 50 FIFO). Use this canonical format:
 

@@ -26,6 +26,11 @@ After all teammates complete independent review (Phase 2), the lead creates deba
 | Architecture & Performance | DX & Testing |
 | DX & Testing | Correctness & Security |
 
+**Critical finding exception (Round 1):** Any teammate may challenge any Critical finding,
+regardless of the rotation above. The fixed rotation applies to Warning and Info findings only.
+Rationale: a security Critical reviewed only by the DX teammate creates a domain-mismatch risk —
+the wrong reviewer may lack context to mount a meaningful challenge.
+
 Each reviewer examines the other's findings and responds with one of:
 
 - **Agree** — "+1, confirmed. [optional: additional evidence]"
@@ -106,7 +111,9 @@ If a teammate discovers a genuinely new issue while reviewing another's findings
 
 1. Mark the finding `[NEW]` with full evidence (file:line, code quote, severity, fix)
 2. Do NOT enter the round-robin — send directly to lead
-3. Lead applies confidence filter (≥ 80) and adds to Phase 4 consolidation if it passes
+3. Lead applies confidence filter (≥ 80), then routes through `falsification-agent` inline
+   (pass the single [NEW] finding as a one-row table). Apply the SUSTAINED/DOWNGRADED/REJECTED
+   verdict before adding to Phase 4 consolidation. Rejected [NEW] findings are dropped silently.
 4. Max **2 new findings per teammate per debate** — prevents scope explosion
 
 This captures cross-domain issues (e.g., Architecture reviewer notices a correctness bug while reviewing DX findings) that would otherwise be lost.
