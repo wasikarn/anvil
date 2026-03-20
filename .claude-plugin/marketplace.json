@@ -11,7 +11,7 @@
       "name": "dev-loop",
       "source": "./",
       "description": "A collection of Claude Code skills for PR review, context optimization, spec-driven development, and deep research workflows. Includes DLC workflow skills (dlc-build, dlc-review, dlc-respond, dlc-debug), utility skills, custom agents, workflow automation hooks, and output styles.",
-      "version": "0.6.6",
+      "version": "0.6.7",
       "author": {
         "name": "kobig"
       },
