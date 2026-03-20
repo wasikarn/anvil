@@ -4,14 +4,55 @@ Inject into reviewer prompts when diff touches: TypeScript files, type definitio
 
 ```text
 TYPESCRIPT LENS (active for this review):
-Check for TypeScript type safety anti-patterns:
-- `any` proliferation: `as any`, `any` parameter types, implicit any from missing annotations
-- Unsafe type assertions: `as X` without runtime validation, double-cast `as unknown as X`
-- Missing discriminated unions: string/number enums for sum types instead of `{ type: 'A'; ... } | { type: 'B'; ... }`
-- Incomplete type guards: `typeof x === 'string'` without exhaustive checks on union types
-- Missing `null`/`undefined` handling: non-nullable types used without narrowing, optional chaining gaps
-- `@ts-ignore` / `@ts-expect-error`: suppressions without explanation comment — why was TypeScript wrong?
-- Leaking internals: exported types that expose implementation details (internal state, private DTOs)
 
-THRESHOLD: Report at confidence ≥75. `any` with no justification: always report (treat as Hard Rule for TypeScript projects).
+HARD RULES (flag unconditionally — no confidence gate):
+- `as any` — use type guard or Zod/valibot runtime validator
+- `as unknown as T` — always wrong; use schema.parse() + inferred type
+- `as T` on external data (API response, JSON.parse) → z.parse() / assertIs*(value)
+- `!` non-null assertion where `?.` or explicit null check exists
+- Manual re-implementation of built-ins: `Partial`, `Readonly`, `Pick`, `Omit`,
+  `Required`, `ReturnType`, `Awaited` → use built-ins; deep variants → type-fest
+
+EXHAUSTIVENESS on discriminated unions:
+- `switch` on union discriminant without `default: never` → future variant falls through silently
+  Fix: `default: { const _: never = x; throw new Error(String(_)); }`
+- `if/else if` chain on union type without final `else` → same risk
+
+TYPE PREDICATES & ASSERTION FUNCTIONS (TS 5.5+):
+- TS 5.5+ infers type predicates on simple boolean-returning guards automatically
+  Flag: explicit `value is T` on trivially-inferrable predicates (redundant, not wrong)
+- Complex / multi-condition guards TS cannot infer → must have explicit `value is T`
+- Validation boundaries: prefer `asserts value is T` over `as T`
+  Pattern: `function assertUser(v: unknown): asserts v is User { schema.parse(v); }`
+
+BRANDED TYPES — flag when 2+ same-base-type params in one function:
+- `(userId: string, productId: string)` → `UserId & { __brand: 'UserId' }`
+- Payment/price as bare `number` → `Amount & { __brand: 'Amount' }`
+
+GENERICS:
+- `T extends object` → `T extends Record<string, unknown>`
+- Generic should preserve literal type but doesn't → add `const` modifier: `<const T extends string>` (5.0+)
+- Inference-blocker workarounds (e.g. `[T][T extends T ? 0 : 0]`) → use `NoInfer<T>` (5.4+)
+- `await fn() as T` → `Awaited<ReturnType<typeof fn>>` or schema.parse()
+
+RESOURCE MANAGEMENT (TS 5.2+):
+- DB connections / file handles in try/finally → suggest `using` / `await using`
+  (requires `Symbol.dispose` support — check runtime target before flagging)
+
+MODERN TS (4.9–5.9):
+- Object literal typed via annotation only → `satisfies Type` for literal inference (4.9+)
+- `as const` without `satisfies` → may weaken checking at assignment site
+- `experimentalDecorators: true` on TS 5.0+ project → migrate to standard decorators
+
+TS 6.0 MIGRATION FLAGS (only when `tsconfig.json` is in the PR diff):
+- Explicit `esModuleInterop: false` → will become default true in 6.0
+- Implicit `allowSyntheticDefaultImports` → now default true in 6.0
+
+EXISTING (conf ≥75):
+- `any` params / implicit any from unannotated returns
+- Boolean flags for sum types → `{ status: 'loading' | 'success' | 'error' }`
+- `@ts-ignore` / `@ts-expect-error` without justification comment
+- Exported types leaking implementation internals
+
+THRESHOLD: HARD RULE items → always. All others: conf ≥75.
 ```
