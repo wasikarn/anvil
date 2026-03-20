@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.10] — 2026-03-20
+
+### Shellcheck Hook Fixes
+
+- fix(hooks): resolve shellcheck SC2001/SC1003 in post-compact-context and stop-failure-log
+
 ## [0.6.9] — 2026-03-20
 
 ### Fix task-gate and idle-nudge false-positive block when env vars unset
