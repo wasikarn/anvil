@@ -95,7 +95,7 @@ Then proceed to dispatch `review-consolidator` with the post-verdict findings ta
 
 ```text
 SEVERITY CALIBRATION — examples from this project:
-Critical: {most recent Critical example from .claude/review-dismissed.md}
+Critical: {most recent Critical example from {review_memory_dir}/review-dismissed.md}
 Warning: {most recent Warning example}
 Suggestion: {most recent Suggestion example}
 

@@ -1,6 +1,6 @@
 ---
 name: project-onboarder
-description: "Bootstraps a new project into the dev-loop ecosystem. Detects the project stack, scaffolds .claude/skills/review-rules/hard-rules.md with stack-appropriate starter rules, creates the .claude/dlc-build/ artifact directory structure, validates that dlc-build/dlc-review/dlc-debug can find their expected paths. Run once on a new project before the first dlc-build or dlc-review invocation."
+description: "Bootstraps a new project into the dev-loop ecosystem. Detects the project stack, scaffolds .claude/skills/review-rules/hard-rules.md with stack-appropriate starter rules, and writes .claude/dlc-build/validate-command.md as project config. Artifacts are stored centrally at ~/.claude/projects/ (created on-demand). Run once on a new project before the first dlc-build or dlc-review invocation."
 tools: Read, Glob, Grep, Bash, Write
 model: sonnet
 maxTurns: 15
@@ -36,7 +36,7 @@ rtk tree --gitignore -L 3 --dirsfirst --prune
 ```bash
 ls -la .claude/ 2>/dev/null
 ls -la .claude/skills/review-rules/ 2>/dev/null
-ls -la .claude/dlc-build/ 2>/dev/null
+ls -la .claude/dlc-build/validate-command.md 2>/dev/null
 ```
 
 Note what already exists — do not overwrite existing files.
@@ -49,6 +49,10 @@ Create required directories if they do not exist:
 mkdir -p .claude/skills/review-rules
 mkdir -p .claude/dlc-build
 ```
+
+Note: Skill artifacts (research.md, debug-context.md, etc.) are stored centrally at
+`~/.claude/projects/<encoded>/dev-loop/` — created automatically by `artifact-dir.sh` on first use.
+`.claude/dlc-build/` is for project-level config only (validate-command.md).
 
 ### 4. Write Hard Rules
 
@@ -134,7 +138,6 @@ Replace this file content with the actual validate command if auto-detection is 
 
 ### Files Created
 - `.claude/skills/review-rules/hard-rules.md` — {created | already existed}
-- `.claude/dlc-build/` — {created | already existed}
 - `.claude/dlc-build/validate-command.md` — {created | already existed}
 
 ### Validate Command

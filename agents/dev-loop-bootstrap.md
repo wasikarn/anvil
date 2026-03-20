@@ -53,7 +53,7 @@ Also check `package.json` for the test script.
 
 ### 6. Write Output
 
-Compute the output directory: `ARTIFACT_DIR=$(bash "${CLAUDE_SKILL_DIR}/../../scripts/artifact-dir.sh" dlc-build 2>/dev/null || echo ".claude/dlc-build")`. Write to `${ARTIFACT_DIR}/bootstrap-context.md`:
+Compute the output directory: `ARTIFACT_DIR=$(bash "${CLAUDE_SKILL_DIR}/../../scripts/artifact-dir.sh" dlc-build 2>/dev/null || echo "")`. Write to `${ARTIFACT_DIR}/bootstrap-context.md`:
 
 ```markdown
 # Bootstrap Context
