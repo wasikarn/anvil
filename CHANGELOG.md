@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.13] — 2026-03-22
+
+### Add good/bad examples to 5 skills
+
+- fix(examples): correct broken relative links in dlc-review and optimize-context examples
+- docs(skills): add good/bad examples to 5 skills
+- feat: add domain expert persona to all 8 SKILL.md files
+- docs: add Good/Bad examples and templates to all skills and reference docs
+- feat(skills): add effort field and ultrathink to analysis-heavy skills
+- feat(scripts): add -y flag to bump-version.sh for non-interactive release
+
 ## [0.6.12] — 2026-03-20
 
 ### Artifact Path Refactor
