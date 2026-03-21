@@ -76,7 +76,7 @@ Docs: see `docs/architecture.md`
 ## Tech Stack
 
 - Node 24 · AdonisJS 5.9 · TypeScript strict
-- Docs: see [`agent_docs/architecture.md`](agent_docs/architecture.md)
+- Docs: see `agent_docs/architecture.md`
 ```
 
 ---

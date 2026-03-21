@@ -1,7 +1,7 @@
 # dlc-review — Output Quality Examples
 
 Examples of what high-quality vs low-quality **review output** looks like.
-For code pattern examples (what each rule flags), see [`../../references/review-examples.md`](../../references/review-examples.md).
+For code pattern examples (what each rule flags), see [`../../../references/review-examples.md`](../../../references/review-examples.md).
 
 ---
 
