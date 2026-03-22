@@ -4,10 +4,10 @@
 
 **A Claude Code plugin for structured development, PR review, and debugging — powered by Agent Teams.**
 
-[![Version](https://img.shields.io/badge/version-0.1.0-blue?style=flat-square)](https://github.com/wasikarn/dev-loop/releases)
+[![Version](https://img.shields.io/badge/version-0.6.13-blue?style=flat-square)](https://github.com/wasikarn/dev-loop/releases)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
-[![Skills](https://img.shields.io/badge/skills-8-blue?style=flat-square)](#skills)
-[![Agents](https://img.shields.io/badge/agents-8-purple?style=flat-square)](#agents)
+[![Skills](https://img.shields.io/badge/skills-10-blue?style=flat-square)](#skills)
+[![Agents](https://img.shields.io/badge/agents-20-purple?style=flat-square)](#agents)
 [![Hooks](https://img.shields.io/badge/hooks-12-orange?style=flat-square)](#hooks)
 
 <p>
@@ -29,8 +29,8 @@
 
 | Component | Count | Purpose |
 | --- | --- | --- |
-| **Skills** | 8 | Workflow automation — dev loop, PR review, debugging, utilities |
-| **Agents** | 8 | Specialized subagents for bootstrapping, reviewing, and committing |
+| **Skills** | 10 | Workflow automation — dev loop, PR review, debugging, utilities |
+| **Agents** | 20 | Specialized subagents for bootstrapping, reviewing, and committing |
 | **Hooks** | 12 | Lifecycle automation — dependency checks, skill routing, quality gates |
 | **Output Styles** | 2 | Senior Software Engineer, Coding Mentor |
 | **Commands** | 1 | `analyze-claude-features` |
@@ -331,6 +331,26 @@ Maps causal loops, identifies feedback cycles, and surfaces second-order effects
 
 ---
 
+#### `dlc-metrics` — Retrospective Report
+
+Reads `~/.claude/projects/.../dlc-metrics.jsonl` and produces a retrospective: iteration counts, critical finding categories, recurrent issues, and Hard Rule candidates.
+
+```bash
+/dev-loop:dlc-metrics
+```
+
+---
+
+#### `dlc-onboard` — Bootstrap a New Project
+
+Scaffolds the dev-loop ecosystem into a new project: generates `hard-rules.md` with stack-appropriate starter rules and creates the `dlc-build` artifact directory.
+
+```bash
+/dev-loop:dlc-onboard
+```
+
+---
+
 ## Full Workflow Example — Jira Ticket to Merged PR
 
 > **PROJ-1234** — "Add rate limiting to auth endpoints"
@@ -406,10 +426,22 @@ Specialized subagents spawned automatically by DLC skills. Can also be invoked d
 | `commit-finalizer` | Haiku | Manually | Fast git commit with conventional commit formatting |
 | `dev-loop-bootstrap` | Haiku | `dlc-build` Phase 1 | Pre-gathers project structure and type definitions |
 | `dlc-debug-bootstrap` | Haiku | `dlc-debug` Phase 0 | Pre-gathers stack trace context and affected files |
+| `dlc-respond-bootstrap` | Haiku | `dlc-respond` Phase 0 | Pre-gathers open PR threads and affected files |
 | `pr-review-bootstrap` | Haiku | `dlc-review` Phase 0 | Fetches PR diff, Jira AC, and groups changed files |
 | `review-consolidator` | Haiku | `dlc-review` Phase 4 | Deduplicates and ranks findings from multiple reviewers |
+| `research-validator` | Haiku | `dlc-build` Phase 1→2 gate | Validates research.md completeness (file:line evidence) |
+| `fix-intent-verifier` | Haiku | `dlc-respond` Phase 1 | Verifies each fix addresses reviewer intent (ADDRESSED/PARTIAL/MISALIGNED) |
+| `jira-sync` | Haiku | `dlc-build`/`dlc-debug` end | Posts structured implementation summary to Jira |
+| `work-context` | Haiku | Session start | Sprint tickets + PRs awaiting action + unmerged branches digest |
+| `merge-preflight` | Haiku | `merge-pr` Confirmation Gate | Pre-merge go/no-go safety checklist |
+| `metrics-analyst` | Haiku | `dlc-metrics` | Retrospective from dlc-metrics.jsonl: iteration patterns and Hard Rule candidates |
 | `falsification-agent` | Sonnet | `dlc-build` Phase 4.5, `dlc-review` Phase 4 | Challenges every finding — outputs SUSTAINED/DOWNGRADED/REJECTED per finding |
+| `plan-challenger` | Sonnet | `dlc-build` Phase 2 gate | Challenges plan for YAGNI/scope/ordering issues before implementation |
+| `test-quality-reviewer` | Sonnet | `dlc-review` Phase 2 | Test quality (T1–T9): behavior vs implementation, mock fidelity, assertion presence |
+| `migration-reviewer` | Sonnet | `dlc-review` Phase 2 | DB migration safety (M1–M10): DDL reversibility, FK indexes, table-lock risk |
+| `api-contract-auditor` | Sonnet | `dlc-review` Phase 2 | API breaking changes (A1–A10): removed fields, status codes, required params |
 | `skill-validator` | Sonnet | Manually | Validates SKILL.md frontmatter and description quality |
+| `project-onboarder` | Sonnet | `dlc-onboard` | Scaffolds hard-rules.md and dlc-build directory for new projects |
 | `code-reviewer` | Sonnet | Manually | General-purpose code reviewer with cross-session persistent memory |
 
 ---
