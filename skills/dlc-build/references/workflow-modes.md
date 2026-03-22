@@ -78,4 +78,4 @@ User can always override classification:
 
 - `/dlc-build "simple bug" --full` → forces Full mode (extra research won't hurt)
 - `/dlc-build "big feature" --quick` → forces Quick mode (lead warns about risk but complies)
-- `/dlc-build "BEP-1234" --hotfix` → forces Hotfix mode (branch from main, minimal scope)
+- `/dlc-build "ABC-1234" --hotfix` → forces Hotfix mode (branch from main, minimal scope)

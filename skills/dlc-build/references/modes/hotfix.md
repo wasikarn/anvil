@@ -10,7 +10,7 @@ Loaded by Phase 0 after Hotfix mode is confirmed. For urgent production bugs onl
 
 ```text
 git checkout main && git pull
-git checkout -b hotfix/BEP-XXX-{slug}   # Jira key present
+git checkout -b hotfix/ABC-XXX-{slug}   # Jira key present
 # No Jira key → ask user: "Branch name? (e.g. hotfix/short-description)"
 # Then: git checkout -b hotfix/{slug}
 ```

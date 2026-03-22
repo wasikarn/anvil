@@ -56,7 +56,7 @@ ls -la ~/.claude/skills/dlc-build
 # Test invocation (requires CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1):
 # /dlc-build "Add health check endpoint" --full
 # /dlc-build "Fix null check in UserService" --quick
-# /dlc-build "BEP-1234 production crash" --hotfix
+# /dlc-build "ABC-1234 production crash" --hotfix
 ```
 
 ## Gotchas

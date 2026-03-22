@@ -1,6 +1,6 @@
 ---
 name: dlc-debug
-description: "Agent Teams debugging with parallel DX analysis — Investigator traces root cause while DX Analyst audits observability, error handling, and test coverage. Pass a Jira key (BEP-XXXX) to enrich bug context from ticket details. Use when: debugging complex bugs, production incidents, or when you want to harden the affected area. Triggers: debug, team debug, investigate bug, /dlc-debug."
+description: "Agent Teams debugging with parallel DX analysis — Investigator traces root cause while DX Analyst audits observability, error handling, and test coverage. Pass a Jira key (ABC-XXXX) to enrich bug context from ticket details. Use when: debugging complex bugs, production incidents, or when you want to harden the affected area. Triggers: debug, team debug, investigate bug, /dlc-debug."
 argument-hint: "[bug-description-or-jira-key] [--quick?] [--review?]"
 compatibility: "Requires gh CLI, git, and CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 (degrades gracefully without)"
 disable-model-invocation: true
@@ -81,7 +81,7 @@ If TeamCreate tool is not available → check graceful degradation:
 ```text
 /dlc-debug "NullPointerException in UserService.findById — user.profile is null for users registered before 2024"
 /dlc-debug "API POST /payments returns 500 when amount is 0.00" --quick
-/dlc-debug BEP-5678
+/dlc-debug ABC-5678
 ```
 
 ❌ **Bad** — no bug description (Investigator cannot start without a hypothesis):
@@ -112,7 +112,7 @@ Check for project-specific Hard Rules at `{project_root}/.claude/skills/review-r
 
 ### Step 1.5: Jira Context (skip if no Jira)
 
-Scan `$ARGUMENTS` for Jira key (`BEP-\d+`). If found, follow [jira-integration.md](../../references/jira-integration.md) §dlc-debug:
+Scan `$ARGUMENTS` for Jira key (`ABC-\d+`). If found, follow [jira-integration.md](../../references/jira-integration.md) §dlc-debug:
 
 1. Fetch ticket — enrich bug description with ticket details
 2. Check linked issues — related bugs may share root cause

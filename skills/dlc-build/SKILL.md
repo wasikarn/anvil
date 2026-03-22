@@ -1,6 +1,6 @@
 ---
 name: dlc-build
-description: "Primary development workflow — use /dlc-build for any coding task: new features, bug fixes, refactors, schema changes, CI failures, production hotfixes, or implementing Jira tickets. Runs Research → Plan → Implement → Review → Ship with iterative fix-review loop and Agent Teams. Pass a Jira key (BEP-XXXX) to auto-extract acceptance criteria into plan tasks. Modes: --quick skips research for small fixes; --hotfix for urgent production incidents (branches from main, creates backport PR to develop). Review scales by diff size. Triggers on: implement this feature, write the code for, fix this bug, create a new endpoint, scaffold this module, add tests for, TDD, CI is failing. When in doubt which dev workflow to use, start here."
+description: "Primary development workflow — use /dlc-build for any coding task: new features, bug fixes, refactors, schema changes, CI failures, production hotfixes, or implementing Jira tickets. Runs Research → Plan → Implement → Review → Ship with iterative fix-review loop and Agent Teams. Pass a Jira key (ABC-XXXX) to auto-extract acceptance criteria into plan tasks. Modes: --quick skips research for small fixes; --hotfix for urgent production incidents (branches from main, creates backport PR to develop). Review scales by diff size. Triggers on: implement this feature, write the code for, fix this bug, create a new endpoint, scaffold this module, add tests for, TDD, CI is failing. When in doubt which dev workflow to use, start here."
 argument-hint: "[task-description-or-jira-key] [--quick?] [--full?] [--hotfix?]"
 compatibility: "Requires gh CLI, git, CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 (degrades gracefully without)"
 disable-model-invocation: true
@@ -86,7 +86,7 @@ Phase 0→1→2→ [3: Implement ↔ 4: Review ↔ 5: Assess loop (max 3)] →6:
 ```text
 /dlc-build "Add health check endpoint GET /api/health → returns {status: ok, uptime}" --full
 /dlc-build "Fix null crash in UserService.findById when profile is missing" --quick
-/dlc-build BEP-1234 --hotfix
+/dlc-build ABC-1234 --hotfix
 ```
 
 ❌ **Bad** — no task description (skill cannot determine scope):
@@ -99,7 +99,7 @@ Phase 0→1→2→ [3: Implement ↔ 4: Review ↔ 5: Assess loop (max 3)] →6:
 ❌ **Bad** — Jira key without `--hotfix`/`--quick` when mode is ambiguous (forces unnecessary mode-confirmation round trip):
 
 ```text
-/dlc-build BEP-1234
+/dlc-build ABC-1234
 ```
 
 > **Tip:** Include a Jira key when the ticket has AC — the skill auto-extracts acceptance criteria into plan tasks. Combine with `--quick` for small tasks or `--hotfix` for production incidents.

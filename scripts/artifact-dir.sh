@@ -8,7 +8,7 @@
 # Encoding: absolute project root path with / replaced by -
 # Stored under ~/.claude/plugins/data/dev-loop-dev-loop/ (NOT ~/.claude/projects/) to avoid colliding with
 # Claude Code's session JSONL storage which owns ~/.claude/projects/ exclusively.
-# The leading - in the encoded path (e.g., -Users-kobig-...) is intentional — not a bug.
+# The leading - in the encoded path (e.g., -Users-alice-...) is intentional — not a bug.
 #
 # Compatible with bash 3.x (macOS default).
 # Note: must be invoked from within the target project directory (or any subdirectory)

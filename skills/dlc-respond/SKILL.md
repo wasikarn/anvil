@@ -66,7 +66,7 @@ Use the `Project` JSON from the header. Load project-specific Hard Rules from `{
 
 ### Step 0.5: Jira Context (if `$1` present)
 
-If `$1` matches `BEP-\d+`, follow `## dlc-respond` section in [../../references/jira-integration.md](../../references/jira-integration.md) to fetch AC and enrich thread prioritization.
+If `$1` matches `ABC-\d+`, follow `## dlc-respond` section in [../../references/jira-integration.md](../../references/jira-integration.md) to fetch AC and enrich thread prioritization.
 
 ### Step 2: Fetch All Open Threads
 

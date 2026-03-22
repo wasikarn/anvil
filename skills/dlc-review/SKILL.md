@@ -1,6 +1,6 @@
 ---
 name: dlc-review
-description: "Use this skill whenever someone wants a pull request reviewed — whether they're asking for a quick standards check before merging, an architecture review, a second opinion on changes, or a thorough multi-perspective analysis. Triggers on: review PR [number], /dlc-review [number], check this pull request, second opinion on PR, look at PR. Three agents independently examine the PR then debate their findings to reduce false positives. Supports optional Jira ticket (BEP-XXXX) for acceptance criteria verification. Works in Author mode (applies fixes directly) or Reviewer mode (submits GitHub comments). Do not use for reviewing uncommitted code or branches without a PR number, writing tests, fixing bugs, or responding to existing reviewer comments."
+description: "Use this skill whenever someone wants a pull request reviewed — whether they're asking for a quick standards check before merging, an architecture review, a second opinion on changes, or a thorough multi-perspective analysis. Triggers on: review PR [number], /dlc-review [number], check this pull request, second opinion on PR, look at PR. Three agents independently examine the PR then debate their findings to reduce false positives. Supports optional Jira ticket (ABC-XXXX) for acceptance criteria verification. Works in Author mode (applies fixes directly) or Reviewer mode (submits GitHub comments). Do not use for reviewing uncommitted code or branches without a PR number, writing tests, fixing bugs, or responding to existing reviewer comments."
 argument-hint: "[pr-number] [jira-key?] [Author|Reviewer?]"
 compatibility: "Requires gh CLI, git, and CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 enabled in settings"
 disable-model-invocation: true
@@ -93,7 +93,7 @@ Parse `Diff stat` from header. Classify per [review-conventions.md](../../refere
 
 ## Phase 0.6: Ticket Understanding (skip if no Jira)
 
-Scan `$ARGUMENTS` for Jira key (`BEP-\d+`). If found, follow [jira-integration.md](../../references/jira-integration.md) §dlc-review:
+Scan `$ARGUMENTS` for Jira key (`ABC-\d+`). If found, follow [jira-integration.md](../../references/jira-integration.md) §dlc-review:
 
 1. Fetch ticket → summarize Problem / Value / Scope
 2. Parse AC → numbered checklist

@@ -38,7 +38,7 @@ English, under 70 chars, start with verb — derived from the plan problem state
 {test strategy จาก plan — unit/integration/manual steps}
 
 ## Jira
-{BEP-XXXX หรือ N/A}
+{ABC-XXXX หรือ N/A}
 
 ## AC Checklist
 {แสดงก็ต่อเมื่อมี Jira key — ดึงจาก {artifacts_dir}/dev-loop-context.md}

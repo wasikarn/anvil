@@ -141,7 +141,7 @@ Skip brainstorming: if scope is already clear from description"
 fi
 
 # --- jira-key (atlassian-pm hint) ---
-# Detects Jira key in prompt with implementation/review intent → suggest /dlc-build BEP-XXX
+# Detects Jira key in prompt with implementation/review intent → suggest /dlc-build ABC-XXX
 # Detects story creation intent → suggest story-writer agent (atlassian-pm)
 if [[ $PROMPT =~ $RE_JIRA_KEY ]]; then
   JIRA_KEY="${BASH_REMATCH[0]}"

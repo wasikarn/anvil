@@ -42,7 +42,7 @@ ls -la ~/.claude/skills/dlc-respond
 
 # Test invocation (requires a real PR with open review threads):
 # /dlc-respond 42
-# /dlc-respond 42 BEP-1234
+# /dlc-respond 42 ABC-1234
 ```
 
 ## Gotchas

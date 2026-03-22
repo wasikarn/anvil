@@ -58,8 +58,8 @@ gh pr list --author @me --state open --json number,title,headRefName,createdAt \
   --jq '.[] | "#\(.number) \(.headRefName) — \(.title)"'
 ```
 
-- If Jira key in `$ARGUMENTS` (e.g. `BEP-1234`) → check if any open PR branch contains that key
-  - Match found: Call AskUserQuestion — question: "PR #1941 already targets BEP-1234. Switch to that PR?",
+- If Jira key in `$ARGUMENTS` (e.g. `ABC-1234`) → check if any open PR branch contains that key
+  - Match found: Call AskUserQuestion — question: "PR #1941 already targets ABC-1234. Switch to that PR?",
     header: "Existing PR", options: [{ label: "Switch to PR #1941", description: "Use /dlc-respond or /dlc-review instead" },
     { label: "Continue new task", description: "Proceed with triage normally" }]
     → Switch: stop. → Continue: proceed.

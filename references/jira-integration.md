@@ -118,8 +118,8 @@ When using `issue-bootstrap` (option 1), all fields above are already extracted 
    Priority: {priority}
 
    ## Linked Issues
-   - BEP-YYYY: {summary} (relates-to)
-   - BEP-ZZZZ: {summary} (is-blocked-by)
+   - ABC-YYYY: {summary} (relates-to)
+   - ABC-ZZZZ: {summary} (is-blocked-by)
    ```
 
 6. Include Jira context in Investigator prompt (Phase 1) — helps narrow search area

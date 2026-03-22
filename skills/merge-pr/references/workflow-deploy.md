@@ -224,7 +224,7 @@ To detect: check if `{backport_target}` == `develop` and original branch was `de
 git checkout -b backport/{original_branch_suffix}
 ```
 
-Example: `hotfix/BEP-456-fix-crash` → `backport/hotfix-BEP-456-fix-crash`
+Example: `hotfix/ABC-456-fix-crash` → `backport/hotfix-ABC-456-fix-crash`
 
 ---
 
