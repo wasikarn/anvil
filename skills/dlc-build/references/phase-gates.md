@@ -7,7 +7,10 @@ Every phase transition has explicit gate conditions. No phase proceeds until its
 | From → To | Gate condition | Who decides |
 | --- | --- | --- |
 | Triage → Research | Requirements clear, mode confirmed | User |
-| Research → Plan | research.md complete with file:line evidence | Lead |
+| Research → ClarifyQ | research.md complete with file:line evidence | Lead |
+| ClarifyQ → ArchOpts | 0–4 questions answered or skipped; 5+ questions: user proceeds or stops (Full mode) | User/Lead |
+| ArchOpts → Plan | Architecture approach selected (Full mode); skip both for Quick/Hotfix | User |
+| Research → Plan | Quick/Hotfix: research.md complete, skips ClarifyQ + ArchOpts | Lead |
 | Plan → Implement (iter 1) | the plan approved by user (annotation cycle done) | User |
 | Implement → Review | All tasks done + validate passes | Lead (automated) |
 | Review → Assess | Findings consolidated with consensus | Lead |
@@ -25,12 +28,26 @@ Every phase transition has explicit gate conditions. No phase proceeds until its
 - [ ] Agent Teams availability checked
 - [ ] User acknowledges mode selection
 
-### Research → Plan
+### Research → ClarifyQ
 
 - [ ] `research.md` written with structured findings
 - [ ] Every section cites file:line references
-- [ ] Open questions listed and resolved (or escalated to user)
 - [ ] At least 2 explorer teammates completed their assignments
+- [ ] research-validator agent returned PASS
+
+### ClarifyQ → ArchOpts (Full mode) / ClarifyQ → Plan (Quick/Hotfix)
+
+- [ ] Clarifying questions identified from research.md (0–4: answered or explicitly skipped; 5+: user confirmed proceed)
+- [ ] If answered: `research.md` updated with `## Clarifications` section
+- [ ] If skipped or unresolved: noted in `dev-loop-context.md` under `open_questions:`
+- [ ] **Quick/Hotfix:** skip this gate entirely — go directly to Plan
+
+### ArchOpts → Plan (Full mode only)
+
+- [ ] Both architect agents completed (or one degraded gracefully)
+- [ ] Lead formed recommendation with ≥1 `file:line` citation from `research.md`
+- [ ] User selected architecture approach via AskUserQuestion
+- [ ] Chosen approach noted in `dev-loop-context.md` under `architecture:`
 
 ### Plan → Implement
 
