@@ -20,6 +20,8 @@ Prefer reading source before editing — key references:
 | `skills/<name>/references/examples.md` | Per-skill ✅/❌ code examples for all 12 rules (review-pr skills) |
 | [`references/review-conventions.md`](references/review-conventions.md) | Comment labels, dedup protocol, strengths, PR size thresholds |
 
+<important if="editing or creating skills">
+
 ## Skill Structure
 
 Each skill lives at `skills/<skill-name>/` with this layout:
@@ -31,6 +33,8 @@ skills/<name>/
   references/       # Supporting docs loaded into agent context from SKILL.md
   scripts/          # Helper scripts referenced from SKILL.md or CLAUDE.md
 ```
+
+</important>
 
 ## Skills in This Repo
 
@@ -82,6 +86,8 @@ Current agents (20):
 | `project-onboarder` | sonnet | Bootstrap a new project into dev-loop: scaffold hard-rules.md + dlc-build directory |
 | `code-reviewer` | sonnet | General-purpose code reviewer with cross-session persistent memory |
 
+<important if="editing or adding hooks">
+
 ## Hooks
 
 Hooks live at `hooks/`. All hooks are registered in `hooks/hooks.json` and distributed automatically when the plugin is installed — no manual configuration required.
@@ -106,6 +112,8 @@ Notes:
 - `stop-failure-log.sh` — file logging is opt-in via `LOG=1` env var; macOS notification via `NOTIFY=1`
 - `shellcheck-written-scripts.sh` and the inline markdownlint hook both degrade gracefully — they `exit 0` silently if `shellcheck`/`markdownlint-cli2` are not installed. No noise for end-users who skip these optional tools.
 
+</important>
+
 ## Output Styles
 
 Custom output styles live at `output-styles/<name>.md` with frontmatter (`name`, `description`, `keep-coding-instructions`). Distributed automatically via plugin.
@@ -125,6 +133,8 @@ claude config set env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS 1
 
 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` is required for all DLC skills (dlc-build, dlc-review, dlc-respond, dlc-debug) to spawn Agent Teams.
 
+<important if="adding a new skill">
+
 ## Adding a New Skill
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full step-by-step guide. Key rules for Claude when editing:
@@ -133,6 +143,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full step-by-step guide. Key rule
 - `disable-model-invocation: true` for side-effect skills (deploy, PR review, merge)
 - `compatibility:` recommended for skills with external tool dependencies (not required, but contributors need to know what to install)
 - Pre-commit hook auto-fixes staged `.md` files — no manual lint needed before commit
+
+</important>
 
 ## Repo Commands
 
@@ -149,9 +161,13 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full step-by-step guide. Key rule
 | Link everything | `bash scripts/link-skill.sh` (skills, agents, hooks, output-styles) |
 | Check link status | `bash scripts/link-skill.sh --list` |
 
+<important if="editing this repo">
+
 ## Gotchas
 
 - `context: fork` + `agent` field runs skills in isolated subagent — used by `env-heal` (haiku, general-purpose). Other skills avoid it for real-time streaming visibility and follow-up interaction
 - Pre-commit hook auto-fixes staged `.md` files — runs `scripts/fix-tables.sh` + `markdownlint-cli2 --fix`; no manual fix needed before commit
 - `disable-model-invocation: true` removes description from context entirely (skill never auto-triggers); `user-invocable: false` hides from menu but keeps context — different effects
 - Run `/optimize-context` when this file feels stale
+
+</important>
