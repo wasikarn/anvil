@@ -29,3 +29,14 @@ if [ -n "$BRANCH" ]; then
     while IFS= read -r line; do echo "  - $line"; done <<< "$DIRTY"
   fi
 fi
+
+# Re-inject project Hard Rules if present (may have been evicted by compaction)
+PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+if [ -n "$PROJECT_ROOT" ]; then
+  HARD_RULES="$PROJECT_ROOT/.claude/skills/review-rules/hard-rules.md"
+  if [ -f "$HARD_RULES" ]; then
+    echo ""
+    echo "### ⚠️ Hard Rules (re-injected after compaction)"
+    cat "$HARD_RULES"
+  fi
+fi
