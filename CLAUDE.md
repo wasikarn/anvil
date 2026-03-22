@@ -63,7 +63,7 @@ Key fields: `description` (include "proactively" to auto-trigger), `memory` (`us
 
 > **Plugin limitation:** `hooks`, `mcpServers`, and `permissionMode` are silently ignored when agents are loaded from a plugin. To use these fields, copy the agent to `.claude/agents/` instead.
 
-Current agents (20):
+Current agents (21):
 
 | Agent | Model | Purpose |
 | --- | --- | --- |
@@ -82,6 +82,7 @@ Current agents (20):
 | `falsification-agent` | sonnet | Challenges review findings before consolidation — outputs SUSTAINED/DOWNGRADED/REJECTED per finding |
 | `plan-challenger` | sonnet | Challenges dlc-build Phase 2 plan for YAGNI/scope/ordering issues before implementation |
 | `test-quality-reviewer` | sonnet | Dedicated test quality reviewer (T1–T9): behavior vs implementation, mock fidelity, edge cases, assertion presence (Hard Rule), boundary operators, stale contracts, test isolation |
+| `code-simplifier` | sonnet | Post-review polish: flatten nesting, remove redundant comments, improve naming — no behavior changes; triggered optionally in dlc-build Phase 5 or standalone |
 | `migration-reviewer` | sonnet | Reviews DB migration files (M1–M10): DDL safety, reversibility, FK indexes, table-lock risk, zero-downtime violations, expand/contract, data batching, index types, deadlock risk |
 | `api-contract-auditor` | sonnet | Detects API breaking changes (A1–A10): removed/renamed fields, changed status codes, new required params, type narrowing, enum reordering, idempotency, pagination, error envelopes, deprecation |
 | `skill-validator` | sonnet | Validates SKILL.md against best practices |
