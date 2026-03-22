@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.16] — 2026-03-23
+
+### Hook Tests + Skill Docs + Gotchas + Analytics + /careful + /freeze + Permission Router
+
+- docs: update hooks table and README for v0.6.16 release
+- feat(hooks): add permission-router.sh — auto-approve safe read-only commands
+- feat(skills): add on-demand hook skills /careful and /freeze
+- docs: wrap critical CLAUDE.md sections with <important if> tags; add positive routing test
+- feat(hooks): add skill-usage-tracker.sh for PreToolUse analytics
+- docs(skills): add Gotchas sections to all 10 SKILL.md files
+- feat(commands): add hook-test and dlc-status commands
+- docs: add user-facing skill guides to docs/skills/
+- test(hooks): tighten command-not-found assertion to match hint-specific text
+- feat(scripts): integrate bats test suite into qa-check.sh
+- test(hooks): add bats tests for skill-routing.sh
+- test(hooks): add bats tests for bash-failure-hint.sh
+- test(hooks): add bats tests for common.sh utility functions
+
 ## [0.6.15] — 2026-03-22
 
 ### Hook Performance + Shared Library
