@@ -351,6 +351,29 @@ Scaffolds the dev-loop ecosystem into a new project: generates `hard-rules.md` w
 
 ---
 
+#### `careful` — Safe Mode
+
+Activates session-level protection that blocks destructive bash commands: `rm -rf`, `DROP TABLE`, `git push --force`, `truncate`, `git reset --hard` on committed work.
+
+```bash
+/dev-loop:careful
+```
+
+**When to use:** Working near production data, shared branches, or irreversible operations.
+
+---
+
+#### `freeze` — Directory Lock
+
+Locks edits to a specific directory for the session. Claude will refuse to edit files outside the target path.
+
+```bash
+/dev-loop:freeze src/auth     # lock edits to src/auth/
+/dev-loop:freeze tests/       # only touch tests/
+```
+
+---
+
 ### Skill Guides
 
 Detailed usage guides for each skill: [docs/skills/](docs/skills/)
@@ -471,6 +494,8 @@ Distributed automatically with the plugin — no manual configuration required.
 | `session-start-context.sh` | `SessionStart` | Injects current git branch and uncommitted file count |
 | `skill-routing.sh` | `UserPromptSubmit` | Detects workflow keywords and suggests the matching skill |
 | `protect-files.sh` | `PreToolUse[Edit\|Write]` | Blocks Claude from editing `.claude/settings.json` directly |
+| `skill-usage-tracker.sh` | `PreToolUse[Skill]` | Logs skill invocations for analytics and usage tracking |
+| `permission-router.sh` | `PreToolUse[Bash]` | Routes bash commands through permission checks (e.g. `/careful` blocks) |
 | _(inline)_ | `PostToolUse[Edit\|Write]` | Auto-lints `.md` files with `markdownlint-cli2 --fix` |
 | `shellcheck-written-scripts.sh` | `PostToolUse[Write]` | Auto-validates `.sh` files Claude writes |
 | `task-gate.sh` | `TaskCompleted` | Requires `file:line` evidence before agent tasks are marked complete |

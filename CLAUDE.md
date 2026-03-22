@@ -50,6 +50,8 @@ skills/<name>/
 | `dlc-onboard` | Bootstrap a new project into the dev-loop ecosystem — scaffold hard-rules.md and dlc-build directories |
 | `dlc-respond` | Address PR review comments as author |
 | `systems-thinking` | Causal Loop Diagram analysis for architecture decisions |
+| `careful` | Enter careful mode — elevated confirmation threshold for destructive operations |
+| `freeze` | Freeze a file or pattern from being edited for the session |
 
 Commands live at `commands/<name>.md`. Current: `analyze-claude-features`.
 
@@ -97,6 +99,8 @@ Hooks live at `hooks/`. All hooks are registered in `hooks/hooks.json` and distr
 | `SessionStart` | `startup` | `check-deps.sh`, `session-start-context.sh`, `cleanup-artifacts.sh` (async) |
 | `UserPromptSubmit` | — | `skill-routing.sh` |
 | `PreToolUse` | `Edit\|Write` | `protect-files.sh` |
+| `PreToolUse` | `Skill` | `skill-usage-tracker.sh` |
+| `PreToolUse` | `Bash` | `permission-router.sh` |
 | `PostToolUse` | `Edit\|Write` | _(inline markdownlint)_ |
 | `PostToolUse` | `Write` | `shellcheck-written-scripts.sh` |
 | `TaskCompleted` | `review-debate\|dev-loop\|respond` | `task-gate.sh` |
