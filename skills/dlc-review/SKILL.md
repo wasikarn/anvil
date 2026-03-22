@@ -296,6 +296,26 @@ As **Tech Lead**: focus on architecture, patterns, team standards, and mentoring
 
 **Comment labels:** Per [review-conventions.md](../../references/review-conventions.md) — prefix every comment with `issue:`/`suggestion:`/`nitpick:`/`praise:`.
 
+## Phase 5.5: Comprehension Gate (Author mode only)
+
+**Skip in Reviewer mode** — reviewer is already engaged.
+
+After fixes are applied in Author mode, before cleanup:
+
+Call AskUserQuestion:
+
+- question: "What was the most critical finding in this review, and do you understand the fix applied?"
+- header: "Comprehension Check"
+- options: [
+    { label: "Yes — I understand all changes", description: "Proceed to cleanup" },
+    { label: "Explain the critical finding", description: "Claude walks through the key finding and fix" },
+    { label: "I reviewed the diff myself", description: "Proceed to cleanup" }
+  ]
+
+**If "Explain the critical finding":** Summarize the top Critical finding — what the problem was, why it matters, and what the fix does. Then re-present the options.
+
+**Never block.** If user dismisses, proceed to Phase 6 silently.
+
 ## Phase 6: Cleanup
 
 After action phase completes:
