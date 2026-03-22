@@ -63,7 +63,7 @@ Key fields: `description` (include "proactively" to auto-trigger), `memory` (`us
 
 > **Plugin limitation:** `hooks`, `mcpServers`, and `permissionMode` are silently ignored when agents are loaded from a plugin. To use these fields, copy the agent to `.claude/agents/` instead.
 
-Current agents (21):
+Current agents (23):
 
 | Agent | Model | Purpose |
 | --- | --- | --- |
@@ -82,6 +82,8 @@ Current agents (21):
 | `falsification-agent` | sonnet | Challenges review findings before consolidation — outputs SUSTAINED/DOWNGRADED/REJECTED per finding |
 | `plan-challenger` | sonnet | Challenges dlc-build Phase 2 plan for YAGNI/scope/ordering issues before implementation |
 | `test-quality-reviewer` | sonnet | Dedicated test quality reviewer (T1–T9): behavior vs implementation, mock fidelity, edge cases, assertion presence (Hard Rule), boundary operators, stale contracts, test isolation |
+| `code-explorer` | sonnet | Trace feature execution paths: entry points → data layer, map abstraction layers, identify extension points — read-only, explicit trigger only |
+| `comment-analyzer` | sonnet | Verify comment accuracy against code, detect stale references and comment rot — explicit trigger; dlc-build lead may optionally spawn after Phase 3 |
 | `code-simplifier` | sonnet | Post-review polish: flatten nesting, remove redundant comments, improve naming — no behavior changes; triggered optionally in dlc-build Phase 5 or standalone |
 | `migration-reviewer` | sonnet | Reviews DB migration files (M1–M10): DDL safety, reversibility, FK indexes, table-lock risk, zero-downtime violations, expand/contract, data batching, index types, deadlock risk |
 | `api-contract-auditor` | sonnet | Detects API breaking changes (A1–A10): removed/renamed fields, changed status codes, new required params, type narrowing, enum reordering, idempotency, pagination, error envelopes, deprecation |

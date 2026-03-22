@@ -26,6 +26,7 @@ Uses dynamic team roster (explorers, workers, reviewers) with iterative implemen
 | `references/reviewer-shared-rules.md` | Shared reviewer rules/output format (referenced by each reviewer template) |
 | `references/workflow-modes.md` | Modifying Full/Quick/Hotfix classification + mode decision tree |
 | `references/review-lenses/` | Domain-specific review checklists (security/perf/frontend/DB/TypeScript) |
+| `references/review-lenses/error-handling.md` | Error handling lens — silent failure patterns; injected when diff contains try/catch/async |
 | `../../references/review-conventions.md` | Shared review conventions (labels, dedup, strengths) |
 | `references/operational.md` | Graceful Degradation, Crash Recovery, Regression Gate, Solo findings |
 | `../../references/review-output-format.md` | Review output format template |

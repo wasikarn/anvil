@@ -16,6 +16,21 @@ git diff {base_branch}...HEAD --name-only | wc -l
 | 30–50 | Reduced — inject only lenses matching the top 3 file extensions by change volume |
 | >50 | Skip all lenses — use Hard Rules only; notify user: "Large diff (N files) — lenses skipped" |
 
+## Lens Selection
+
+Inject lenses whose trigger keywords appear in `git diff {base_branch}...HEAD`:
+
+| Lens file | Inject when diff contains |
+| --- | --- |
+| `security.md` | `auth`, `token`, `password`, `secret`, `jwt`, `cookie`, `csrf`, `sql`, `query`, `exec`, `eval` |
+| `performance.md` | `SELECT`, `findAll`, `findMany`, `loop`, `forEach`, `map`, `filter`, `sort`, `cache`, `index` |
+| `database.md` | `migration`, `schema`, `ALTER`, `CREATE TABLE`, `DROP`, `knex`, `prisma`, `typeorm`, `sequelize` |
+| `frontend.md` | `.tsx`, `.jsx`, `useState`, `useEffect`, `component`, `render`, `style`, `css` |
+| `typescript.md` | `.ts`, `.tsx`, `interface`, `type`, `as any`, `generic`, `<T>`, `extends` |
+| `error-handling.md` | `try`, `catch`, `async`, `.catch(`, `Promise`, `new Error`, `throw` |
+
+> Multiple lenses may apply to the same diff — inject all that match, up to the diff-size limit above.
+
 ## Review Scale (Iteration 1)
 
 Determine diff size first: `git diff {base_branch}...HEAD --stat | tail -1`
