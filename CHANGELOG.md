@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.20] — 2026-03-23
+
+### Performance
+
+- **dlc-review:** Phase 0 bootstrap and Jira fetch now run in parallel (saves 5–15s per review)
+- **dlc-build Phase 1:** Explorer team spawns immediately while bootstrap runs concurrently (saves up to 60s in Full mode)
+- **dlc-build Phase 2:** plan-challenger spawns speculatively during user think-time (saves one sequential round-trip)
+- **dlc-build Phase 4:** review-consolidator now used for iter 2+ (2 reviewers), dispatched immediately on findings arrival
+- **dlc-debug:** Investigator/DX Analyst spawn immediately while bootstrap runs concurrently
+- **dlc-respond Phase 0:** Thread fetch and dismissed-patterns read now parallel
+- **dlc-respond Phase 1:** fix-intent-verifier spawned per file group in parallel for PRs with 3+ groups
+- **work-context:** Git state, PR fetch, and Jira search now run in a single parallel tool call round
+- **qa-check.sh:** Checks 1–11 run as parallel background subshells (60–70% wall-clock reduction)
+- **merge-preflight:** Checks 1–5 run as parallel background subshells
+
 ## [0.6.19] — 2026-03-23
 
 ### feat: add code-explorer + comment-analyzer agents, error-handling review lens, jira-sync ADF + atlassian-pm integration
