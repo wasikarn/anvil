@@ -12,8 +12,9 @@
 
 <p>
   <a href="#installation">Installation</a> •
-  <a href="#skills">Skills</a> •
   <a href="#daily-usage">Daily Usage</a> •
+  <a href="#full-workflow-example--jira-ticket-to-merged-pr">Workflow Example</a> •
+  <a href="#skills">Skills</a> •
   <a href="#agents">Agents</a> •
   <a href="#hooks">Hooks</a> •
   <a href="#output-styles">Output Styles</a> •
@@ -188,6 +189,84 @@ Skills and agents take effect immediately on file change. Restart Claude Code on
 
 ---
 
+## Daily Usage
+
+Typical developer day using the DLC workflow:
+
+```mermaid
+flowchart TD
+    MORNING([Start of day]) --> WC
+
+    WC["/dev-loop:work-context
+    Sprint tickets + open PRs
+    + unmerged branches"]
+
+    WC --> DECISION{What needs doing?}
+
+    DECISION -->|New task / ticket| BUILD
+    DECISION -->|Incoming PR to review| REVIEW
+    DECISION -->|Review comments on my PR| RESPOND
+    DECISION -->|Bug / production incident| DEBUG
+
+    BUILD["/dev-loop:dlc-build PROJ-123
+    or: 'add X feature'
+    Full loop → PR created"]
+
+    REVIEW["/dev-loop:dlc-review 42
+    3 reviewers → findings table
+    post as GitHub review comments"]
+
+    RESPOND["/dev-loop:dlc-respond 42
+    Fix all threads → commit → reply"]
+
+    DEBUG["/dev-loop:dlc-debug 'error msg'
+    Root cause + DX hardening → fix PR"]
+
+    BUILD --> MERGE
+    RESPOND --> MERGE
+    DEBUG --> REVIEW
+
+    REVIEW -->|Comments posted, waiting| EOD
+
+    MERGE["/dev-loop:merge-pr 42
+    Preflight → merge → tag"]
+
+    MERGE --> EOD([End of day ✓])
+```
+
+**Session tips:**
+
+- Start every session with `/dev-loop:work-context` — shows active sprint tickets, open PRs awaiting action, and unmerged branches
+- Run `/dev-loop:careful` before risky work (migrations, force-push, DROP TABLE)
+- Use `/dev-loop:dlc-metrics` weekly to spot recurring review findings
+
+---
+
+## Full Workflow Example — Jira Ticket to Merged PR
+
+> **PROJ-1234** — "Add rate limiting to auth endpoints"
+
+```bash
+# 1. Build the feature
+/dev-loop:dlc-build PROJ-1234
+# Claude fetches Jira AC → maps auth middleware → writes plan.md →
+# implements with tests → 3-reviewer debate → opens PR
+
+# 2. Address reviewer comments
+/dev-loop:dlc-respond 42
+# Fetches open threads → fixes in parallel → commits → posts replies
+
+# 3. Final review before merge
+/dev-loop:dlc-review 42 PROJ-1234 Author
+# Three agents re-examine PR against AC → debate → apply remaining fixes
+
+# 4. Merge
+/dev-loop:merge-pr 42
+# Squash into develop → version bump → CHANGELOG → post-merge verification
+```
+
+---
+
 ## Skills
 
 ### DLC Workflow Skills
@@ -283,6 +362,45 @@ Three agents independently review a PR, then debate their findings to eliminate 
 | --- | --- |
 | `Author` | You own the PR — Claude applies fixes automatically |
 | `Reviewer` | You are reviewing someone else's PR — Claude posts GitHub comments |
+
+**Example output:**
+
+```markdown
+## 📋 PR #42 — PROJ-1234 | Author Mode | 🟡
+
+**PR:** feat: add rate limiting to auth endpoints
+**Files changed:** 6 | **Lines:** +142 −18
+
+### AC Verification
+
+| AC  | Status      | File                           | Note                    |
+| --- | ----------- | ------------------------------ | ----------------------- |
+| AC1 | ✅ Done     | `app/middleware/rate-limit.ts` | 5 req/min enforced      |
+| AC2 | ✅ Done     | `app/middleware/rate-limit.ts` | 10 req/min enforced     |
+| AC3 | 🔴 Partial  | `app/middleware/rate-limit.ts` | Headers set only on 429 |
+
+### Findings (after debate)
+
+| #  | Sev | File                           | Line | Consensus | Issue                                         |
+| -- | --- | ------------------------------ | ---- | --------- | --------------------------------------------- |
+| 1  | 🔴  | `app/middleware/rate-limit.ts` | 47   | 3/3       | Rate limit headers missing on success (AC3)   |
+| 2  | 🟡  | `app/middleware/rate-limit.ts` | 12   | 2/3       | In-memory store resets on restart — use Redis |
+| 3  | 🟡  | `tests/rate-limit.spec.ts`     | 88   | 2/3       | Only 429 tested — add success + burst cases   |
+
+### Fixes Applied
+
+| #  | Fix                                        | File                              |
+| -- | ------------------------------------------ | --------------------------------- |
+| 1  | Add X-RateLimit-* headers to all responses | `app/middleware/rate-limit.ts:47` |
+| 2  | Add Redis store note + env guard           | `app/middleware/rate-limit.ts:12` |
+| 3  | Add success path + burst edge case tests   | `tests/rate-limit.spec.ts:88`     |
+
+✅ **Validate:** `node ace test --filter rate-limit` — PASS
+
+### Final Verdict
+
+✅ **APPROVE** — Fixed 🔴 1, 🟡 2 | AC: 3/3 ✅ | Signal: 50%
+```
 
 ---
 
@@ -421,125 +539,6 @@ Detailed usage guides for each skill: [docs/skills/](docs/skills/)
 | [dlc-debug](docs/skills/dlc-debug.md) | Root cause analysis |
 | [merge-pr](docs/skills/merge-pr.md) | Safe PR merge |
 | [utilities](docs/skills/utilities.md) | optimize-context, env-heal, systems-thinking, dlc-metrics |
-
----
-
-## Full Workflow Example — Jira Ticket to Merged PR
-
-> **PROJ-1234** — "Add rate limiting to auth endpoints"
-
-```bash
-# 1. Build the feature
-/dev-loop:dlc-build PROJ-1234
-# Claude fetches Jira AC → maps auth middleware → writes plan.md →
-# implements with tests → 3-reviewer debate → opens PR
-
-# 2. Address reviewer comments
-/dev-loop:dlc-respond 42
-# Fetches open threads → fixes in parallel → commits → posts replies
-
-# 3. Final review before merge
-/dev-loop:dlc-review 42 PROJ-1234 Author
-# Three agents re-examine PR against AC → debate → apply remaining fixes
-
-# 4. Merge
-/dev-loop:merge-pr 42
-# Squash into develop → version bump → CHANGELOG → post-merge verification
-```
-
----
-
-## Daily Usage
-
-Typical developer day using the DLC workflow:
-
-```mermaid
-flowchart TD
-    MORNING([Start of day]) --> WC
-
-    WC["/dev-loop:work-context
-    Sprint tickets + open PRs
-    + unmerged branches"]
-
-    WC --> DECISION{What needs doing?}
-
-    DECISION -->|New task / ticket| BUILD
-    DECISION -->|Incoming PR to review| REVIEW
-    DECISION -->|Review comments on my PR| RESPOND
-    DECISION -->|Bug / production incident| DEBUG
-
-    BUILD["/dev-loop:dlc-build PROJ-123
-    or: 'add X feature'
-    Full loop → PR created"]
-
-    REVIEW["/dev-loop:dlc-review 42
-    3 reviewers → findings table
-    post as GitHub review comments"]
-
-    RESPOND["/dev-loop:dlc-respond 42
-    Fix all threads → commit → reply"]
-
-    DEBUG["/dev-loop:dlc-debug 'error msg'
-    Root cause + DX hardening → fix PR"]
-
-    BUILD --> MERGE
-    RESPOND --> MERGE
-    DEBUG --> REVIEW
-
-    REVIEW -->|Comments posted, waiting| EOD
-
-    MERGE["/dev-loop:merge-pr 42
-    Preflight → merge → tag"]
-
-    MERGE --> EOD([End of day ✓])
-```
-
-**Session tips:**
-
-- Start every session with `/dev-loop:work-context` — shows active sprint tickets, open PRs awaiting action, and unmerged branches
-- Run `/dev-loop:careful` before risky work (migrations, force-push, DROP TABLE)
-- Use `/dev-loop:dlc-metrics` weekly to spot recurring review findings
-
----
-
-## dlc-review Example Output
-
-```markdown
-## 📋 PR #42 — PROJ-1234 | Author Mode | 🟡
-
-**PR:** feat: add rate limiting to auth endpoints
-**Files changed:** 6 | **Lines:** +142 −18
-
-### AC Verification
-
-| AC  | Status      | File                           | Note                    |
-| --- | ----------- | ------------------------------ | ----------------------- |
-| AC1 | ✅ Done     | `app/middleware/rate-limit.ts` | 5 req/min enforced      |
-| AC2 | ✅ Done     | `app/middleware/rate-limit.ts` | 10 req/min enforced     |
-| AC3 | 🔴 Partial  | `app/middleware/rate-limit.ts` | Headers set only on 429 |
-
-### Findings (after debate)
-
-| #  | Sev | File                           | Line | Consensus | Issue                                         |
-| -- | --- | ------------------------------ | ---- | --------- | --------------------------------------------- |
-| 1  | 🔴  | `app/middleware/rate-limit.ts` | 47   | 3/3       | Rate limit headers missing on success (AC3)   |
-| 2  | 🟡  | `app/middleware/rate-limit.ts` | 12   | 2/3       | In-memory store resets on restart — use Redis |
-| 3  | 🟡  | `tests/rate-limit.spec.ts`     | 88   | 2/3       | Only 429 tested — add success + burst cases   |
-
-### Fixes Applied
-
-| #  | Fix                                        | File                              |
-| -- | ------------------------------------------ | --------------------------------- |
-| 1  | Add X-RateLimit-* headers to all responses | `app/middleware/rate-limit.ts:47` |
-| 2  | Add Redis store note + env guard           | `app/middleware/rate-limit.ts:12` |
-| 3  | Add success path + burst edge case tests   | `tests/rate-limit.spec.ts:88`     |
-
-✅ **Validate:** `node ace test --filter rate-limit` — PASS
-
-### Final Verdict
-
-✅ **APPROVE** — Fixed 🔴 1, 🟡 2 | AC: 3/3 ✅ | Signal: 50%
-```
 
 ---
 
