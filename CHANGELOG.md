@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.23] — 2026-03-23
+
+### perf: domain-scoped lens injection — reduce session token usage ~60%
+
+- **perf(dlc-review):** domain-scoped lens injection — T1→security/error-handling/typescript, T2→performance/database/api-design, T3→frontend/observability (was all→all); specialist agent cap: max 1 in priority order (test>api>migration), skip if PR<200 lines; debate broadcast now compact format (file:line+summary only)
+- **perf(dlc-build):** domain-scoped lens injection for Phase 4 reviewers — same role assignment as dlc-review; phase-4-review.md Lens Selection table updated with all 8 lenses + domain column; adds missing api-design and observability lenses
+- **perf(dlc-debug):** move dx-checklist.md from Load immediately → on-demand (Quick mode only); remove `{project_conventions}` injection from both Fixer prompts — CLAUDE.md is already auto-loaded, eliminating duplicate context injection
+
 ## [0.6.22] — 2026-03-23
 
 ### feat: domain expert ecosystem upgrade — review lenses, DX checklist, code-reviewer
