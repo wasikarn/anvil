@@ -91,14 +91,15 @@ Source material:
 7. Task list — tag each task `[P]` (parallelizable) or `[S]` (sequential)
 8. Task granularity — each task must specify: exact file(s) to modify, what to change (specific — not "update the logic"), expected behavior after change, how to verify (test to run or output to check). Each task must be completable in one worker turn — if not, split further.
 
-Present plan to user — iterate via annotations until approved. Call `ExitPlanMode` after user approves. **Immediately update `plan_file:` in `{artifacts_dir}/dev-loop-context.md`** with the path returned by the plan system.
+Enter plan mode. Draft and refine the plan. Call `ExitPlanMode` — plan file is created and path is returned. **Immediately update `plan_file:` in `{artifacts_dir}/dev-loop-context.md`** with the returned path.
 
-**Adversarial Gate:** Run `plan-challenger` agent with the plan file path and `research.md` path. Review its challenge table — address CHALLENGED items before proceeding:
+**Speculative plan-challenger:** Immediately spawn `plan-challenger` (Task/Agent tool) with the plan file path and `{artifacts_dir}/research.md`. Do NOT wait for it. Present the plan summary to the user while plan-challenger runs in the background.
 
-- Remove YAGNI/scope-creep tasks from the plan
-- Add any missing tasks flagged by the challenger
-- Correct any task ordering issues
+**After user responds:**
 
-If all items are SUSTAINED or the user overrides a CHALLENGED item with explicit justification → proceed.
+- **User approves unchanged:** Collect plan-challenger result (wait if still running). Address all CHALLENGED items: remove YAGNI/scope-creep tasks, add missing tasks, correct ordering.
+- **User requests changes:** Discard the speculative result. Apply edits, call ExitPlanMode again to save the revised plan, then re-spawn plan-challenger against the revised plan file.
 
-**GATE:** plan-challenger review addressed + user approves → proceed to Implement-Review Loop.
+If all items are SUSTAINED or the user overrides with explicit justification → proceed.
+
+**GATE:** plan-challenger addressed + user approves final plan → proceed to Implement-Review Loop.
