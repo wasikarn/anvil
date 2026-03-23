@@ -1,10 +1,10 @@
 ---
 name: merge-pr
 description: "Automates git-flow merge and deploy for any project. Use /merge-pr to merge a feature/bugfix PR, deploy a hotfix to production, or cut a release. Handles version bumps, CHANGELOG updates, tags, backport PRs, and post-merge verification. Three modes: (1) feature/bugfix → merge to develop; (2) hotfix → deploy to production + backport; (3) release → deploy to production + backport. Requires gh CLI and a clean working tree."
-argument-hint: "[pr-number?] [--hotfix?] [--release?]"
+argument-hint: "[pr-number?] [--hotfix?] [--release?] [jira-key?]"
 disable-model-invocation: true
 compatibility: "Requires gh CLI (authenticated) and a git repository with a GitHub remote."
-allowed-tools: Bash(git *), Bash(gh *), Read, Edit, Grep
+allowed-tools: Bash(git *), Bash(gh *), Read, Edit, Grep, AskUserQuestion, mcp__mcp-atlassian__jira_add_comment
 ---
 
 ## Persona
@@ -75,7 +75,11 @@ gh pr list --state open --base main --json headRefName \
 | --- | --- |
 | [references/workflow-feature.md](references/workflow-feature.md) | Mode 1 — feature/bugfix merge |
 | [references/workflow-deploy.md](references/workflow-deploy.md) | Mode 2 or 3 — hotfix/release deploy |
-| [references/changelog-format.md](references/changelog-format.md) | Mode 2 or 3 — before editing CHANGELOG.md |
+| [references/changelog-format.md](references/changelog-format.md) | Mode 2 or 3 — CHANGELOG format rules |
+| [references/version-detector.md](references/version-detector.md) | Mode 2 or 3 — before reading/writing version |
+| [references/changelog-writer.md](references/changelog-writer.md) | Mode 2 or 3 — before generating CHANGELOG entries |
+| [references/post-merge-integrations.md](references/post-merge-integrations.md) | Mode 2 or 3 — after tag pushed |
+| [references/rollback-guide.md](references/rollback-guide.md) | Any mode — when a step fails |
 
 Load the relevant reference file now, then follow its steps exactly.
 
