@@ -167,9 +167,11 @@ shared context in each Fixer prompt to eliminate redundant per-Fixer reads.
 
 1. Run validate independently: `{validate_command}` — if fails, revert and re-fix
 2. Check `git diff --stat` — scope must match thread scope only (scope crept → revert)
-3. Run `fix-intent-verifier` agent (Haiku) with the triage table and PR number — verify each fix
-   addresses the reviewer's intent (not just the literal symptom). For MISALIGNED threads: Fixer
-   re-reads the original thread and re-fixes. For PARTIAL threads: Fixer refines before proceeding.
+3. Run `fix-intent-verifier` agent(s) — verify each fix addresses the reviewer's intent:
+   - **1–2 file groups (or solo mode):** Spawn a single `fix-intent-verifier` (Haiku) with the full triage table and PR number.
+   - **3+ file groups:** Spawn one `fix-intent-verifier` per group in parallel. Each receives only its group's threads and the diff for those files. Merge ADDRESSED/PARTIAL/MISALIGNED verdicts after all complete.
+
+   For MISALIGNED threads: Fixer re-reads the original thread and re-fixes. For PARTIAL threads: Fixer refines before proceeding.
 
 **GATE:** All Critical+Important fixed + Lead-verified validate passes. (See [references/phase-gates.md](references/phase-gates.md) Fix → Reply gate.)
 
