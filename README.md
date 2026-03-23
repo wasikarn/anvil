@@ -4,11 +4,11 @@
 
 **A Claude Code plugin for structured development, PR review, and debugging — powered by Agent Teams.**
 
-[![Version](https://img.shields.io/badge/version-0.6.14-blue?style=flat-square)](https://github.com/wasikarn/dev-loop/releases)
+[![Version](https://img.shields.io/badge/version-0.6.19-blue?style=flat-square)](https://github.com/wasikarn/dev-loop/releases)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
-[![Skills](https://img.shields.io/badge/skills-10-blue?style=flat-square)](#skills)
-[![Agents](https://img.shields.io/badge/agents-20-purple?style=flat-square)](#agents)
-[![Hooks](https://img.shields.io/badge/hooks-12-orange?style=flat-square)](#hooks)
+[![Skills](https://img.shields.io/badge/skills-12-blue?style=flat-square)](#skills)
+[![Agents](https://img.shields.io/badge/agents-23-purple?style=flat-square)](#agents)
+[![Hooks](https://img.shields.io/badge/hooks-14-orange?style=flat-square)](#hooks)
 
 <p>
   <a href="#installation">Installation</a> •
@@ -29,9 +29,9 @@
 
 | Component | Count | Purpose |
 | --- | --- | --- |
-| **Skills** | 10 | Workflow automation — dev loop, PR review, debugging, utilities |
-| **Agents** | 20 | Specialized subagents for bootstrapping, reviewing, and committing |
-| **Hooks** | 12 | Lifecycle automation — dependency checks, skill routing, quality gates |
+| **Skills** | 12 | Workflow automation — dev loop, PR review, debugging, utilities |
+| **Agents** | 23 | Specialized subagents for bootstrapping, reviewing, and committing |
+| **Hooks** | 14 | Lifecycle automation — dependency checks, skill routing, quality gates |
 | **Output Styles** | 2 | Senior Software Engineer, Coding Mentor |
 | **Commands** | 1 | `analyze-claude-features` |
 
@@ -469,7 +469,7 @@ Specialized subagents spawned automatically by DLC skills. Can also be invoked d
 | `review-consolidator` | Haiku | `dlc-review` Phase 4 | Deduplicates and ranks findings from multiple reviewers |
 | `research-validator` | Haiku | `dlc-build` Phase 1→2 gate | Validates research.md completeness (file:line evidence) |
 | `fix-intent-verifier` | Haiku | `dlc-respond` Phase 1 | Verifies each fix addresses reviewer intent (ADDRESSED/PARTIAL/MISALIGNED) |
-| `jira-sync` | Haiku | `dlc-build`/`dlc-debug` end | Posts structured implementation summary to Jira |
+| `jira-sync` | Haiku | `dlc-build`/`dlc-debug` end | Posts ADF implementation summary to Jira; AC coverage check; optional status transition; spawns atlassian-pm agents when available |
 | `work-context` | Haiku | Session start | Sprint tickets + PRs awaiting action + unmerged branches digest |
 | `merge-preflight` | Haiku | `merge-pr` Confirmation Gate | Pre-merge go/no-go safety checklist |
 | `metrics-analyst` | Haiku | `dlc-metrics` | Retrospective from dlc-metrics.jsonl: iteration patterns and Hard Rule candidates |
@@ -480,6 +480,9 @@ Specialized subagents spawned automatically by DLC skills. Can also be invoked d
 | `api-contract-auditor` | Sonnet | `dlc-review` Phase 2 | API breaking changes (A1–A10): removed fields, status codes, required params |
 | `skill-validator` | Sonnet | Manually | Validates SKILL.md frontmatter and description quality |
 | `project-onboarder` | Sonnet | `dlc-onboard` | Scaffolds hard-rules.md and dlc-build directory for new projects |
+| `code-explorer` | Sonnet | Manually | Traces execution paths and maps feature architecture — read-only, no code changes |
+| `comment-analyzer` | Sonnet | Manually / `dlc-build` Phase 3 (optional) | Verifies comment accuracy against code; flags stale references and comment rot |
+| `code-simplifier` | Sonnet | Manually / `dlc-build` Phase 5.5 (optional) | Simplifies recently changed code for clarity and maintainability without altering behavior |
 | `code-reviewer` | Sonnet | Manually | General-purpose code reviewer with cross-session persistent memory |
 
 ---
