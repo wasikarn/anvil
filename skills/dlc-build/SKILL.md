@@ -72,7 +72,7 @@ Phase 0→1→[1.5: Clarify?]→[2a: ArchOpts?]→2b→ [3: Implement ↔ 4: Rev
 | [references/fixer-prompts.md](references/fixer-prompts.md) | Entering Phase 3 iter 2+ |
 | [references/reviewer-prompts.md](references/reviewer-prompts.md) | Entering Phase 4 |
 | [references/reviewer-shared-rules.md](references/reviewer-shared-rules.md) | Phase 4 — shared reviewer rules/output format (referenced by reviewer templates) |
-| [references/review-lenses/frontend.md](references/review-lenses/frontend.md) · [security.md](references/review-lenses/security.md) · [database.md](references/review-lenses/database.md) · [performance.md](references/review-lenses/performance.md) · [typescript.md](references/review-lenses/typescript.md) | Phase 4 — domain lenses injected per diff content (see Lens Selection in reviewer-prompts.md) |
+| [references/review-lenses/frontend.md](references/review-lenses/frontend.md) · [security.md](references/review-lenses/security.md) · [database.md](references/review-lenses/database.md) · [performance.md](references/review-lenses/performance.md) · [typescript.md](references/review-lenses/typescript.md) · [error-handling.md](references/review-lenses/error-handling.md) · [api-design.md](references/review-lenses/api-design.md) · [observability.md](references/review-lenses/observability.md) | Phase 4 — domain lenses injected per diff content (see Lens Selection in reviewer-prompts.md) |
 | `review-consolidator` agent | Phase 4 iter 1 (3 reviewers) and iter 2+ (2 reviewers) — consolidate findings |
 | [../../references/review-conventions.md](../../references/review-conventions.md) | Entering Phase 4 |
 | [../../references/review-output-format.md](../../references/review-output-format.md) | Entering Phase 4 |

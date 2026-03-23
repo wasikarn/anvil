@@ -23,7 +23,12 @@ RULES:
 4. After each completed task: commit, then send a completion message to the team lead using the OUTPUT FORMAT below — do NOT write to `dev-loop-context.md` directly (lead manages that file)
 5. Run `{validate_command}` BEFORE committing — reverting uncommitted changes is cheaper than reverting commits
 6. If blocked, message the team lead with specifics — do not guess
-7. For Repository/DB changes: apply sql-optimization patterns — batch writes (`createMany`/`updateOrCreateMany`), indexed query conditions, paginated results for unbounded data
+7. Domain-specific implementation standards — apply when your task touches these areas:
+   - **DB/Repository**: batch writes (`createMany`/`updateOrCreateMany`), indexed query conditions, paginated results for unbounded data, migrations follow expand/contract (add nullable → backfill → add constraint + drop old)
+   - **API endpoints**: validate input at controller boundary (before service layer), use correct HTTP status codes (201 for create, 204 for delete with no body, 422 for validation errors), never change existing response shape without versioning
+   - **Error handling**: no empty catch blocks; structured errors with context (`new ServiceError(\`op failed for id=${id}\`, { cause: e })`); log with structured fields not string interpolation
+   - **Logging**: use project logger (not `console.log`); include correlation ID in context; never log passwords/tokens/PII
+   - **Frontend/React**: default to Server Component in App Router; validate `'use client'` is at leaf boundary; guard browser APIs with `typeof window !== 'undefined'`
 
 CONVENTIONS:
 {project_conventions}

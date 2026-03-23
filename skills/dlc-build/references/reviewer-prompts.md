@@ -181,11 +181,14 @@ Select lenses based on diff content — inject only relevant ones:
 
 | Diff touches | Inject lens |
 | --- | --- |
-| `*.tsx`, `*.jsx`, React components, hooks | `review-lenses/frontend.md` |
+| `*.tsx`, `*.jsx`, React components, hooks, Next.js pages | `review-lenses/frontend.md` |
 | auth/, middleware, API endpoints, user input | `review-lenses/security.md` |
 | migrations/, `*.sql`, ORM queries, repository layer | `review-lenses/database.md` |
 | data fetching, list rendering, event handlers, hot paths | `review-lenses/performance.md` |
 | `*.ts` type definitions, generics, type guards | `review-lenses/typescript.md` |
+| `try`, `catch`, `async`, `.catch(`, `Promise`, `new Error`, `throw` | `review-lenses/error-handling.md` |
+| route handlers, controllers, REST routes, GraphQL resolvers | `review-lenses/api-design.md` |
+| logging, metrics, tracing, new endpoints or background jobs | `review-lenses/observability.md` |
 
 Multiple lenses can apply. When in doubt, inject — false positives are filtered by confidence threshold.
 
