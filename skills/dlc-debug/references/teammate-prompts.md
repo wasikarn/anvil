@@ -196,18 +196,25 @@ ROOT CAUSE: {root_cause_summary from investigation.md}
 YOUR FOCUS — review only the fix commits (not the whole codebase):
 
 1. CORRECTNESS:
-   - Does the fix actually address the root cause?
-   - Are there edge cases the fix misses?
-   - Does the regression test cover the actual failure mode?
+   - Does the fix actually address the root cause as described in ROOT CAUSE?
+   - Trace the fix path: {entry file:line} → {patched line} → {exit/return} — is the causal chain complete?
+   - Are there edge cases the fix misses? (n=0, null, concurrent request, boundary value adjacent to the fixed case)
+   - Does the regression test cover the actual failure mode — not just the happy path added back?
+   - If PR title contains "fix": enumerate the *class* of inputs that caused the bug; verify fix handles all of them
 
 2. SAFETY:
-   - Does the fix introduce new failure modes?
-   - Does it handle null/undefined/empty input correctly?
-   - Are there race conditions introduced?
+   - **New null paths**: does the fix introduce a code path where a previously-guaranteed value is now nullable?
+   - **Race condition**: if the fix touches shared state, a cache, or a counter — is access atomic or guarded?
+   - **TOCTOU (time-of-check-time-of-use)**: does the fix read a value then use it later assuming it hasn't changed?
+     Pattern: `const balance = await getBalance(); if (balance >= amount) { await deduct(amount) }` — deduct without re-checking
+   - **Error swallowing**: does the fix add a try/catch that silently swallows the new error path?
+   - **Type safety regression**: does the fix use `as any` or `as T` cast to work around a type error?
+   - **Missing input guard**: if the fix adds a new code path, does it guard against null/undefined/empty at entry?
 
 3. SCOPE CREEP:
    - Does the fix change more than necessary?
    - Are any changes unrelated to the root cause?
+   - DX commits (`dx(area):`) are in scope — verify they match DX findings from investigation.md, not new issues
 
 RULES:
 - READ-ONLY — do not modify any files
