@@ -6,10 +6,14 @@ Automates git-flow merge and deploy workflows for any project following git-flow
 
 ```text
 skills/merge-pr/
-  SKILL.md                      — entry point: mode detection, safety checks, confirmation gate, output format
-  references/workflow-feature.md — Mode 1: feature/bugfix → develop (6 steps)
-  references/workflow-deploy.md  — Mode 2+3: hotfix/release → main + tag + backport (15 shared steps)
-  references/changelog-format.md — Keep a Changelog template and rules
+  SKILL.md                              — entry point: mode detection, safety checks, confirmation gate
+  references/workflow-feature.md        — Mode 1: feature/bugfix → develop (6 steps)
+  references/workflow-deploy.md         — Mode 2+3: hotfix/release → main + tag + backport (14 steps)
+  references/changelog-format.md        — Keep a Changelog template and rules
+  references/version-detector.md        — auto-detect version file (package.json, pyproject.toml, setup.cfg)
+  references/changelog-writer.md        — hybrid CHANGELOG generation (9-step algorithm)
+  references/post-merge-integrations.md — GitHub Release + Jira comment (auto, non-blocking)
+  references/rollback-guide.md          — per-step recovery commands (loaded on failure only)
 ```
 
 SKILL.md loads reference files on-demand — only the relevant mode's file is loaded per invocation.
@@ -31,6 +35,10 @@ SKILL.md loads reference files on-demand — only the relevant mode's file is lo
 - Annotated tags (`git tag -a`) — carries message, shows author/date in `git log`
 - Hotfix backport → release branch (if active) instead of develop — release will merge to develop anyway (Atlassian git-flow)
 - `git branch -d` (not `-D`) for local cleanup — confirms branch was merged before deleting
+- `version-detector.md` loaded on-demand — reads and writes version file for package.json, pyproject.toml, setup.cfg; verifies write-back before committing
+- `changelog-writer.md` loaded on-demand — hybrid algorithm: moves [Unreleased] entries + supplements from git log; categorizes by conventional commit prefix; no AskUserQuestion
+- `post-merge-integrations.md` loaded after tag push — creates GitHub Release with CHANGELOG section as notes; posts Jira comment if jira-key in args; both non-blocking
+- `rollback-guide.md` loaded on failure — read-only recovery guide per step; does not execute commands
 
 ## Validate After Changes
 
