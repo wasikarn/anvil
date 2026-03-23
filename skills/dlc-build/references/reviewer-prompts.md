@@ -177,20 +177,20 @@ When constructing reviewer prompts:
 
 ### Lens Selection
 
-Select lenses based on diff content — inject only relevant ones:
+Lenses are **domain-scoped** — each reviewer receives only lenses relevant to their focus area. Do not inject all matching lenses to all reviewers (N×3 token cost).
 
-| Diff touches | Inject lens |
-| --- | --- |
-| `*.tsx`, `*.jsx`, React components, hooks, Next.js pages | `review-lenses/frontend.md` |
-| auth/, middleware, API endpoints, user input | `review-lenses/security.md` |
-| migrations/, `*.sql`, ORM queries, repository layer | `review-lenses/database.md` |
-| data fetching, list rendering, event handlers, hot paths | `review-lenses/performance.md` |
-| `*.ts` type definitions, generics, type guards | `review-lenses/typescript.md` |
-| `try`, `catch`, `async`, `.catch(`, `Promise`, `new Error`, `throw` | `review-lenses/error-handling.md` |
-| route handlers, controllers, REST routes, GraphQL resolvers | `review-lenses/api-design.md` |
-| logging, metrics, tracing, new endpoints or background jobs | `review-lenses/observability.md` |
+| Reviewer | Lens | Trigger condition |
+| --- | --- | --- |
+| Correctness & Security | `review-lenses/security.md` | auth/, middleware, API endpoints, user input |
+| Correctness & Security | `review-lenses/error-handling.md` | `try`, `catch`, `async`, `.catch(`, `Promise`, `throw` |
+| Correctness & Security | `review-lenses/typescript.md` | `*.ts` type definitions, generics, type guards |
+| Architecture & Performance | `review-lenses/performance.md` | data fetching, list rendering, event handlers, hot paths |
+| Architecture & Performance | `review-lenses/database.md` | migrations/, `*.sql`, ORM queries, repository layer |
+| Architecture & Performance | `review-lenses/api-design.md` | route handlers, controllers, REST routes, GraphQL resolvers |
+| DX & Testing | `review-lenses/frontend.md` | `*.tsx`, `*.jsx`, React components, hooks, Next.js pages |
+| DX & Testing | `review-lenses/observability.md` | logging, metrics, tracing, new endpoints or background jobs |
 
-Multiple lenses can apply. When in doubt, inject — false positives are filtered by confidence threshold.
+Populate `{domain_lenses}` per reviewer with only their assigned lenses. Leave empty if no trigger matches.
 
 ## Fallback Debate Protocol
 

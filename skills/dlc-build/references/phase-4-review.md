@@ -12,24 +12,24 @@ git diff {base_branch}...HEAD --name-only | wc -l
 
 | Diff files | Lens injection |
 | --- | --- |
-| <30 | Standard — inject all relevant lenses per Lens Selection table |
-| 30–50 | Reduced — inject only lenses matching the top 3 file extensions by change volume |
+| <30 | Domain-scoped — inject assigned lenses per reviewer per [reviewer-prompts.md](reviewer-prompts.md) Lens Selection table |
+| 30–50 | Reduced — inject max 1 lens per reviewer: Correctness→security, Architecture→performance, DX→frontend (if applicable) |
 | >50 | Skip all lenses — use Hard Rules only; notify user: "Large diff (N files) — lenses skipped" |
 
 ## Lens Selection
 
-Inject lenses whose trigger keywords appear in `git diff {base_branch}...HEAD`:
+Lenses are domain-scoped per [reviewer-prompts.md](reviewer-prompts.md) — each reviewer receives only their assigned lenses. Detect applicable lenses using keywords in `git diff {base_branch}...HEAD`, then assign to the appropriate reviewer only.
 
-| Lens file | Inject when diff contains |
-| --- | --- |
-| `security.md` | `auth`, `token`, `password`, `secret`, `jwt`, `cookie`, `csrf`, `sql`, `query`, `exec`, `eval` |
-| `performance.md` | `SELECT`, `findAll`, `findMany`, `loop`, `forEach`, `map`, `filter`, `sort`, `cache`, `index` |
-| `database.md` | `migration`, `schema`, `ALTER`, `CREATE TABLE`, `DROP`, `knex`, `prisma`, `typeorm`, `sequelize` |
-| `frontend.md` | `.tsx`, `.jsx`, `useState`, `useEffect`, `component`, `render`, `style`, `css` |
-| `typescript.md` | `.ts`, `.tsx`, `interface`, `type`, `as any`, `generic`, `<T>`, `extends` |
-| `error-handling.md` | `try`, `catch`, `async`, `.catch(`, `Promise`, `new Error`, `throw` |
-
-> Multiple lenses may apply to the same diff — inject all that match, up to the diff-size limit above.
+| Reviewer | Lens file | Inject when diff contains |
+| --- | --- | --- |
+| Correctness & Security | `security.md` | `auth`, `token`, `password`, `secret`, `jwt`, `cookie`, `csrf`, `sql`, `query`, `exec`, `eval` |
+| Correctness & Security | `error-handling.md` | `try`, `catch`, `async`, `.catch(`, `Promise`, `new Error`, `throw` |
+| Correctness & Security | `typescript.md` | `.ts`, `.tsx`, `interface`, `type`, `as any`, `generic`, `<T>`, `extends` |
+| Architecture & Performance | `performance.md` | `SELECT`, `findAll`, `findMany`, `loop`, `forEach`, `map`, `filter`, `sort`, `cache`, `index` |
+| Architecture & Performance | `database.md` | `migration`, `schema`, `ALTER`, `CREATE TABLE`, `DROP`, `knex`, `prisma`, `typeorm`, `sequelize` |
+| Architecture & Performance | `api-design.md` | `router`, `controller`, `handler`, `endpoint`, `route`, `REST`, `GraphQL`, `resolver` |
+| DX & Testing | `frontend.md` | `.tsx`, `.jsx`, `useState`, `useEffect`, `component`, `render`, `style`, `css` |
+| DX & Testing | `observability.md` | `logger`, `log.`, `metric`, `trace`, `span`, `monitor`, `alert`, `newrelic`, `datadog` |
 
 ## Review Scale (Iteration 1)
 
