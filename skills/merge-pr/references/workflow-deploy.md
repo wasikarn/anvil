@@ -203,7 +203,7 @@ Else → backport to `develop`.
 Mode 3 (release):
 
 If origin was `develop` (we created the release branch here) → SKIP backport entirely.
-If origin was `release/*` → backport `{version_bump_sha}` to `develop`.
+If origin was `release/*` → backport to `develop` using **merge** (not cherry-pick — see rationale below).
 
 **Create backport branch:**
 
@@ -213,17 +213,23 @@ git checkout -b backport/{original_branch_suffix}
 
 Example: `hotfix/ABC-456-fix-crash` → `backport/hotfix-ABC-456-fix-crash`
 
-**Cherry-pick:**
+**Apply changes:**
 
 ```bash
-# Mode 2:
+# Mode 2: cherry-pick fix commits (hotfix commits not in develop)
 git cherry-pick $fix_shas   # unquoted — shell word-splitting enumerates SHAs
 
-# Mode 3:
-git cherry-pick {version_bump_sha}
+# Mode 3: merge from tag (NOT cherry-pick)
+# Rationale: develop already has all feature commits — only the version bump from
+# the release branch is missing. git merge uses 3-way merge and cleanly selects
+# the version bump without conflicts. Cherry-picking {version_bump_sha} causes
+# CHANGELOG conflicts because develop doesn't yet have the version section.
+git merge v{next_version}
 ```
 
-On conflict → `git cherry-pick --abort`. The backport branch now has no commits (cherry-pick was aborted). Push the empty branch and create the PR — the engineer will resolve conflicts in the PR by pushing fixes manually.
+**Mode 2 conflict:** `git cherry-pick --abort`. The backport branch now has no commits. Push the empty branch and create the PR — the engineer will resolve conflicts in the PR by pushing fixes manually.
+
+**Mode 3 conflict:** `git merge --abort`. Investigate why — develop should already contain all feature commits. If unresolvable, push the empty branch and create the PR for manual resolution.
 
 **Push and create PR:**
 
@@ -235,13 +241,13 @@ gh pr create --base {backport_target} --head backport/{suffix} \
   --body "Backport of {original_branch} to {backport_target}"
 ```
 
-If no cherry-pick conflict → auto-merge:
+If no conflict → auto-merge:
 
 ```bash
 gh pr merge --admin --merge --delete-branch
 ```
 
-If cherry-pick conflict occurred → do NOT auto-merge. Report:
+If conflict occurred → do NOT auto-merge. Report:
 "Backport PR #{n} created but has conflicts — load rollback-guide.md for resolution steps."
 
 ---
