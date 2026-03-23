@@ -142,8 +142,8 @@ Before spawning reviewers, count changed files from the already-loaded PR diff s
 
 | Diff files (from header) | Lens injection |
 | --- | --- |
-| <30 | Standard — inject all relevant lenses per existing Lens Selection table |
-| 30–50 | Reduced — inject only the 1 highest-risk lens: security > database > performance > frontend > typescript |
+| <30 | Domain-scoped — inject assigned lenses per teammate per [teammate-prompts.md](references/teammate-prompts.md) lens table |
+| 30–50 | Reduced — inject max 1 lens per teammate: T1→security, T2→performance, T3→frontend (if applicable) |
 | >50 | Skip all lenses — Hard Rules only; notify user: "Large diff (N files) — lenses skipped, Hard Rules only" |
 
 Use the file count from `PR diff stat` in the skill header (`!gh pr diff $0 --stat`). Parse the summary line (e.g., "12 files changed") — do not run a new git command.
@@ -179,15 +179,15 @@ Create an agent team named `review-pr-$0` with 3 reviewer teammates using prompt
 - **Teammate 2 — Architecture & Performance:** Focus on N+1 (#3), DRY (#4), flatten (#5), SOLID (#6), elegance (#7)
 - **Teammate 3 — DX & Testing:** Focus on naming (#8), docs (#9), testability (#11), debugging (#12)
 
-**Conditional specialist agents** (spawn in parallel with the 3 teammates above, based on file groups from `{bootstrap_context}`):
+**Conditional specialist agent** — spawn at most 1, evaluated in priority order. Skip all specialists if PR has < 200 lines changed (from diff stat).
 
-| Condition | Agent to spawn |
-| --- | --- |
-| Test files changed (`*.spec.*`, `*.test.*`) OR new exported functions without spec changes | `test-quality-reviewer` |
-| Migration files changed (`*.migration.*`, files with `CREATE TABLE` / `ALTER TABLE` / `addColumn`) | `migration-reviewer` |
-| Controller/route/handler/interface/DTO files changed | `api-contract-auditor` |
+| Priority | Condition | Agent to spawn |
+| --- | --- | --- |
+| 1 | Test files changed (`*.spec.*`, `*.test.*`) OR new exported functions without spec changes | `test-quality-reviewer` |
+| 2 | Controller/route/handler/interface/DTO files changed | `api-contract-auditor` |
+| 3 | Migration files changed (`*.migration.*`, files with `CREATE TABLE` / `ALTER TABLE` / `addColumn`) | `migration-reviewer` |
 
-Specialist agents send findings to the team lead and enter the same debate pipeline as standard teammates.
+Evaluate in priority order — spawn the **first matching condition only**. The specialist agent sends findings to the team lead and enters the same debate pipeline as standard teammates.
 
 Insert into each teammate prompt:
 
@@ -208,7 +208,7 @@ Wait for all 3 teammates to complete. Track progress: show each teammate's statu
 Follow [debate-protocol.md](../../references/debate-protocol.md) exactly:
 
 1. **Pre-Debate Triage:** Auto-pass (Hard Rule + conf ≥90), auto-drop (Info + conf <80), must-debate (all others). Only must-debate findings enter round-robin.
-2. **Broadcast** must-debate findings to all teammates.
+2. **Broadcast** must-debate findings to teammates in compact format — one line per finding: `[T{n}-F{n}] file:line — issue summary (conf:{score})`. Omit full evidence and fix suggestion from broadcast; teammates re-read code at file:line as needed during their debate response.
 3. **Round-robin:** Correctness reviews Architecture's findings · Architecture reviews DX's · DX reviews Correctness's.
 4. **Consensus check:** Proceed if consensus, else Round 2 on unresolved only. After Round 2, lead decides on evidence quality. Max 2 rounds.
 5. **Output:** Debate summary table — Finding / Raised By / Challenged By / Outcome. Show: Consensus (N/3), Dropped (reason), Lead decided (rationale).

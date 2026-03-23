@@ -30,7 +30,7 @@ Invoke as `/dlc-respond [pr-number] [jira-key?]`
 **PR:** #$0 | **Today:** !`date +%Y-%m-%d`
 **Git branch:** !`git branch --show-current`
 **Project:** !`bash "${CLAUDE_SKILL_DIR}/../../scripts/detect-project.sh" 2>/dev/null || true`
-**Artifacts dir:** !`bash "${CLAUDE_SKILL_DIR}/../../scripts/artifact-dir.sh" dlc-respond 2>/dev/null || echo ""`
+**Artifacts dir:** !`bash "${CLAUDE_SKILL_DIR}/../../scripts/artifact-dir.sh" dlc-respond "pr-$0" 2>/dev/null || echo ""`
 **Review memory dir:** !`bash "${CLAUDE_SKILL_DIR}/../../scripts/artifact-dir.sh" dlc-review 2>/dev/null || echo ""`
 **Open threads:** !`gh pr view $0 --json reviewThreads --jq '[.reviewThreads[] | select(.isResolved == false)] | length' 2>/dev/null || true`
 **PR diff stat:** !`gh pr diff $0 --stat 2>/dev/null || true`

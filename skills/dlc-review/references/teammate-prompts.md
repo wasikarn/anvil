@@ -4,27 +4,29 @@ Prompt templates for the 3 reviewer teammates. Lead inserts project Hard Rules a
 
 ## Lead Notes — Lens Injection
 
-Before spawning teammates, select lenses from `skills/dlc-build/references/review-lenses/` based on diff content and inject as `{domain_lenses}`:
+Lenses are **domain-scoped** — each teammate receives only lenses relevant to their focus area. Do not inject all matching lenses to all teammates (N×3 token cost).
 
-| Diff touches | Inject lens |
-| --- | --- |
-| `*.tsx`, `*.jsx`, React components, hooks, Next.js pages | `review-lenses/frontend.md` |
-| auth/, middleware, API endpoints, user input | `review-lenses/security.md` |
-| migrations/, `*.sql`, ORM queries, repository layer | `review-lenses/database.md` |
-| data fetching, list rendering, event handlers, hot paths | `review-lenses/performance.md` |
-| `*.ts` type definitions, generics, type guards | `review-lenses/typescript.md` |
-| `try`, `catch`, `async`, `.catch(`, `Promise`, `new Error`, `throw` | `review-lenses/error-handling.md` |
-| route handlers, controllers, REST routes, GraphQL resolvers | `review-lenses/api-design.md` |
-| logging, metrics, tracing, new endpoints or background jobs | `review-lenses/observability.md` |
+Load lenses from `skills/dlc-build/references/review-lenses/` and assign per teammate based on diff content:
 
-Multiple lenses can apply. Leave `{domain_lenses}` empty if no lens applies.
+| Teammate | Lens | Trigger condition |
+| --- | --- | --- |
+| T1 — Correctness & Security | `security.md` | auth/, middleware, API endpoints, user input |
+| T1 — Correctness & Security | `error-handling.md` | `try`, `catch`, `async`, `.catch(`, `Promise`, `throw` |
+| T1 — Correctness & Security | `typescript.md` | `*.ts` type definitions, generics, type guards |
+| T2 — Architecture & Performance | `performance.md` | data fetching, list rendering, event handlers, hot paths |
+| T2 — Architecture & Performance | `database.md` | migrations/, `*.sql`, ORM queries, repository layer |
+| T2 — Architecture & Performance | `api-design.md` | route handlers, controllers, REST routes, GraphQL resolvers |
+| T3 — DX & Testing | `frontend.md` | `*.tsx`, `*.jsx`, React components, hooks, Next.js pages |
+| T3 — DX & Testing | `observability.md` | logging, metrics, tracing, new endpoints or background jobs |
+
+Populate `{domain_lenses}` per teammate with only their assigned lenses. Leave empty if no trigger matches.
 
 Diff size gate (from SKILL.md Phase 2):
 
 | Changed files | Lens injection |
 | --- | --- |
-| <30 | Inject all relevant lenses |
-| 30–50 | Inject only 1 highest-risk lens: security > database > performance > frontend > typescript |
+| <30 | Inject assigned lenses per table above |
+| 30–50 | Inject max 1 lens per teammate: T1→security, T2→performance, T3→frontend (if applicable) |
 | >50 | Skip all lenses — Hard Rules only |
 
 ---
