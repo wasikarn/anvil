@@ -329,6 +329,8 @@ flowchart LR
 
 **When to use:** New features, bug fixes, refactors, Jira tickets, CI failures, production hotfixes.
 
+**Domain lenses (Phase 4):** Each reviewer automatically receives domain-specific lens files based on diff content — security, database, TypeScript, frontend (RSC/App Router), error handling, API design, observability, and performance. Lens injection is automatic; no configuration needed.
+
 ```bash
 /dev-loop:dlc-build "add rate limiting to the API"
 /dev-loop:dlc-build PROJ-1234           # auto-fetches Jira AC
@@ -348,6 +350,8 @@ flowchart LR
 #### `dlc-review` — Adversarial PR Review
 
 Three agents independently review a PR, then debate their findings to eliminate false positives. Output is a single ranked findings table with evidence-backed verdicts.
+
+**Domain lenses:** Each teammate receives diff-content-specific lens files — security, database, TypeScript, frontend, error handling, API design, observability, and performance — injected automatically before review begins.
 
 **When to use:** Any pull request — quick standards check, architecture review, or multi-perspective analysis.
 
@@ -419,7 +423,7 @@ Fetches all open GitHub review threads on a PR, fixes each issue in parallel, co
 
 #### `dlc-debug` — Parallel Root Cause Analysis
 
-Two agents run in parallel: an Investigator traces the root cause, while a DX Analyst audits observability, error handling, and test coverage in the affected area. A Fixer agent then applies the fix.
+Two agents run in parallel: an Investigator traces the root cause, while a DX Analyst audits the affected area across 19 DX patterns (error handling E1–E8, observability O1–O6, prevention P1–P5). A Fixer agent then applies the fix; an optional Fix Reviewer checks safety patterns including TOCTOU, null paths, and race conditions.
 
 **When to use:** Complex bugs, production incidents, or when you want to harden the affected area alongside the fix.
 
@@ -570,7 +574,7 @@ Specialized subagents spawned automatically by DLC skills. Can also be invoked d
 | `code-explorer` | Sonnet | Manually | Traces execution paths and maps feature architecture — read-only, no code changes |
 | `comment-analyzer` | Sonnet | Manually / `dlc-build` Phase 3 (optional) | Verifies comment accuracy against code; flags stale references and comment rot |
 | `code-simplifier` | Sonnet | Manually / `dlc-build` Phase 5.5 (optional) | Simplifies recently changed code for clarity and maintainability without altering behavior |
-| `code-reviewer` | Sonnet | Manually | General-purpose code reviewer with cross-session persistent memory |
+| `code-reviewer` | Sonnet | Manually | General-purpose code reviewer with cross-session persistent memory; includes 6 inline domain lenses (security, database, TypeScript, frontend, error handling, API design) applied per diff content |
 
 ---
 

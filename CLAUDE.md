@@ -19,6 +19,7 @@ Prefer reading source before editing — key references:
 | `skills/<name>/references/checklist.md` | Per-skill review criteria with severity markers (review-pr skills) |
 | `skills/<name>/references/examples.md` | Per-skill ✅/❌ code examples for all 12 rules (review-pr skills) |
 | [`references/review-conventions.md`](references/review-conventions.md) | Comment labels, dedup protocol, strengths, PR size thresholds |
+| [`skills/dlc-build/references/review-lenses/`](skills/dlc-build/references/review-lenses/) | 8 domain lenses injected into reviewers at Phase 4 — `frontend`, `security`, `database`, `performance`, `typescript`, `error-handling`, `api-design`, `observability`. Shared by both `dlc-build` and `dlc-review`. |
 
 <important if="editing or creating skills">
 
