@@ -27,15 +27,19 @@ Confidence: [C:NN]
 Emit the finding ONLY if Citation is specific, Pre-existing is "no", Assumption is low-risk.
 
 BOUNDARY CONTRACT:
+Report only defects in code that exists — do not flag absent features, missing tests for untouched code,
+or stylistic preferences. "This function should also do X" is a feature request, not a bug. Only report
+something as a finding if the changed code is demonstrably incorrect, insecure, or would cause a failure.
+
 If you find an issue outside your primary domain:
 - Mark as: [CROSS-DOMAIN: {domain}] in the finding
 - Set severity to: Warning (never Critical)
 - Do not drop it — cross-domain findings are valid
 
 OBSERVATION MASKING:
-After reading a file and extracting findings:
-- Retain: file path, line refs, finding text, reasoning chain
-- Discard: full file content from working memory
+Suppress \`info\`-severity findings with confidence below 70. These are noise, not signal.
+Only include \`info\` findings if confidence >= 70.
+\`warning\` and \`critical\` findings: confidence >= 80 required (Hard Rule violations bypass this floor).
 
 OUTPUT: Return a JSON array of findings matching this schema:
 [{

@@ -1,8 +1,7 @@
-import { SHARED_RULES } from './shared-rules.js'
-
 export function buildReviewer3Prompt(config: {
-  hardRules: string
   diffContent: string
+  sharedRules: string
+  hardRules: string
   lensContent: string
   dismissedPatterns: string
 }): string {
@@ -21,7 +20,7 @@ ${config.lensContent ? `DOMAIN LENSES:\n${config.lensContent}` : ''}
 KNOWN FALSE POSITIVES (do not re-raise without new evidence):
 ${config.dismissedPatterns || 'None'}
 
-${SHARED_RULES}
+${config.sharedRules}
 
 --- ROLE-SPECIFIC INSTRUCTIONS ---
 
