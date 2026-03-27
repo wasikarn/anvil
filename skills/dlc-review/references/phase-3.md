@@ -12,7 +12,7 @@ Before spawning reviewers, count changed files from the already-loaded PR diff s
 
 Use the file count from `PR diff stat` in the skill header (`!gh pr diff $0 --stat`). Parse the summary line (e.g., "12 files changed") — do not run a new git command.
 
-## Step 0.9: Severity Calibration Block
+## Step 1: Severity Calibration Block
 
 Before creating the team, construct the `SEVERITY CALIBRATION` block to inject into each reviewer prompt:
 
@@ -35,7 +35,7 @@ Suggestion: {example}
 Anchor to these before assigning any severity. When in doubt, use Warning over Critical.
 ```
 
-## Step 1: Create the team
+## Step 2: Create the team
 
 Create an agent team named `review-pr-$0` with 3 reviewer teammates using prompts from [teammate-prompts.md](references/teammate-prompts.md):
 
@@ -63,6 +63,6 @@ Insert into each teammate prompt:
 
 All teammates are READ-ONLY.
 
-## Step 2: Wait for all reviews
+## Step 3: Wait for all reviews
 
 Wait for all 3 teammates to complete. Track progress: show each teammate's status and key finding. **CHECKPOINT** — all 3 reviews must complete before proceeding to Phase 4 debate.

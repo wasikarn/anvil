@@ -31,7 +31,7 @@ Output the consolidated findings table per [review-output-format.md](../../refer
 | --- | --- | --- | --- | --- | --- |
 | YYYY-MM-DD | {brief} | {file}:{line} | Critical/Warning | PR #{number} | dlc-review |
 
-These become positive severity anchors in future reviews (Step 0.9).
+These become positive severity anchors in future reviews (Step 1).
 
 **Dismissed Findings Log:** After consolidation, append dropped findings to `{review_memory_dir}/review-dismissed.md` (cap 50 FIFO). Use this canonical format:
 
