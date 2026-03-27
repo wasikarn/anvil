@@ -55,4 +55,17 @@ EXISTING (conf ≥75):
 - Exported types leaking implementation internals
 
 THRESHOLD: HARD RULE items → always. All others: conf ≥75.
+
+TYPE DESIGN SCORING (required for new/modified type definitions):
+For each new `interface`, `type`, or `enum` introduced in the diff, score on 4 dimensions:
+
+| Dimension | Score 1–10 | Question |
+| --- | :---: | --- |
+| Encapsulation | | Can internals change without breaking consumers? |
+| Invariant Expression | | Does the type make invalid states unrepresentable? |
+| Usefulness | | Does it add value over primitive types? |
+| Enforcement | | Does TypeScript actually enforce the constraints? |
+
+Overall type health = average of 4 dimensions.
+Any dimension < 5 = emit as a finding (🟡 Warning minimum).
 ```

@@ -49,4 +49,12 @@ RETRY & RESILIENCE (flag when calling external services or DB):
 - Retry on non-retryable errors (400 Bad Request, 404 Not Found) → wastes time and quota
 
 THRESHOLD: HARD RULE items → always. All others: conf ≥ 75.
+
+FINDING FORMAT (required for this lens):
+For every finding emitted under this lens, include:
+  Finding: [description of the issue]
+  Hidden error types: [specific exception/error types swallowed — name them, not "some error"]
+  Scenario: [specific condition where this silently fails — be concrete]
+
+"catch is too broad" is NOT sufficient — you must name what is lost.
 ```
