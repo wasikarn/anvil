@@ -554,12 +554,12 @@ Specialized subagents spawned automatically by DLC skills. Can also be invoked d
 | --- | --- | --- | --- |
 | `commit-finalizer` | Haiku | Manually | Fast git commit with conventional commit formatting |
 | `dev-loop-bootstrap` | Haiku | `dlc-build` Phase 2 | Pre-gathers project structure and type definitions |
-| `dlc-debug-bootstrap` | Haiku | `dlc-debug` Phase 0 | Pre-gathers stack trace context and affected files |
-| `dlc-respond-bootstrap` | Haiku | `dlc-respond` Phase 0 | Pre-gathers open PR threads and affected files |
+| `dlc-debug-bootstrap` | Haiku | `dlc-debug` Phase 1 | Pre-gathers stack trace context and affected files |
+| `dlc-respond-bootstrap` | Haiku | `dlc-respond` Phase 1 | Pre-gathers open PR threads and affected files |
 | `pr-review-bootstrap` | Haiku | `dlc-review` Phase 1 | Fetches PR diff, Jira AC, and groups changed files |
 | `review-consolidator` | Haiku | `dlc-review` Phase 5 | Deduplicates and ranks findings from multiple reviewers |
 | `research-validator` | Haiku | `dlc-build` Phase 2→3 gate | Validates research.md completeness (file:line evidence) |
-| `fix-intent-verifier` | Haiku | `dlc-respond` Phase 1 | Verifies each fix addresses reviewer intent (ADDRESSED/PARTIAL/MISALIGNED) |
+| `fix-intent-verifier` | Haiku | `dlc-respond` Phase 2 | Verifies each fix addresses reviewer intent (ADDRESSED/PARTIAL/MISALIGNED) |
 | `jira-sync` | Haiku | `dlc-build`/`dlc-debug` end | Posts ADF implementation summary to Jira; AC coverage check; optional status transition; spawns atlassian-pm agents when available |
 | `work-context` | Haiku | Session start | Sprint tickets + PRs awaiting action + unmerged branches digest |
 | `merge-preflight` | Haiku | `merge-pr` Confirmation Gate | Pre-merge go/no-go safety checklist |
