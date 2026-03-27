@@ -2,7 +2,7 @@
 
 Prompt templates for each teammate role. Lead inserts project-specific values at `{placeholders}`.
 
-## Investigator (Phase 1 — Root Cause)
+## Investigator (Phase 2 — Root Cause)
 
 ```text
 You are investigating a bug to find its root cause.
@@ -53,7 +53,7 @@ OUTPUT FORMAT:
 Send your findings to the team lead when done.
 ```
 
-## DX Analyst (Phase 1 — Parallel with Investigator)
+## DX Analyst (Phase 2 — Parallel with Investigator)
 
 ```text
 You are auditing the Developer Experience (DX) quality of a code area where a bug was found.
@@ -96,7 +96,7 @@ OUTPUT FORMAT:
 Send your findings to the team lead when done.
 ```
 
-## Fixer (Phase 2 — Fix + Harden)
+## Fixer (Phase 3 — Fix + Harden)
 
 ### Full Mode Fixer
 
@@ -182,7 +182,7 @@ HARD RULES:
 Message the team lead when all fixes are done.
 ```
 
-## Fix Reviewer (Phase 2.5 — conditional)
+## Fix Reviewer (Phase 4 — conditional)
 
 ```text
 You are reviewing the quality of a bug fix.

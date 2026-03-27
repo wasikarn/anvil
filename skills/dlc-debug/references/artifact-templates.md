@@ -23,14 +23,14 @@ Branch: {branch_name}
 {ticket title, priority, and key description — leave blank if no Jira key}
 
 ## Shared Context
-{populated by Bootstrap step in Phase 1}
+{populated by Bootstrap step in Phase 2}
 
 ## Progress
-- [ ] Phase 0: Triage
-- [ ] Phase 1: Investigation
-- [ ] Phase 2: Fix + Harden
-- [ ] Phase 2.5: Fix Review (if --review or P0)
-- [ ] Phase 3: Ship
+- [ ] Phase 1: Triage
+- [ ] Phase 2: Investigation
+- [ ] Phase 3: Fix + Harden
+- [ ] Phase 4: Fix Review (if --review or P0)
+- [ ] Phase 5: Ship
 ```
 
 ## investigation.md

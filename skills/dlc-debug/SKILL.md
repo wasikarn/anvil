@@ -28,7 +28,7 @@ Invoke as `/dlc-debug [bug-description-or-jira-key] [--quick?]`
 
 ## References
 
-**Load immediately** (needed for Phase 0–1):
+**Load immediately** (needed for Phase 1–2):
 
 | File |
 | --- |
@@ -38,12 +38,12 @@ Invoke as `/dlc-debug [bug-description-or-jira-key] [--quick?]`
 
 | File | When |
 | --- | --- |
-| [dx-checklist.md](references/dx-checklist.md) | Quick mode confirmed in Phase 0 — inject condensed checklist section into Quick Mode Fixer prompt |
+| [dx-checklist.md](references/dx-checklist.md) | Quick mode confirmed in Phase 1 — inject condensed checklist section into Quick Mode Fixer prompt |
 | [phase-gates.md](references/phase-gates.md) | At gate transitions — if unsure about conditions |
 | [../../references/review-conventions.md](../../references/review-conventions.md) | If adding Fix Review pass |
 | [jira-integration.md](../../references/jira-integration.md) | When Jira key detected in arguments |
 | [references/operational.md](references/operational.md) | On graceful degradation or context compression recovery |
-| [artifact-templates.md](references/artifact-templates.md) | Phase 0 Step 4, Phase 1 Step 3, Phase 3 — artifact format reference |
+| [artifact-templates.md](references/artifact-templates.md) | Phase 1 Step 5, Phase 2 Step 3, Phase 5 — artifact format reference |
 | [references/examples.md](references/examples.md) | When assessing investigation quality, root cause vs symptom, or DX finding depth |
 
 ---
@@ -102,7 +102,7 @@ If TeamCreate tool is not available → check graceful degradation:
 
 ---
 
-## Phase 0: Triage (Lead Only)
+## Phase 1: Triage (Lead Only)
 
 ### Step 1: Detect Project
 
@@ -110,20 +110,20 @@ Use the `Project` JSON from the header (output of `detect-project.sh`). It conta
 
 Check for project-specific Hard Rules at `{project_root}/.claude/skills/review-rules/hard-rules.md`. If it exists, load it.
 
-### Step 1.5: Jira Context (skip if no Jira)
+### Step 2: Jira Context (skip if no Jira)
 
 Scan `$ARGUMENTS` for Jira key (`ABC-\d+`). If found, follow [jira-integration.md](../../references/jira-integration.md) §dlc-debug:
 
 1. Fetch ticket — enrich bug description with ticket details
 2. Check linked issues — related bugs may share root cause
 3. Use ticket priority to inform severity classification (Step 2)
-4. Add Jira context to `debug-context.md` (Step 4) and Investigator prompt (Phase 1)
+4. Add Jira context to `debug-context.md` (Step 5) and Investigator prompt (Phase 2)
 
 If Jira unreachable → proceed with user-provided description only; note "Jira unavailable" in debug-context.md Jira Context section.
 
-If no Jira key — skip to Step 2.
+If no Jira key — skip to Step 3.
 
-### Step 2: Classify Severity
+### Step 3: Classify Severity
 
 | Severity | Criteria | Effect |
 | --- | --- | --- |
@@ -133,13 +133,13 @@ If no Jira key — skip to Step 2.
 
 **P0 gate clarification:** Only the mode confirmation gate is skipped (auto-Full). All other gates remain.
 
-### Step 3: Classify Mode
+### Step 4: Classify Mode
 
 - `--quick` flag or P2 severity → **Quick mode** (skip DX Analyst)
 - P0/P1, multi-file, cross-cutting → **Full mode**
 - Ambiguous → ask user
 
-### Step 4: Create Context Artifact
+### Step 5: Create Context Artifact
 
 Write `{artifacts_dir}/debug-context.md` — format: [artifact-templates.md](references/artifact-templates.md#debug-context.md). Includes: bug description, severity, mode, project, validate command, reproduction steps, hard rules, Jira context (if applicable), shared context (populated in Phase 1 Bootstrap), and progress checkboxes.
 
@@ -156,7 +156,7 @@ Lead updates the progress checkboxes at the start of each phase.
 
 ---
 
-## Phase 1: Investigate + DX Audit
+## Phase 2: Investigate + DX Audit
 
 ### Bootstrap (concurrent with teammates)
 
@@ -164,7 +164,7 @@ Dispatch `dlc-debug-bootstrap` agent. Pass labeled input inline:
 
 ```text
 Bug: {bug description from $ARGUMENTS}
-Project Root: {project_root from Phase 0 detect-project output}
+Project Root: {project_root from Phase 1 detect-project output}
 Artifacts Dir: {artifacts_dir}
 ```
 
@@ -188,7 +188,7 @@ Create team `debug-{branch}` with 1-2 teammates using prompts from [teammate-pro
 ### Step 2: Wait for Teammates
 
 ```markdown
-### Phase 1: Investigation
+### Phase 2: Investigation
 
 | Teammate | Status | Key finding |
 | --- | --- | --- |
@@ -200,7 +200,7 @@ Create team `debug-{branch}` with 1-2 teammates using prompts from [teammate-pro
 
 ### Step 3: Convergence
 
-Lead shuts down all Phase 1 teammates.
+Lead shuts down all Phase 2 teammates.
 
 **DX Signal Quality Check (Full mode only):** Before merging, check DX findings:
 
@@ -209,18 +209,16 @@ Lead shuts down all Phase 1 teammates.
 
 Then merge findings into `{artifacts_dir}/investigation.md` — format: [artifact-templates.md](references/artifact-templates.md#investigation.md). Sections: Root Cause (hypothesis + file:line evidence), DX Findings table (Sev/Category/File/Line/Issue/Recommendation), Fix Plan (numbered: [Bug]/[Test]/[DX] items).
 
-**GATE:** Root cause identified with file:line evidence **and confidence >= Medium** → proceed. If confidence is Low or root cause not found → escalate to user (present alternative hypotheses; do not proceed to Phase 2).
+**GATE:** Root cause identified with file:line evidence **and confidence >= Medium** → proceed. If confidence is Low or root cause not found → escalate to user (present alternative hypotheses; do not proceed to Phase 3).
 
 ---
 
-## Phase 2: Fix + Harden
+## Phase 3: Fix + Harden
 
 Create Fixer in same team using prompts from [teammate-prompts.md](references/teammate-prompts.md):
 
 - **Full mode:** Full Mode Fixer prompt (references investigation.md)
-- **Quick mode:** Quick Mode Fixer prompt (includes condensed DX checklist from [dx-checklist.md](references/dx-checklist.md))
-
-Fixer executes Fix Plan from `investigation.md`.
+- **Quick mode:** Quick Mode Fixer prompt (includes condensed DX checklist from [dx-checklist.md](references/dx-checklist.md))Fixer executes Fix Plan from `investigation.md`.
 
 Commit strategy: one commit per Fix Plan item — `fix(area)`, `test(area)`, `dx(area)`.
 
@@ -254,7 +252,7 @@ After all Fix Plan items done, Lead shuts down Fixer.
 
 **GATE:** All Fix Plan items done + Final Lead verification passes → proceed.
 
-### Phase 2.5: Fix Review (conditional)
+### Phase 4: Fix Review (conditional)
 
 Run Fix Review if: `--review` flag was passed **or** severity is P0.
 
@@ -264,11 +262,11 @@ Provide: fix commit hashes (from `rtk git log --oneline -N`), root cause summary
 After Fix Reviewer completes, Lead shuts down Fix Reviewer.
 
 **If Fix Reviewer finds Critical issues** → Lead presents findings to user and asks whether to fix before shipping or proceed.
-**If Fix Reviewer finds only Warnings/Info** → include in Debug Summary; proceed to Phase 3.
+**If Fix Reviewer finds only Warnings/Info** → include in Debug Summary; proceed to Phase 5.
 
 ---
 
-## Phase 3: Verify & Ship (Lead Only)
+## Phase 5: Verify & Ship (Lead Only)
 
 ### Step 1: Present Summary
 
@@ -282,7 +280,7 @@ Output Debug Summary — format: [artifact-templates.md](references/artifact-tem
 
 ### Step 3: Jira Sync (conditional)
 
-If a Jira key was identified in Phase 0 Step 1.5 context:
+If a Jira key was identified in Phase 1 Step 2 context:
 
 1. Run `jira-sync` agent — pass `{artifacts_dir}/debug-context.md` as `$ARGUMENTS` (the agent reads from
    project root but explicit path avoids any ambiguity).
@@ -300,7 +298,7 @@ Append one JSON line to `~/.claude/dlc-metrics.jsonl`:
 
 ## Constraints
 
-- **Max 2 teammates concurrent** — Investigator + DX Analyst in Phase 1 · Fixer alone in Phase 2 · Fix Reviewer alone in Phase 2.5
+- **Max 2 teammates concurrent** — Investigator + DX Analyst in Phase 2 · Fixer alone in Phase 3 · Fix Reviewer alone in Phase 4
 - **No debate phase** — debugging needs speed, not consensus
 - **Investigator is READ-ONLY** — no file modifications during Phase 1
 - **DX Analyst is READ-ONLY** — no file modifications during Phase 1
@@ -320,7 +318,7 @@ See [references/operational.md](references/operational.md) for Graceful Degradat
 ## Gotchas
 
 - **Minified or bundled stack traces reduce Investigator accuracy** — if the error originates in a compiled/bundled file, the Investigator maps to the wrong source location. Provide source-mapped stack traces or point to the source file explicitly in the bug description.
-- **Multiple investigators can produce conflicting root causes** — in Full mode, the Investigator and DX Analyst may identify different root causes. The convergence step (Phase 1 Step 3) is required to reconcile; do not skip it or proceed with only one finding.
-- **P0 severity skips mode confirmation but not fix approval** — the gate clarification in Phase 0 Step 2 is explicit: only the mode selection gate is skipped for P0. Fix plan approval still requires user confirmation. Don't assume P0 = fully automated.
+- **Multiple investigators can produce conflicting root causes** — in Full mode, the Investigator and DX Analyst may identify different root causes. The convergence step (Phase 2 Step 3) is required to reconcile; do not skip it or proceed with only one finding.
+- **P0 severity skips mode confirmation but not fix approval** — the gate clarification in Phase 1 Step 3 is explicit: only the mode selection gate is skipped for P0. Fix plan approval still requires user confirmation. Don't assume P0 = fully automated.
 - **DX scope is the affected area only** — the DX Analyst is constrained to files touched by the bug fix. If broader DX improvements are needed, run `/dlc-build` after the fix is merged, not within this session.
 - **`--review` flag adds a Fix Reviewer** — this spawns an additional teammate after the Fixer and reviews only the fix commits. Without `--review` (and for non-P0 severity), fix review is skipped. For production fixes, always pass `--review` or set severity to P0.

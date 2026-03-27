@@ -41,7 +41,7 @@ Every phase transition has explicit gate conditions. No phase proceeds until its
 
 If Investigator cannot identify root cause → escalate to user. Do NOT proceed to Fix.
 
-### Fix → Phase 2.5 (or Ship if no review)
+### Fix → Phase 4 (or Ship if no review)
 
 - [ ] All Fix Plan items verified by Lead's verification loop (not Fixer's self-report)
 - [ ] Bug fix committed with regression test
@@ -53,7 +53,7 @@ If Investigator cannot identify root cause → escalate to user. Do NOT proceed 
   4. No uncommitted changes: `git status` shows clean working tree
 - [ ] Fixer shut down
 
-### Phase 2.5 → Ship (conditional — skip if no `--review` flag and severity is not P0)
+### Phase 4 → Ship (conditional — skip if no `--review` flag and severity is not P0)
 
 - [ ] Fix Reviewer completed with findings table
 - [ ] If Critical findings: call AskUserQuestion — question: "Fix Reviewer found Critical issues. Fix before shipping?",
