@@ -18,7 +18,7 @@ function getRolesForFile(file: FileDiff): Set<ReviewRole> {
     /\.(tsx|jsx)$/.test(p) ||
     p.includes('components/') ||
     p.includes('pages/') ||
-    p.includes('app/')
+    /(^|\/)app\//.test(p)
   ) {
     roles.add('dx')
   }
@@ -68,8 +68,8 @@ function getRolesForFile(file: FileDiff): Set<ReviewRole> {
     roles.add('correctness')
   }
 
-  // Default: any .ts/.js not yet assigned → correctness
-  if (roles.size === 0 && /\.(ts|js)$/.test(p)) {
+  // Default: any file not yet assigned → correctness
+  if (roles.size === 0) {
     roles.add('correctness')
   }
 
@@ -104,7 +104,7 @@ export function mapToDomains(files: FileDiff[]): DiffBucket[] {
       role,
       files,
       lenses: [],
-      totalLines: files.reduce((sum, f) => sum + f.linesChanged, 0),
+      totalLines: files.reduce((sum, f) => sum + f.diffLineCount, 0),
     }
   })
 }

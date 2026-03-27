@@ -26,7 +26,8 @@ export interface FileDiff {
   path: string
   hunks: string
   language: string
-  linesChanged: number
+  /** Total lines in the diff (additions + deletions). Used for workload estimation. */
+  diffLineCount: number
 }
 
 export interface DiffBucket {

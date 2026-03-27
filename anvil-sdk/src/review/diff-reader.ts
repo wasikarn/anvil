@@ -31,16 +31,12 @@ function parseFileBlock(block: string): FileDiff | null {
 
   const path = rawPath.trim()
 
-  // Skip deleted files (path /dev/null)
-  if (block.includes('+++ /dev/null')) return null
-  if (path === '/dev/null') return null
-
   // Skip binary files
   if (block.includes('Binary files')) return null
 
   // Count added/removed lines (lines starting with + or -, excluding +++ and ---)
   const lines = block.split('\n')
-  let linesChanged = 0
+  let diffLineCount = 0
   const hunkLines: string[] = []
   let inHunk = false
 
@@ -54,11 +50,11 @@ function parseFileBlock(block: string): FileDiff | null {
       hunkLines.push(line)
       // Count added lines: starts with + but not +++
       if (line.startsWith('+') && !line.startsWith('+++')) {
-        linesChanged++
+        diffLineCount++
       }
       // Count removed lines: starts with - but not ---
       if (line.startsWith('-') && !line.startsWith('---')) {
-        linesChanged++
+        diffLineCount++
       }
     }
   }
@@ -66,27 +62,30 @@ function parseFileBlock(block: string): FileDiff | null {
   const hunks = hunkLines.join('\n')
   const language = detectLanguage(path)
 
-  return { path, hunks, language, linesChanged }
+  return { path, hunks, language, diffLineCount }
 }
 
+const SAFE_REF = /^[\w/.-]+$/
+
 /**
- * Reads git diff for a PR number or branch and returns parsed file diffs.
+ * Reads git diff for the current branch and returns parsed file diffs.
+ * Caller is responsible for checking out the branch/PR before calling.
  * Runs `git diff` once — callers receive pre-parsed data, no redundant re-reads.
  */
-export function readDiff(target: { pr?: string; branch?: string; baseBranch?: string }): FileDiff[] {
-  const base = target.baseBranch ?? 'origin/main'
-
-  let command: string
-  if (target.branch) {
-    command = `git diff $(git merge-base HEAD ${base})...HEAD`
-  } else {
-    // pr mode: assume PR is checked out locally
-    command = `git diff ${base}...HEAD`
+export function readDiff(target: { branch?: string; baseBranch?: string }): FileDiff[] {
+  if (target.branch !== undefined && !SAFE_REF.test(target.branch)) {
+    throw new Error(`Unsafe branch name: ${target.branch}`)
   }
+  if (target.baseBranch !== undefined && !SAFE_REF.test(target.baseBranch)) {
+    throw new Error(`Unsafe base branch name: ${target.baseBranch}`)
+  }
+
+  const base = target.baseBranch ?? 'origin/main'
+  const mergeBase = execSync(`git merge-base HEAD ${base}`, { encoding: 'utf8' }).trim()
 
   let output: string
   try {
-    output = execSync(command, { encoding: 'utf8', shell: '/bin/sh' })
+    output = execSync(`git diff ${mergeBase}...HEAD`, { encoding: 'utf8' })
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     throw new Error(`git diff failed: ${message}`)
