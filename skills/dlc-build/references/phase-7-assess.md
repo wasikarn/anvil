@@ -33,7 +33,7 @@ FIFO cap: 50 entries total — if file exceeds 50 rows (excluding header), remov
 
 **GATE:** Loop decision made → update `Phase: assess` (or `Phase: ship` if exiting) in dev-loop-context.md → proceed accordingly.
 
-## Step 7.5: Simplification Pass (Ship path only)
+## Step 1: Simplification Pass (Ship path only)
 
 Per [workflow-modes.md](workflow-modes.md): Micro=Skip, Quick=Optional, Full=Default when Critical=0.
 

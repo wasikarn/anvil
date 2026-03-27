@@ -10,9 +10,9 @@ Mode behavior per [workflow-modes.md](workflow-modes.md):
 
 ---
 
-## Step 0: Bootstrap (concurrent with explorers)
+## Step 1: Bootstrap (concurrent with explorers)
 
-Dispatch `dev-loop-bootstrap` agent (Haiku) with the task description. **Do not wait** — proceed immediately to Step 1 while bootstrap runs.
+Dispatch `dev-loop-bootstrap` agent (Haiku) with the task description. **Do not wait** — proceed immediately to Step 2 while bootstrap runs.
 
 When bootstrap completes: read `{artifacts_dir}/bootstrap-context.md` and send its contents to each explorer via `SendMessage`:
 
@@ -24,7 +24,7 @@ BOOTSTRAP CONTEXT: {contents of bootstrap-context.md}
 
 ---
 
-## Step 1: Spawn Explorers
+## Step 2: Spawn Explorers
 
 Load [explorer-prompts.md](explorer-prompts.md). Spawn explorers based on mode:
 
@@ -52,13 +52,13 @@ Explorers return a **structured file list** (not file contents):
 
 ---
 
-## Step 2: Wait for Explorers
+## Step 3: Wait for Explorers
 
 Track status in conversation (pending/done/crashed) for each explorer. Wait until all complete.
 
 ---
 
-## Step 3: Write research.md
+## Step 4: Write research.md
 
 Lead reads the files listed by explorers, then writes `{artifacts_dir}/research.md`.
 
@@ -122,13 +122,13 @@ Every section must cite file:line references. Update `phase: research` in dev-lo
 
 ---
 
-## Step 3.5: Research Validator Gate
+## Step 5: Research Validator Gate
 
 Run `research-validator` agent with path `{artifacts_dir}/research.md`. If result is FAIL → re-dispatch the relevant explorer with a targeted prompt before proceeding. If PASS → proceed.
 
 ---
 
-## Step 4: GO/NO-GO (Full mode only — PhaseVerdict)
+## Step 6: GO/NO-GO (Full mode only — PhaseVerdict)
 
 Full mode only. Quick and Micro proceed to Phase 3 automatically.
 

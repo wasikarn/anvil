@@ -4,7 +4,7 @@
 
 Load [pr-template.md](pr-template.md) now. Present the Phase 8 Summary (task, mode, iterations, final status, iteration history table).
 
-## Step 1.5: Comprehension Gate
+## Step 2: Comprehension Gate
 
 Before presenting completion options, ask one question to confirm human engagement:
 
@@ -24,7 +24,7 @@ Call AskUserQuestion:
 
 **Never block:** If user skips or dismisses, proceed silently. This is a signal, not a barrier.
 
-## Step 2: Completion Options
+## Step 3: Completion Options
 
 Present options to user:
 
@@ -35,7 +35,7 @@ Present options to user:
 
 Load [pr-template.md](pr-template.md) for PR title format, description template (Thai), `gh pr create` command, and Hotfix Backport steps.
 
-### Step 2.5: PR Description Draft (if user chose "Create PR")
+### Step 4: PR Description Draft (if user chose "Create PR")
 
 If `pr-description-writer` agent (atlassian-pm plugin) is available AND a Jira key is present in
 `dev-loop-context.md`:
@@ -48,7 +48,7 @@ If `pr-description-writer` agent (atlassian-pm plugin) is available AND a Jira k
 
 If `pr-description-writer` is not available, fall back to `pr-template.md` manual template (current behavior).
 
-## Step 3: Cleanup
+## Step 5: Cleanup
 
 1. Shut down all remaining teammates and clean up the team
 2. Update `Phase: complete` in `{artifacts_dir}/{date}-{task-slug}/dev-loop-context.md`
@@ -61,7 +61,7 @@ If `pr-description-writer` is not available, fall back to `pr-template.md` manua
 mv {artifacts_dir}/{date}-{task-slug}/ {artifacts_dir}/archive/{date}-{task-slug}/
 ```
 
-## Step 3.5: Jira Sync (optional)
+## Step 6: Jira Sync (optional)
 
 If a Jira key is present in `dev-loop-context.md`:
 
@@ -73,7 +73,7 @@ If a Jira key is present in `dev-loop-context.md`:
 Note: `jira-sync` runs now (post-create). `pr-review-jira-sync` runs post-merge — remind user or add
 to their post-merge checklist if atlassian-pm is installed.
 
-## Step 4: Metrics
+## Step 7: Metrics
 
 Append one JSON line to `{artifacts_dir}/dlc-metrics.jsonl` (create if absent) for future analysis.
 Lead writes directly — not via hook (metrics data not available at hook time).
@@ -82,7 +82,7 @@ New fields:
 
 - `findings_reversed` — count of findings rejected by falsification-agent (signals agent overconfidence)
 - `ac_coverage` — AC items verified vs total (e.g. "3/4"); use "N/A" if no Jira
-- `human_confirmed` — whether user engaged with Comprehension Gate (Step 1.5)
+- `human_confirmed` — whether user engaged with Comprehension Gate (Step 2)
 
 ```json
 {"skill":"dlc-build","date":"{YYYY-MM-DD}","mode":"{mode}","mode_source":"{auto|flag|override}","blast_radius":{N},"iterations":{N},"task":"{task_short}","final_critical":0,"final_warning":{W},"findings_reversed":{falsification_rejected_count},"ac_coverage":"{AC_passed}/{AC_total}","human_confirmed":{true|false}}

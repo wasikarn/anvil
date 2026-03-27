@@ -2,28 +2,28 @@
 
 ```text
 Phase 1 Flow:
-Step 0: Resume check ──→ existing context? ──→ Yes: ask to resume / No: proceed
+Step 1: Resume check ──→ existing context? ──→ Yes: ask to resume / No: proceed
     ↓
-Step 1: Parallel triage (all concurrent)
-  1a: Detect project + domain lenses
-  1b: Check pending PRs
-  1c: Fetch Jira context (if Jira key)
-  1d: Duplicate detection
-  1e: AC quality check
+Step 2: Parallel triage (all concurrent)
+  2a: Detect project + domain lenses
+  2b: Check pending PRs
+  2c: Fetch Jira context (if Jira key)
+  2d: Duplicate detection
+  2e: AC quality check
     ↓
-Step 2: Classify mode (decision tree → Full/Quick/Hotfix)
+Step 3: Classify mode (decision tree → Full/Quick/Hotfix)
 GATE: User confirms mode ──────────────────────────────────────────┐
     ↓                                                              │
-Step 2a: Auto-Transition to In Progress (atlassian-pm, if avail.)  │
+Step 3a: Auto-Transition to In Progress (atlassian-pm, if avail.)  │
     ↓                                                              │
-Step 2.5: Load Mode File                                            │
+Step 4: Load Mode File                                             │
     ↓                                                              │
-Step 3: Create dev-loop-context.md artifact                        │
+Step 5: Create dev-loop-context.md artifact                        │
     ↓                                                              │
-Step 4: Initialize progress tracker ←─────────────────────────────┘
+Step 6: Initialize progress tracker ←─────────────────────────────┘
 ```
 
-## Step 0: Resume Check
+## Step 1: Resume Check
 
 Check if `{artifacts_dir}/dev-loop-context.md` exists:
 
@@ -42,11 +42,11 @@ Check if `{artifacts_dir}/dev-loop-context.md` exists:
 └→ No: Proceed with triage normally.
 ```
 
-## Step 1: Parallel Triage
+## Step 2: Parallel Triage
 
-Run steps 1a, 1b, 1c concurrently — all are read-only and independent:
+Run steps 2a, 2b, 2c concurrently — all are read-only and independent:
 
-**1a — Detect Project:** Use the `Project` JSON from the header (output of `detect-project.sh`). It contains: `project`, `repo`, `validate`, `base_branch`, `branch`.
+**2a — Detect Project:** Use the `Project` JSON from the header (output of `detect-project.sh`). It contains: `project`, `repo`, `validate`, `base_branch`, `branch`.
 
 After detecting the project, also **detect domain lenses** from the task description and file extensions: if task mentions auth/API/security → load [review-lenses/security.md](review-lenses/security.md); SQL/DB/migration → [review-lenses/database.md](review-lenses/database.md); React/Next.js/frontend → [review-lenses/frontend.md](review-lenses/frontend.md); performance/bundle/query → [review-lenses/performance.md](review-lenses/performance.md); TypeScript types → [review-lenses/typescript.md](review-lenses/typescript.md). Multiple lenses can stack. Inject into `{domain_lenses}` placeholder in reviewer prompts at Phase 6.
 
@@ -55,7 +55,7 @@ After detecting the project, also **detect domain lenses** from the task descrip
   - Exists → load it + note checklist.md and examples.md paths
   - Not exists → use Generic Hard Rules (as defined in dlc-review Phase 2)
 
-**1b — Pending PRs Check:**
+**2b — Pending PRs Check:**
 
 ```bash
 gh pr list --author @me --state open --json number,title,headRefName,createdAt \
@@ -70,15 +70,15 @@ gh pr list --author @me --state open --json number,title,headRefName,createdAt \
 - No match / no Jira key: list open PRs briefly, ask if user wants to switch to one
 - No open PRs → proceed silently
 
-**1c — Jira Context** (skip if no Jira key in `$ARGUMENTS`):
+**2c — Jira Context** (skip if no Jira key in `$ARGUMENTS`):
 
 Follow [../../../references/jira-integration.md](../../../references/jira-integration.md) §dlc-build:
 
 1. Fetch ticket → extract AC and subtasks
 2. AC items become plan task constraints (Phase 3)
-3. Jira context staged for `dev-loop-context.md` (Step 3)
+3. Jira context staged for `dev-loop-context.md` (Step 5)
 
-**1d — Duplicate Detection** (skip if no Jira key; run in parallel with 1a–1c):
+**2d — Duplicate Detection** (skip if no Jira key; run in parallel with 2a–2c):
 
 If `jira-search` agent (atlassian-pm plugin) is available, search for similar in-progress work:
 
@@ -93,9 +93,9 @@ jira-search: "status = 'In Progress' AND summary ~ '{task keywords}' AND key != 
              { label: "Switch to existing", description: "Use /dlc-respond or /dlc-review on that ticket" }]
 - No match or jira-search not available → proceed silently
 
-**1e — AC Quality Check** (skip if no Jira key or Jira unavailable):
+**2e — AC Quality Check** (skip if no Jira key or Jira unavailable):
 
-For each AC item fetched in Step 1c, flag if:
+For each AC item fetched in Step 2c, flag if:
 
 - ❌ **No measurable outcome** — vague improvement without a testable condition
   (e.g. "ระบบต้องเร็วขึ้น" with no threshold, "improve error handling" with no criterion)
@@ -103,7 +103,7 @@ For each AC item fetched in Step 1c, flag if:
   (e.g. "handle all edge cases" — edge cases of what, exactly?)
 - ❌ **Contradicts another AC** — mutually exclusive conditions in same ticket
 
-Output an AC quality table before proceeding to Step 2:
+Output an AC quality table before proceeding to Step 3:
 
 | AC | Status | Issue |
 | --- | --- | --- |
@@ -121,11 +121,11 @@ If **2 or more ACs are flagged**: Call AskUserQuestion before proceeding:
 - If "Clarify now" → capture user's clarification, update AC items in-memory, then proceed.
 - If 0-1 ACs flagged → proceed silently (minor ambiguity, not worth a round-trip).
 
-## Step 2: Classify Mode
+## Step 3: Classify Mode
 
 Per [workflow-modes.md](workflow-modes.md) — blast-radius auto-scoring:
 
-**`--hotfix` flag** → Hotfix mode immediately. Skip scoring. Skip to Step 2a.
+**`--hotfix` flag** → Hotfix mode immediately. Skip scoring. Skip to Step 3a.
 
 **All other tasks:** Score 5 blast-radius factors (score 1 = yes, 0 = no):
 
@@ -167,20 +167,20 @@ Set `mode_source`:
 If validate is empty, follow up with a second AskUserQuestion or free-text prompt.
 → proceed.
 
-## Step 2a: Auto-Transition to In Progress
+## Step 3a: Auto-Transition to In Progress
 
-**Run only if:** `$ARGUMENTS` contains a Jira key AND at least one Jira integration is reachable (detected in Step 1c).
+**Run only if:** `$ARGUMENTS` contains a Jira key AND at least one Jira integration is reachable (detected in Step 2c).
 **Skip silently** if no Jira key or Jira is unreachable — this step never blocks the workflow.
 
 **Detect which path to use** (in priority order):
 
 | Path | Condition | Extra behavior |
 | ------ | ----------- | ---------------- |
-| **atlassian-pm** | `issue-bootstrap` was used successfully in Step 1c | WIP gate hook fires automatically; call `cache_invalidate` after transition (HR6) |
-| **mcp-atlassian** | `mcp__mcp-atlassian__jira_transition_issue` available (Step 1c used direct API) | No WIP hook, no cache; transition only |
+| **atlassian-pm** | `issue-bootstrap` was used successfully in Step 2c | WIP gate hook fires automatically; call `cache_invalidate` after transition (HR6) |
+| **mcp-atlassian** | `mcp__mcp-atlassian__jira_transition_issue` available (Step 2c used direct API) | No WIP hook, no cache; transition only |
 | **Skip** | Neither available | Proceed silently without transitioning |
 
-Use the ticket status already fetched in Step 1c (no re-fetch needed).
+Use the ticket status already fetched in Step 2c (no re-fetch needed).
 
 | Current Status | Action |
 | ---------------- | -------- |
@@ -211,7 +211,7 @@ options:
 
 ---
 
-## Step 2.5: Load Mode File
+## Step 4: Load Mode File
 
 After mode is confirmed, load the corresponding mode file:
 
@@ -222,7 +222,7 @@ After mode is confirmed, load the corresponding mode file:
 
 The mode file contains branch strategy and mode-specific phase pre-steps. Read it in full before proceeding. Branch setup is defined inside the mode file — `workflow-modes.md §Branch Setup` no longer exists.
 
-## Step 3: Create Context Artifact
+## Step 5: Create Context Artifact
 
 Write `{artifacts_dir}/dev-loop-context.md` with YAML frontmatter + Markdown body:
 
@@ -246,7 +246,7 @@ tasks_completed: []
 
 Markdown body below frontmatter: Hard Rules summary, Jira context (AC items). Update `phase:` field at every gate transition. **Lead is sole writer of this file** — update `tasks_completed:` when workers send completion messages (prevents YAML race from parallel workers). Update `plan_file:` with the plan path immediately after Phase 3 creates the plan file.
 
-## Step 4: Initialize Progress Tracker
+## Step 6: Initialize Progress Tracker
 
 Post a checkbox list in conversation: Phase 1 (done), Phase 2 (Full/Quick only), Phase 3, Loop iterations 1-3 with nested Phase 4/5/6/7, Phase 8. Update checkboxes as each phase completes.
 
