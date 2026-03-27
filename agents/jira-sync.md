@@ -150,24 +150,31 @@ mcp__plugin_atlassian-pm_atlassian-cache__cache_invalidate(issue_key=KEY)
 
 Use the `status.name` saved in Phase A (Step 3).
 
+**Caller may pass `--done` flag** (via `$ARGUMENTS` suffix) to request Done transition instead of In Review.
+Parse: if `$ARGUMENTS` contains `--done` → target status = "Done"; otherwise → target status = "In Review".
+
 If status is `"In Progress"` or `"In Development"`:
 
 ```text
 mcp__mcp-atlassian__jira_get_transitions(issue_key=KEY)
-→ Find transition whose name contains "In Review" or "Review" (case-insensitive)
+
+→ Find transition whose name matches target status (case-insensitive):
+    - "In Review" / "Review" — for default path (post-build, pre-merge)
+    - "Done" / "Closed" / "Resolved" — for --done path (post-merge)
+
 → If found:
     AskUserQuestion:
       header: "Transition Jira Issue?"
-      question: "Issue {KEY} is currently '{status}'. Move to In Review?"
+      question: "Issue {KEY} is currently '{status}'. Move to {target_status}?"
       options:
-        - label: "Transition to In Review"
+        - label: "Transition to {target_status}"
           description: "Updates Jira status and invalidates cache"
         - label: "Leave as-is"
           description: "Skip transition — comment was still posted"
-    If "Transition to In Review":
+    If approved:
       mcp__mcp-atlassian__jira_transition_issue(issue_key=KEY, transition_id=<found_id>)
       mcp__plugin_atlassian-pm_atlassian-cache__cache_invalidate(issue_key=KEY)
-→ If no matching transition found: note "No 'In Review' transition available" and skip
+→ If no matching transition found: note "No '{target_status}' transition available" and skip
 ```
 
 If status is anything other than `"In Progress"` / `"In Development"`, or if Phase A failed: skip silently.

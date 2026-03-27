@@ -187,6 +187,7 @@ Lenses are **domain-scoped** — each reviewer receives only lenses relevant to 
 | Architecture & Performance | `review-lenses/performance.md` | data fetching, list rendering, event handlers, hot paths |
 | Architecture & Performance | `review-lenses/database.md` | migrations/, `*.sql`, ORM queries, repository layer |
 | Architecture & Performance | `review-lenses/api-design.md` | route handlers, controllers, REST routes, GraphQL resolvers |
+| Architecture & Performance | `review-lenses/adonisjs.md` | `app/controllers/`, `app/models/`, `app/validators/`, `start/routes.ts`, Lucid ORM, `@inject`, `vine.` |
 | DX & Testing | `review-lenses/frontend.md` | `*.tsx`, `*.jsx`, React components, hooks, Next.js pages |
 | DX & Testing | `review-lenses/observability.md` | logging, metrics, tracing, new endpoints or background jobs |
 
