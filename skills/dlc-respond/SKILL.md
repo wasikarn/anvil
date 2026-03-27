@@ -68,13 +68,15 @@ Use the `Project` JSON from the header. Load project-specific Hard Rules from `{
 
 If `$1` matches `ABC-\d+`, follow `## dlc-respond` section in [../../references/jira-integration.md](../../references/jira-integration.md) to fetch AC and enrich thread prioritization.
 
-### Steps 3 + 4: Fetch Threads + Dismissed Patterns (parallel)
+### Step 3: Fetch Threads
 
-Issue both in the same tool call round — they are independent reads:
+**Bash:** Fetch all open threads — see [references/operational.md](references/operational.md#phase-1-thread-fetch-commands) for gh API commands. Fetch both: inline review comments (by line) and review-level comments (CHANGES_REQUESTED + COMMENTED).
 
-**Step 3 (Bash):** Fetch all open threads — see [references/operational.md](references/operational.md#phase-1-thread-fetch-commands) for gh API commands. Fetch both: inline review comments (by line) and review-level comments (CHANGES_REQUESTED + COMMENTED).
+### Step 4: Load Dismissed Patterns
 
-**Step 4 (Read):** Load `{review_memory_dir}/review-dismissed.md` if present. Threads matching dismissed patterns → note as "Previously dismissed" in triage table (still include — reviewer may have re-raised with new evidence).
+Issue Steps 3 and 4 in the same tool call round — they are independent reads.
+
+**Read:** Load `{review_memory_dir}/review-dismissed.md` if present. Threads matching dismissed patterns → note as "Previously dismissed" in triage table (still include — reviewer may have re-raised with new evidence).
 
 ### Step 5: Classify Threads
 

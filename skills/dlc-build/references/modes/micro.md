@@ -27,8 +27,8 @@ Per [workflow-modes.md](../workflow-modes.md) Mode Capability Matrix:
 - Phase 4 (Implement): 1 worker, `effort: low`
 - Phase 5 (Verify): Lightweight — 1 truth check, no loop (escalate immediately on fail)
 - Phase 6 (Review): Stage 2 → 1 reviewer (self-review for diffs ≤50 lines), no debate
-- Phase 7 Simplify sub-step: Skip
-- Phase 8 (metrics-analyst): Skip
+- Phase 8 Simplify sub-step: Skip
+- Phase 9 (metrics-analyst): Skip
 
 ## Key Differences from Quick
 
@@ -39,7 +39,7 @@ Per [workflow-modes.md](../workflow-modes.md) Mode Capability Matrix:
 | Plan-challenger | Skip | Skip |
 | Verify loop (Phase 5) | None (escalate immediately) | 1 re-entry loop allowed |
 | Reviewers (Phase 6) | 1 | 1–2 |
-| Simplify (Phase 7 sub-step) | Skip | Optional |
+| Simplify (Phase 8 sub-step) | Skip | Optional |
 | Metrics | Skip | Skip |
 
 ## Phase 3 Pre-Steps

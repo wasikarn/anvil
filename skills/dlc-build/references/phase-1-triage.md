@@ -14,13 +14,13 @@ Step 2: Parallel triage (all concurrent)
 Step 3: Classify mode (decision tree → Full/Quick/Hotfix)
 GATE: User confirms mode ──────────────────────────────────────────┐
     ↓                                                              │
-Step 3a: Auto-Transition to In Progress (atlassian-pm, if avail.)  │
+Step 4: Auto-Transition to In Progress (atlassian-pm, if avail.)   │
     ↓                                                              │
-Step 4: Load Mode File                                             │
+Step 5: Load Mode File                                             │
     ↓                                                              │
-Step 5: Create dev-loop-context.md artifact                        │
+Step 6: Create dev-loop-context.md artifact                        │
     ↓                                                              │
-Step 6: Initialize progress tracker ←─────────────────────────────┘
+Step 7: Initialize progress tracker ←─────────────────────────────┘
 ```
 
 ## Step 1: Resume Check
@@ -76,7 +76,7 @@ Follow [../../../references/jira-integration.md](../../../references/jira-integr
 
 1. Fetch ticket → extract AC and subtasks
 2. AC items become plan task constraints (Phase 3)
-3. Jira context staged for `dev-loop-context.md` (Step 5)
+3. Jira context staged for `dev-loop-context.md` (Step 6)
 
 **2d — Duplicate Detection** (skip if no Jira key; run in parallel with 2a–2c):
 
@@ -125,7 +125,7 @@ If **2 or more ACs are flagged**: Call AskUserQuestion before proceeding:
 
 Per [workflow-modes.md](workflow-modes.md) — blast-radius auto-scoring:
 
-**`--hotfix` flag** → Hotfix mode immediately. Skip scoring. Skip to Step 3a.
+**`--hotfix` flag** → Hotfix mode immediately. Skip scoring. Skip to Step 4.
 
 **All other tasks:** Score 5 blast-radius factors (score 1 = yes, 0 = no):
 
@@ -167,7 +167,7 @@ Set `mode_source`:
 If validate is empty, follow up with a second AskUserQuestion or free-text prompt.
 → proceed.
 
-## Step 3a: Auto-Transition to In Progress
+## Step 4: Auto-Transition to In Progress
 
 **Run only if:** `$ARGUMENTS` contains a Jira key AND at least one Jira integration is reachable (detected in Step 2c).
 **Skip silently** if no Jira key or Jira is unreachable — this step never blocks the workflow.
@@ -211,7 +211,7 @@ options:
 
 ---
 
-## Step 4: Load Mode File
+## Step 5: Load Mode File
 
 After mode is confirmed, load the corresponding mode file:
 
@@ -222,7 +222,7 @@ After mode is confirmed, load the corresponding mode file:
 
 The mode file contains branch strategy and mode-specific phase pre-steps. Read it in full before proceeding. Branch setup is defined inside the mode file — `workflow-modes.md §Branch Setup` no longer exists.
 
-## Step 5: Create Context Artifact
+## Step 6: Create Context Artifact
 
 Write `{artifacts_dir}/dev-loop-context.md` with YAML frontmatter + Markdown body:
 
@@ -246,9 +246,9 @@ tasks_completed: []
 
 Markdown body below frontmatter: Hard Rules summary, Jira context (AC items). Update `phase:` field at every gate transition. **Lead is sole writer of this file** — update `tasks_completed:` when workers send completion messages (prevents YAML race from parallel workers). Update `plan_file:` with the plan path immediately after Phase 3 creates the plan file.
 
-## Step 6: Initialize Progress Tracker
+## Step 7: Initialize Progress Tracker
 
-Post a checkbox list in conversation: Phase 1 (done), Phase 2 (Full/Quick only), Phase 3, Loop iterations 1-3 with nested Phase 4/5/6/7, Phase 8. Update checkboxes as each phase completes.
+Post a checkbox list in conversation: Phase 1 (done), Phase 2 (Full/Quick only), Phase 3, Loop iterations 1-3 with nested Phase 4/5/6/7/8, Phase 9. Update checkboxes as each phase completes.
 
 Write dlc-metrics entry to `{artifacts_dir}/dlc-metrics.jsonl` (append, create if missing):
 

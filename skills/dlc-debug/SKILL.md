@@ -252,7 +252,7 @@ After all Fix Plan items done, Lead shuts down Fixer.
 
 **GATE:** All Fix Plan items done + Final Lead verification passes → proceed.
 
-### Phase 4: Fix Review (conditional)
+## Phase 4: Fix Review (conditional)
 
 Run Fix Review if: `--review` flag was passed **or** severity is P0.
 

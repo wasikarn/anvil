@@ -1,8 +1,8 @@
-# Phase 8: Ship (Lead Only)
+# Phase 9: Ship (Lead Only)
 
 ## Step 1: Present Summary
 
-Load [pr-template.md](pr-template.md) now. Present the Phase 8 Summary (task, mode, iterations, final status, iteration history table).
+Load [pr-template.md](pr-template.md) now. Present the Phase 9 Summary (task, mode, iterations, final status, iteration history table).
 
 ## Step 2: Comprehension Gate
 
@@ -35,7 +35,7 @@ Present options to user:
 
 Load [pr-template.md](pr-template.md) for PR title format, description template (Thai), `gh pr create` command, and Hotfix Backport steps.
 
-### Step 4: PR Description Draft (if user chose "Create PR")
+## Step 4: PR Description Draft (if user chose "Create PR")
 
 If `pr-description-writer` agent (atlassian-pm plugin) is available AND a Jira key is present in
 `dev-loop-context.md`:

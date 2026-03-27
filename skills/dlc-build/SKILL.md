@@ -34,10 +34,10 @@ Invoke as `/dlc-build [task-description-or-jira-key] [--quick?] [--full?] [--hot
 
 ## Phase Flow
 
-Phase 1 → [2: Research] → 3: Plan → 4: Implement → 5: Verify → 6: Review → 7: Assess → 8: Ship
+Phase 1 → [2: Research] → 3: Plan → 4: Implement → 5: Verify → 6: Review → 7: Falsification → 8: Assess → 9: Ship
 (brackets = mode-conditional; see [Mode Capability Matrix](references/workflow-modes.md))
 
-Loop: Phase 4 ↔ 5 ↔ 6 ↔ 7 (max 3 shared iterations)
+Loop: Phase 4 ↔ 5 ↔ 6 ↔ 7 ↔ 8 (max 3 shared iterations)
 
 | Iter | Implement | Reviewers (Full / Quick / Micro) | Debate |
 | --- | --- | --- | --- |
@@ -56,9 +56,9 @@ See [references/operational.md](references/operational.md) for prerequisites, co
 | [references/phase-3-plan.md](references/phase-3-plan.md) | Entering Phase 3 |
 | [references/phase-4-implement.md](references/phase-4-implement.md) | Entering Phase 4 |
 | [references/phase-5-verify.md](references/phase-5-verify.md) | Entering Phase 5 |
-| [references/phase-6-review.md](references/phase-6-review.md) | Entering Phase 6 |
-| [references/phase-7-assess.md](references/phase-7-assess.md) | Entering Phase 7 |
-| [references/phase-8-ship.md](references/phase-8-ship.md) | Entering Phase 8 |
+| [references/phase-6-review.md](references/phase-6-review.md) | Entering Phase 6 and Phase 7 (Falsification Pass) |
+| [references/phase-8-assess.md](references/phase-8-assess.md) | Entering Phase 8 |
+| [references/phase-9-ship.md](references/phase-9-ship.md) | Entering Phase 9 |
 | [references/workflow-modes.md](references/workflow-modes.md) | Phase 1 — mode classification |
 | [references/modes/micro.md](references/modes/micro.md) · [references/modes/feature.md](references/modes/feature.md) · [references/modes/quick.md](references/modes/quick.md) · [references/modes/hotfix.md](references/modes/hotfix.md) | Phase 1 Step 4 — load the file matching the confirmed mode |
 | [references/operational.md](references/operational.md) | Phase 1 (degradation) + Phase 4 end (Verification Gate) + on crash |
@@ -74,5 +74,5 @@ See [references/operational.md](references/operational.md) for prerequisites, co
 | [../../references/review-output-format.md](../../references/review-output-format.md) | Entering Phase 6 |
 | [../../references/debate-protocol.md](../../references/debate-protocol.md) | Phase 6 iter 1 debate only (fallback in phase-6-review.md) |
 | [../../references/jira-integration.md](../../references/jira-integration.md) | Jira key in `$ARGUMENTS` |
-| [references/pr-template.md](references/pr-template.md) | Entering Phase 8 |
+| [references/pr-template.md](references/pr-template.md) | Entering Phase 9 |
 | [references/examples.md](references/examples.md) | When assessing research/plan/implementation quality or checking for YAGNI violations |

@@ -18,7 +18,7 @@ Uses dynamic team roster (explorers, workers, reviewers) with iterative implemen
 | Reference | When to use |
 | --- | --- |
 | `references/phase-gates.md` | Modifying gate conditions or escalation protocol |
-| `references/phase-{1-8}-*.md` | Modifying a specific phase's logic — one file per phase |
+| `references/phase-{1-9}-*.md` | Modifying a specific phase's logic — one file per phase |
 | `references/explorer-prompts.md` | Modifying explorer prompts (Phase 2) |
 | `references/worker-prompts.md` | Modifying worker implementation prompt (Phase 4 iter 1) |
 | `references/fixer-prompts.md` | Modifying fixer prompt (Phase 4 iter 2+) |
@@ -36,7 +36,7 @@ Uses dynamic team roster (explorers, workers, reviewers) with iterative implemen
 ## Skill Architecture
 
 - `SKILL.md` — overview, phase flow, reference table, constraints, gate summary (~100 lines)
-- `references/phase-{1-8}-*.md` — phase-specific instructions (load on demand)
+- `references/phase-{1-9}-*.md` — phase-specific instructions (load on demand)
 - Role-specific prompt files: explorer, worker, fixer, reviewer
 - `references/review-lenses/` — domain checklists injected into reviewer prompts at Phase 6
 - `references/phase-gates.md` — gate conditions for every phase transition
@@ -69,5 +69,5 @@ ls -la ~/.claude/skills/dlc-build
 - Hard Rules cannot be dropped via debate — only reclassified with evidence
 - Max 3 loop iterations enforced — prevents runaway token usage
 - Artifacts written to **`{artifacts_dir}/{date}-{slug}/`** (path from `scripts/artifact-dir.sh dlc-build`): `dev-loop-context.md`, `research.md`, `plan.md`, `verify-results.md`, `review-findings-*.md`. All artifacts in one folder — `~/.claude/plans/` is no longer used.
-- Team cleanup must be done by lead in Phase 8 — teammates don't self-terminate
+- Team cleanup must be done by lead in Phase 9 — teammates don't self-terminate
 - One team per session — cannot run multiple dlc-build in parallel

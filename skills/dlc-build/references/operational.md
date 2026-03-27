@@ -66,7 +66,7 @@ Verify: no files modified that were NOT part of the findings being fixed. If uni
 
 ### Solo Mode Self-Review Output
 
-When running in Solo mode (no Agent Teams or subagents), lead performs self-review and MUST produce a `review-findings-{N}.md` file using this template so Phase 7 Assess works the same regardless of mode:
+When running in Solo mode (no Agent Teams or subagents), lead performs self-review and MUST produce a `review-findings-{N}.md` file using this template so Phase 8 Assess works the same regardless of mode:
 
 ```markdown
 ## Summary
@@ -176,5 +176,5 @@ Full gate details: [references/phase-gates.md](references/phase-gates.md)
 - **Phase 5 is mandatory** — every Implement → Review transition must pass through Phase 5 Verify. Skipping it after a Stage 1 FAIL is not permitted.
 - **[NEEDS CLARIFICATION] replaces ClarifyQ** — clarifying questions are embedded as tokens in research.md (max 3, each with file:line evidence). No separate ClarifyQ phase. Quick and Hotfix modes use Lite research with no clarification tokens.
 - **plan-challenger is Full mode only** — Micro and Quick modes write plans directly without a challenge step. Running plan-challenger on Micro/Quick adds overhead that defeats their purpose.
-- **Auto-transition requires a Jira key + at least one Jira integration** — Step 3a transitions the Jira card to In Progress automatically after mode is confirmed. Uses atlassian-pm path if `issue-bootstrap` was available in Step 2c; falls back to `mcp-atlassian` (`jira_transition_issue`) if atlassian-pm is not installed; skips silently if neither is reachable.
+- **Auto-transition requires a Jira key + at least one Jira integration** — Step 4 transitions the Jira card to In Progress automatically after mode is confirmed. Uses atlassian-pm path if `issue-bootstrap` was available in Step 2c; falls back to `mcp-atlassian` (`jira_transition_issue`) if atlassian-pm is not installed; skips silently if neither is reachable.
 - **WIP limit enforcement only on the atlassian-pm path** — the `pre_wip_limit_check` hook fires only when atlassian-pm is installed. On the mcp-atlassian fallback path, there is no WIP gate — the transition proceeds unconditionally.

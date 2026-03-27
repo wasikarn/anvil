@@ -86,12 +86,19 @@ Lead verifies: `git diff {base_branch}...HEAD --stat` (scope) + `git log --oneli
 - Prior artifacts archived with `-attempt-1` suffix
 - `redesign_count` incremented in dev-loop-context.md
 
-### Phase 6 (Review) → Phase 7 (Assess)
+### Phase 6 (Review) → Phase 7 (Falsification)
 
 - [ ] Stage 1 compliance check PASSED
 - [ ] All Stage 2 reviewers completed (per mode scale)
 - [ ] Debate rounds completed (Full iter 1: full, iter 2+: focused/none)
-- [ ] Findings consolidated, `review-findings-N.md` written
+- [ ] Raw findings table ready for falsification pass
+
+### Phase 7 (Falsification) → Phase 8 (Assess)
+
+- [ ] `falsification-agent` completed (Full mode iter 1 only)
+- [ ] Verdicts applied (SUSTAINED/DOWNGRADED/REJECTED)
+- [ ] Post-verdict findings table ready for consolidation
+- [ ] `review-consolidator` dispatched with final findings
 
 ### Phase 6 (Review) → Phase 4 (Implement) — Stage 1 FAIL
 
@@ -99,7 +106,7 @@ Lead verifies: `git diff {base_branch}...HEAD --stat` (scope) + `git log --oneli
 - Lead increments `iteration_count` before returning to Phase 4
 - Mandatory path: Phase 4 → Phase 5 → Phase 6 Stage 1 (Phase 5 cannot be skipped)
 
-### Phase 7 (Assess) → Loop Decision
+### Phase 8 (Assess) → Loop Decision
 
 Decision tree:
 
@@ -132,7 +139,7 @@ If iteration_count ≥ 2 AND Critical count(iter N) ≥ Critical count(iter N-1)
   ]
 ```
 
-### Phase 8 (Ship) → Done
+### Phase 9 (Ship) → Done
 
 - [ ] Summary presented with iteration count and TDD violations (if any)
 - [ ] User selects via AskUserQuestion — question: "Implementation complete. What next?", header: "Ship",

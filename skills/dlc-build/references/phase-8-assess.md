@@ -1,4 +1,4 @@
-# Phase 7: Assess (Lead Only)
+# Phase 8: Assess (Lead Only)
 
 Read ONLY `{artifacts_dir}/review-findings-{N}.md` (the consolidated file) — do not re-read raw reviewer outputs. Raw findings are available on-demand if a specific finding needs deeper investigation.
 
@@ -50,7 +50,7 @@ Call AskUserQuestion:
 - question: "Zero critical findings — code is shippable. Run a simplification pass before shipping to improve clarity and maintainability?"
 - options: [
     { label: "Run simplification", description: "Spawn code-simplifier on changed files — clarity improvements only, no behavior changes" },
-    { label: "Ship as-is", description: "Skip — proceed to Phase 8 directly" }
+    { label: "Ship as-is", description: "Skip — proceed to Phase 9 directly" }
   ]
 
 **If "Run simplification":**
@@ -59,7 +59,7 @@ Call AskUserQuestion:
 2. Spawn `code-simplifier` agent with task text: `"Simplify changed files: <space-separated file list>"` — the agent treats the task text as its `$ARGUMENTS` and uses it instead of its fallback git diff scope
 3. Wait for agent completion
 4. Run validate command from `dev-loop-context.md` → `validate:` field — confirm no regressions introduced. If `validate:` is empty, use fallback: `npx tsc --noEmit && npx eslint . --ext .ts,.tsx`
-5. If validate passes → proceed to Phase 8
-6. If validate fails → revert simplifier changes (`git checkout HEAD -- <changed-files>`), note in context, proceed to Phase 8 with original code
+5. If validate passes → proceed to Phase 9
+6. If validate fails → revert simplifier changes (`git checkout HEAD -- <changed-files>`), note in context, proceed to Phase 9 with original code
 
-**If "Ship as-is":** Proceed to Phase 8 directly.
+**If "Ship as-is":** Proceed to Phase 9 directly.

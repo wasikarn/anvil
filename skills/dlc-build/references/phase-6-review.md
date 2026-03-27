@@ -119,18 +119,18 @@ Drop findings below the role threshold before consolidation. Hard Rule violation
 
 Write findings to `{artifacts_dir}/review-findings-{iteration}.md` per [../../../references/review-output-format.md](../../../references/review-output-format.md).
 
-- **Iter 1 (3 reviewers):** After falsification pass (Phase 6.5), dispatch `review-consolidator` with the post-verdict findings table.
+- **Iter 1 (3 reviewers):** After falsification pass (Phase 7), dispatch `review-consolidator` with the post-verdict findings table.
 - **Iter 2+ (2 reviewers):** Dispatch `review-consolidator` immediately when the second reviewer's findings arrive — lead reads findings while agent runs in parallel. No falsification pass.
 - **1 reviewer:** Lead consolidates inline (no agent).
 
 If agent errors → dedup, pattern-cap, sort, and signal-check inline per [review-conventions.md](../../../references/review-conventions.md).
 
 **Phase 6 status line** (output before findings table — no prose paragraph):
-`### Phase 6 Complete — N findings consolidated · Proceeding to Phase 7`
+`### Phase 6 Complete — N findings consolidated · Proceeding to Phase 8`
 
 **GATE:** Findings consolidated → update `Phase: review` in dev-loop-context.md → proceed to Assess.
 
-## Phase 6.5: Falsification Pass (Full mode iter 1 only)
+## Phase 7: Falsification Pass (Full mode iter 1 only)
 
 After debate completes but **before** dispatching `review-consolidator`, spawn the `falsification-agent` (defined in `agents/falsification-agent.md`) with the raw pre-consolidation findings table inline.
 
