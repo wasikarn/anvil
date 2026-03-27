@@ -62,59 +62,37 @@ function dedup(findings: Finding[]): ConsolidatedFinding[] {
 }
 
 /**
- * Caps same rule appearing in >3 files — keeps 3, adds patternNote on last kept.
+ * Caps same rule appearing in >capCount findings — keeps first capCount, adds patternNote on last kept.
  */
-function patternCap(findings: ConsolidatedFinding[], capCount: number): ConsolidatedFinding[] {
-  // Group by rule, tracking unique files per rule
-  const ruleFiles = new Map<string, Set<string>>()
+function patternCap(
+  findings: ConsolidatedFinding[],
+  capCount: number
+): ConsolidatedFinding[] {
+  // Group findings by rule
+  const byRule = new Map<string, ConsolidatedFinding[]>()
   for (const f of findings) {
-    const set = ruleFiles.get(f.rule) ?? new Set<string>()
-    set.add(f.file)
-    ruleFiles.set(f.rule, set)
+    const bucket = byRule.get(f.rule) ?? []
+    bucket.push(f)
+    byRule.set(f.rule, bucket)
   }
-
-  // Rules that exceed the cap
-  const cappedRules = new Set<string>()
-  for (const [rule, files] of ruleFiles.entries()) {
-    if (files.size > capCount) {
-      cappedRules.add(rule)
-    }
-  }
-
-  if (cappedRules.size === 0) return findings
 
   const result: ConsolidatedFinding[] = []
-  // Track how many unique files we've kept per capped rule
-  const keptFiles = new Map<string, Set<string>>()
-
-  for (const f of findings) {
-    if (!cappedRules.has(f.rule)) {
-      result.push(f)
-      continue
-    }
-
-    const kept = keptFiles.get(f.rule) ?? new Set<string>()
-    if (kept.has(f.file)) {
-      // Same file already counted — always include (avoids dropping within same file)
-      result.push(f)
-      continue
-    }
-
-    const totalFiles = ruleFiles.get(f.rule)?.size ?? 0
-    if (kept.size < capCount) {
-      kept.add(f.file)
-      keptFiles.set(f.rule, kept)
-
-      if (kept.size === capCount) {
-        const extra = totalFiles - capCount
-        result.push({ ...f, patternNote: `(+ ${extra} more file${extra === 1 ? '' : 's'})` })
+  for (const [, group] of byRule) {
+    if (group.length <= capCount) {
+      result.push(...group)
+    } else {
+      const kept = group.slice(0, capCount)
+      const overflow = group.length - capCount
+      // Add patternNote to last kept finding
+      const last = kept[capCount - 1]
+      if (last !== undefined) {
+        result.push(...kept.slice(0, capCount - 1))
+        result.push({ ...last, patternNote: `(+ ${overflow} more)` })
       } else {
-        result.push(f)
+        result.push(...kept)
       }
     }
-    // else: beyond cap — drop
   }
-
   return result
 }
 

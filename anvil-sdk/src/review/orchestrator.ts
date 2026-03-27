@@ -30,6 +30,9 @@ async function runSingleReviewer(params: {
       agents: { reviewer: agent },
       agent: 'reviewer',
       allowedTools: ['Read', 'Grep', 'Glob'],
+      // NOTE: permissionMode and allowDangerouslySkipPermissions are silently ignored
+      // when run inside a Claude Code plugin. This SDK is designed for CLI use only.
+      // Run via: npx tsx anvil-sdk/src/cli.ts review ...
       permissionMode: 'bypassPermissions',
       allowDangerouslySkipPermissions: true,
       maxTurns: params.config.maxTurnsReviewer,
