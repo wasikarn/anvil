@@ -2,6 +2,7 @@ export const DEFAULT_CONFIG = {
   effort: 'high' as const,
   maxBudgetPerReviewer: 0.30,
   maxBudgetFalsification: 0.15,
+  maxBudgetVerification: 0.10,
   maxTurnsReviewer: 20,
   maxTurnsFalsification: 5,
   model: 'sonnet' as ModelName,
@@ -26,6 +27,7 @@ export interface ResolvedConfig {
   effort: EffortLevel
   maxBudgetPerReviewer: number
   maxBudgetFalsification: number
+  maxBudgetVerification: number
   maxTurnsReviewer: number
   maxTurnsFalsification: number
   model: ModelName
@@ -46,6 +48,8 @@ export function resolveConfig(userConfig?: ReviewConfig): ResolvedConfig {
       // 80% split across 3 reviewers, 20% for falsification — stays within stated total
       maxBudgetPerReviewer: (userConfig.budgetUsd * 0.8) / 3,
       maxBudgetFalsification: userConfig.budgetUsd * 0.2,
+      // fix-intent-verify uses budgetUsd as a direct ceiling (single-agent call)
+      maxBudgetVerification: userConfig.budgetUsd,
     }),
     ...(userConfig?.hardRulesPath && { hardRulesPath: userConfig.hardRulesPath }),
     ...(userConfig?.noFalsification !== undefined && { noFalsification: userConfig.noFalsification }),

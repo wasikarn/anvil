@@ -2,7 +2,13 @@
 
 ## SDK Fast-Path (try before spawning Agent Teams)
 
-**Try the SDK Review Engine first (faster, deterministic, lower token cost):**
+**Skip fast-path → force Agent Teams ถ้า:**
+
+- PR argument มี Jira key (e.g., `ABC-123`) → ต้องการ AC verification ที่ Agent Teams ทำได้
+- PR มี >500 changed lines (from diff stat) → SDK อาจ truncate diff
+- `--full` flag ระบุมา explicitly → user ต้องการ full debate
+
+**Otherwise, try the SDK Review Engine first (faster, deterministic, lower token cost):**
 
 ```bash
 SDK_DIR="${CLAUDE_SKILL_DIR}/../../anvil-sdk"
@@ -29,15 +35,30 @@ fi
 # Run SDK reviewer
 sdk_result=$(cd "$SDK_DIR" && node_modules/.bin/tsx src/cli.ts review $SDK_ARGS 2>&1)
 sdk_exit=$?
+
+# Validate: must be JSON with findings array (not just any {})
+_is_valid_json() {
+  if command -v jq >/dev/null 2>&1; then
+    echo "$1" | jq -e '.findings' >/dev/null 2>&1
+  else
+    echo "$1" | node -e "const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')); process.exit(Array.isArray(d.findings)?0:1)" 2>/dev/null
+  fi
+}
 ```
 
-If `sdk_exit=0` and `sdk_result` is valid JSON (starts with `{`):
+If `sdk_exit=0` and `_is_valid_json "$sdk_result"` succeeds:
 
 **Use SDK output directly:**
 
 - Parse `sdk_result` as the review report JSON
-- Map `findings[]` to the standard findings table format per [review-output-format](../../review-output-format/SKILL.md)
-- Report: `SDK Review Engine: {critical} critical · {warning} warnings · {info} info · cost $X`
+- Map `findings[]` to the standard findings table format per [review-output-format](../../review-output-format/SKILL.md):
+  - `isHardRule: true` → append `[HR]` badge to finding row
+  - `confidence` → display as `C:{value}` (e.g., `C:85`)
+  - `consensus` → use N/M format directly (e.g., `"2/3"`)
+- Map `strengths[]` → Strengths section
+- Use `verdict` field (`"APPROVE"` | `"REQUEST_CHANGES"`) for final decision
+- If `noiseWarning: true` → prepend `⚠ Low signal` notice per review-conventions
+- Report: `SDK Review Engine: {summary.critical} critical · {summary.warning} warnings · {summary.info} info · cost $X`
 - **Skip Agent Teams spawning (Phases 3-5)** — proceed directly to Phase 6 (action phase)
 
 **If `sdk_exit != 0` or result is not valid JSON**, log `SDK review failed (exit {sdk_exit}) — falling back to Agent Teams` and continue with the steps below.

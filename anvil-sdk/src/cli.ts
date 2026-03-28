@@ -176,17 +176,23 @@ async function runReviewCommand(args: string[]): Promise<void> {
   }
 
   // Run reviewers in parallel
-  const { results, totalCost, totalTokens } = await runReview({
+  const { results, roles, totalCost, totalTokens } = await runReview({
     files,
     hardRules,
     dismissedPatterns: loadDismissedPatterns(parsed.dismissedPatternsPath),
     config,
   })
 
-  // Collect all findings
-  const allFindings = results.flatMap(r => r.findings)
+  // Build per-reviewer buckets (preserves attribution for role-based thresholds + consensus)
+  // roles[i] must be defined — undefined means orchestrator/results mismatch
+  const perReviewer = results.map((r, i) => {
+    const role = roles[i]
+    if (role === undefined) throw new Error(`[sdk-review] roles[${i}] undefined — results/roles mismatch`)
+    return { role, findings: r.findings }
+  })
 
-  // Triage
+  // Triage merged findings to find autoPass/mustFalsify split
+  const allFindings = results.flatMap(r => r.findings)
   const { autoPass, autoDrop: _autoDrop, mustFalsify } = triage(allFindings)
 
   // Falsification
@@ -195,12 +201,17 @@ async function runReviewCommand(args: string[]): Promise<void> {
     verdicts = await runFalsification({ findings: mustFalsify, config })
   }
 
-  // Consolidate
+  // Consolidate with full attribution — key-based Set prevents silent bug if objects were spread
+  const mustFalsifyKeys = new Set(mustFalsify.map(f => `${f.file}:${f.line ?? 'null'}:${f.rule}`))
+  const perReviewerMustFalsify = perReviewer.map(r => ({
+    role: r.role,
+    findings: r.findings.filter(f => mustFalsifyKeys.has(`${f.file}:${f.line ?? 'null'}:${f.rule}`)),
+  }))
+
   const consolidated = consolidate({
+    perReviewer: perReviewerMustFalsify,
     autoPass,
-    mustFalsify,
     verdicts,
-    confidenceThreshold: config.confidenceThreshold,
     patternCapCount: config.patternCapCount,
   })
 
@@ -420,6 +431,77 @@ async function runFalsifyCommand(args: string[]): Promise<void> {
   console.log(JSON.stringify({ verdicts }, null, 2))
 }
 
+// ─── fix-intent-verify subcommand ────────────────────────────────────────────
+
+interface ParsedFixIntentVerifyArgs {
+  pr: number | undefined
+  triageFile: string | undefined
+  budget: number | undefined
+}
+
+export function parseFixIntentVerifyArgs(args: string[]): ParsedFixIntentVerifyArgs {
+  const result: ParsedFixIntentVerifyArgs = { pr: undefined, triageFile: undefined, budget: undefined }
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i]
+    if (arg === undefined) continue
+    const next = args[i + 1]
+    if (arg === '--pr') {
+      if (next === undefined) {
+        console.error('[sdk-fix-intent-verify] --pr requires a value')
+        process.exit(1)
+      }
+      const n = parseInt(next, 10)
+      if (Number.isNaN(n) || n <= 0) {
+        console.error(`[sdk-fix-intent-verify] --pr must be a positive integer, got: ${next}`)
+        process.exit(1)
+      }
+      result.pr = n
+      i++
+    } else if (arg === '--triage-file') {
+      if (next === undefined) {
+        console.error('[sdk-fix-intent-verify] --triage-file requires a value')
+        process.exit(1)
+      }
+      result.triageFile = next
+      i++
+    } else if (arg === '--budget') {
+      if (next === undefined || next.startsWith('--')) {
+        console.warn('[sdk-fix-intent-verify] --budget requires a value — using default')
+      } else {
+        const n = parseFloat(next)
+        if (Number.isNaN(n) || n <= 0) {
+          console.warn(`[sdk-fix-intent-verify] --budget must be a positive number, got: ${next} — using default`)
+        } else {
+          result.budget = n
+          i++
+        }
+      }
+    }
+  }
+  return result
+}
+
+async function runFixIntentVerifyCommand(args: string[]): Promise<void> {
+  const parsed = parseFixIntentVerifyArgs(args)
+  if (parsed.pr === undefined) {
+    console.error('[sdk-fix-intent-verify] --pr is required')
+    process.exit(1)
+  }
+  if (parsed.triageFile === undefined) {
+    console.error('[sdk-fix-intent-verify] --triage-file is required')
+    process.exit(1)
+  }
+  if (!existsSync(parsed.triageFile)) {
+    console.error(`[sdk-fix-intent-verify] triage file not found: ${parsed.triageFile}`)
+    process.exit(1)
+  }
+  const triageContent = readFileSync(parsed.triageFile, 'utf8')
+  const config = resolveConfig({ ...(parsed.budget !== undefined && { budgetUsd: parsed.budget }) })
+  const { runIntentVerification } = await import('./fix-intent-verify/agents/verifier.js')
+  const result = await runIntentVerification({ pr: parsed.pr, triageContent, config })
+  console.log(JSON.stringify(result, null, 2))
+}
+
 // ─── main dispatcher ──────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
@@ -437,6 +519,10 @@ async function main(): Promise<void> {
   }
   if (subcommand === 'falsify') {
     await runFalsifyCommand(args)
+    return
+  }
+  if (subcommand === 'fix-intent-verify') {
+    await runFixIntentVerifyCommand(args)
     return
   }
 

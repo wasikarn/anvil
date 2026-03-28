@@ -1,7 +1,7 @@
 import { query } from '@anthropic-ai/claude-agent-sdk'
 import type { SDKResultSuccess } from '@anthropic-ai/claude-agent-sdk'
 import type { ResolvedConfig } from '../config.js'
-import type { DiffBucket, FileDiff, ReviewerResult } from '../types.js'
+import type { DiffBucket, FileDiff, ReviewerResult, ReviewRole } from '../types.js'
 import { createReviewer } from './agents/reviewer.js'
 import { mapToDomains } from './domain-mapper.js'
 import { type Finding, FindingResultSchema, findingResultJsonSchema } from './schemas/finding.js'
@@ -84,22 +84,21 @@ export async function runReview(params: {
   hardRules: string
   dismissedPatterns: string
   config: ResolvedConfig
-}): Promise<{ results: ReviewerResult[]; totalCost: number; totalTokens: number }> {
+}): Promise<{ results: ReviewerResult[]; roles: ReviewRole[]; totalCost: number; totalTokens: number }> {
   const buckets = mapToDomains(params.files)
+  const activeBuckets = buckets.filter(b => b.files.length > 0)
   const isAdonisProject = detectAdonisProject(params.files)
 
   const settled = await Promise.allSettled(
-    buckets
-      .filter(b => b.files.length > 0)
-      .map(bucket =>
-        runSingleReviewer({
-          bucket,
-          hardRules: params.hardRules,
-          dismissedPatterns: params.dismissedPatterns,
-          isAdonisProject,
-          config: params.config,
-        })
-      )
+    activeBuckets.map(bucket =>
+      runSingleReviewer({
+        bucket,
+        hardRules: params.hardRules,
+        dismissedPatterns: params.dismissedPatterns,
+        isAdonisProject,
+        config: params.config,
+      })
+    )
   )
 
   const results: ReviewerResult[] = settled.map(r => {
@@ -110,8 +109,11 @@ export async function runReview(params: {
     return r.value
   })
 
+  // roles[i] corresponds to results[i] — preserves reviewer attribution
+  const roles: ReviewRole[] = activeBuckets.map(b => b.role)
+
   const totalCost = results.reduce((sum, r) => sum + r.cost, 0)
   const totalTokens = results.reduce((sum, r) => sum + r.tokens, 0)
 
-  return { results, totalCost, totalTokens }
+  return { results, roles, totalCost, totalTokens }
 }

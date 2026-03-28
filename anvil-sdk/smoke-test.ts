@@ -7,7 +7,7 @@ import { mapToDomains } from './src/review/domain-mapper.js'
 import { triage } from './src/review/triage.js'
 import { consolidate } from './src/review/consolidator.js'
 import { formatJson, formatMarkdown } from './src/review/output.js'
-import type { Finding, ReviewReport } from './src/types.js'
+import type { Finding, ReviewReport, ReviewRole } from './src/types.js'
 import { ChallengeResultSchema } from './src/plan/schemas/challenge.js'
 import { InvestigationResultSchema } from './src/investigate/schemas/investigation.js'
 import { parsePlanChallengeArgs, parseInvestigateArgs, parseFalsifyArgs } from './src/cli.js'
@@ -97,43 +97,121 @@ test('no finding in multiple buckets', () => {
 console.log('\nconsolidator')
 test('consolidate with no verdicts returns autoPass findings', () => {
   const result = consolidate({
+    perReviewer: [],
     autoPass: [mockFindings[0]!],
-    mustFalsify: [],
     verdicts: [],
-    confidenceThreshold: 80,
     patternCapCount: 3,
   })
   assert(result.length === 1, `got ${result.length}`)
 })
 test('consolidate sorts critical before warning', () => {
   const result = consolidate({
+    perReviewer: [],
     autoPass: [mockFindings[3]!, mockFindings[0]!],
-    mustFalsify: [],
     verdicts: [],
-    confidenceThreshold: 80,
     patternCapCount: 3,
   })
   assert(result[0]?.severity === 'critical', `first is ${result[0]?.severity}`)
 })
 test('REJECTED verdict removes finding', () => {
+  const finding3 = mockFindings[3]
+  if (finding3 === undefined) throw new Error('mockFindings[3] missing')
   const result = consolidate({
+    perReviewer: [{ role: 'correctness' as ReviewRole, findings: [finding3] }],
     autoPass: [],
-    mustFalsify: [mockFindings[3]!],
     verdicts: [{ findingIndex: 0, originalSummary: 'arch', verdict: 'REJECTED', rationale: 'false positive' }],
-    confidenceThreshold: 80,
     patternCapCount: 3,
   })
   assert(result.length === 0, `expected 0, got ${result.length}`)
 })
 test('DOWNGRADED verdict updates severity', () => {
+  const finding3 = mockFindings[3]
+  if (finding3 === undefined) throw new Error('mockFindings[3] missing')
   const result = consolidate({
+    perReviewer: [{ role: 'correctness' as ReviewRole, findings: [finding3] }],
     autoPass: [],
-    mustFalsify: [mockFindings[3]!],
     verdicts: [{ findingIndex: 0, originalSummary: 'arch', verdict: 'DOWNGRADED', newSeverity: 'info', rationale: 'minor' }],
-    confidenceThreshold: 80,
     patternCapCount: 3,
   })
   assert(result[0]?.severity === 'info', `expected info, got ${result[0]?.severity}`)
+})
+test('role-based threshold: dx finding confidence=82 dropped (threshold=85)', () => {
+  const finding: Finding = { severity: 'warning', rule: 'R-dx', file: 'x.ts', line: 1, confidence: 82, issue: 'x', fix: 'y', isHardRule: false }
+  const result = consolidate({
+    perReviewer: [{ role: 'dx' as ReviewRole, findings: [finding] }],
+    autoPass: [],
+    verdicts: [],
+    patternCapCount: 3,
+  })
+  assert(result.length === 0, `dx confidence=82 should be dropped (threshold=85), got ${result.length}`)
+})
+test('role-based threshold: correctness finding confidence=74 dropped (threshold=75)', () => {
+  const finding: Finding = { severity: 'warning', rule: 'R-cor', file: 'x.ts', line: 1, confidence: 74, issue: 'x', fix: 'y', isHardRule: false }
+  const result = consolidate({
+    perReviewer: [{ role: 'correctness' as ReviewRole, findings: [finding] }],
+    autoPass: [],
+    verdicts: [],
+    patternCapCount: 3,
+  })
+  assert(result.length === 0, `correctness confidence=74 should be dropped (threshold=75), got ${result.length}`)
+})
+test('role-based threshold: correctness confidence=75 passes (boundary)', () => {
+  const finding: Finding = { severity: 'warning', rule: 'R-cor75', file: 'x.ts', line: 1, confidence: 75, issue: 'x', fix: 'y', isHardRule: false }
+  const result = consolidate({
+    perReviewer: [{ role: 'correctness' as ReviewRole, findings: [finding] }],
+    autoPass: [],
+    verdicts: [],
+    patternCapCount: 3,
+  })
+  assert(result.length === 1, `correctness confidence=75 should pass (75 >= 75), got ${result.length}`)
+})
+test('consensus "2/3" when 2 of 3 reviewers raise same finding', () => {
+  const f: Finding = { severity: 'warning', rule: 'R-dup', file: 'a.ts', line: 10, confidence: 80, issue: 'x', fix: 'y', isHardRule: false }
+  const result = consolidate({
+    perReviewer: [
+      { role: 'correctness' as ReviewRole, findings: [f] },
+      { role: 'architecture' as ReviewRole, findings: [f] },
+      { role: 'dx' as ReviewRole, findings: [] },
+    ],
+    autoPass: [],
+    verdicts: [],
+    patternCapCount: 3,
+  })
+  assert(result.length === 1, `expected 1 deduped finding, got ${result.length}`)
+  assert(result[0]?.consensus === '2/3', `expected "2/3", got "${result[0]?.consensus}"`)
+})
+test('autoPass finding gets consensus "auto"', () => {
+  const f: Finding = { severity: 'critical', rule: 'HR-1', file: 'a.ts', line: 1, confidence: 95, issue: 'x', fix: 'y', isHardRule: true }
+  const result = consolidate({
+    perReviewer: [],
+    autoPass: [f],
+    verdicts: [],
+    patternCapCount: 3,
+  })
+  assert(result[0]?.consensus === 'auto', `expected "auto", got "${result[0]?.consensus}"`)
+})
+test('pattern cap note includes file basenames', () => {
+  const makeF = (file: string): Finding => ({ severity: 'warning', rule: 'R-cap', file, line: 1, confidence: 80, issue: 'x', fix: 'y', isHardRule: false })
+  const result = consolidate({
+    perReviewer: [{ role: 'correctness' as ReviewRole, findings: [makeF('src/a.ts'), makeF('src/b.ts'), makeF('src/c.ts'), makeF('src/d.ts')] }],
+    autoPass: [],
+    verdicts: [],
+    patternCapCount: 2,
+  })
+  const withNote = result.find(r => r.patternNote !== undefined)
+  if (withNote === undefined) throw new Error('expected patternNote on a finding')
+  const note = withNote.patternNote ?? ''
+  assert(note.includes('c.ts') || note.includes('d.ts'), `patternNote missing filenames: "${note}"`)
+})
+test('Hard Rule confidence=40 passes (bypasses threshold)', () => {
+  const finding: Finding = { severity: 'warning', rule: 'HR-low', file: 'x.ts', line: 1, confidence: 40, issue: 'x', fix: 'y', isHardRule: true }
+  const result = consolidate({
+    perReviewer: [{ role: 'dx' as ReviewRole, findings: [finding] }],
+    autoPass: [],
+    verdicts: [],
+    patternCapCount: 3,
+  })
+  assert(result.length === 1, `Hard Rule should bypass threshold, got ${result.length}`)
 })
 
 // --- output ---

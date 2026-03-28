@@ -47,19 +47,36 @@ if [ -f "$DISMISSED_FILE" ]; then
   SDK_ARGS="$SDK_ARGS --dismissed $DISMISSED_FILE"
 fi
 
+# Pass hard rules explicitly (CLI also auto-discovers .build/hard-rules.md)
+[ -n "${HARD_RULES_PATH}" ] && SDK_ARGS="$SDK_ARGS --hard-rules $HARD_RULES_PATH"
+
 # Run SDK reviewer
 sdk_result=$(cd "$SDK_DIR" && node_modules/.bin/tsx src/cli.ts review $SDK_ARGS 2>&1)
 sdk_exit=$?
+
+# Validate: must be JSON with findings array (not just any {})
+_is_valid_json() {
+  if command -v jq >/dev/null 2>&1; then
+    echo "$1" | jq -e '.findings' >/dev/null 2>&1
+  else
+    echo "$1" | node -e "const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')); process.exit(Array.isArray(d.findings)?0:1)" 2>/dev/null
+  fi
+}
 ```
 
-If `sdk_exit=0` and `sdk_result` is valid JSON (starts with `{`):
+If `sdk_exit=0` and `_is_valid_json "$sdk_result"` succeeds:
 
 **Use SDK output directly:**
 
 - Parse `sdk_result` as the review report JSON
-- Map `findings[]` to the standard findings table format per [review-output-format](../../review-output-format/SKILL.md)
+- Map `findings[]` to the standard findings table format per [review-output-format](../../review-output-format/SKILL.md):
+  - `isHardRule: true` → append `[HR]` badge to finding row
+  - `confidence` → display as `C:{value}` (e.g., `C:85`)
+  - `consensus` → use N/M format directly (e.g., `"2/3"`)
+- Map `strengths[]` → Strengths section
+- If `noiseWarning: true` → prepend `⚠ Low signal` notice per review-conventions
 - Write to `{artifacts_dir}/review-findings-{iteration}.md`
-- Report: `SDK Review Engine: {critical} critical · {warning} warnings · {info} info · cost $X`
+- Report: `SDK Review Engine (iter {N}): {summary.critical}c · {summary.warning}w · {summary.info}i · cost $X`
 - **Skip the Agent Teams reviewer spawning below** — proceed directly to Phase 6 output section
 
 **If `sdk_exit != 0` or result is not valid JSON**, log `SDK review failed (exit {sdk_exit}) — falling back to Agent Teams` and continue with the Agent Teams workflow below.

@@ -1,18 +1,13 @@
-import type { AgentDefinition } from '@anthropic-ai/claude-agent-sdk'
-import { query } from '@anthropic-ai/claude-agent-sdk'
+import Anthropic from '@anthropic-ai/sdk'
 import type { ModelName, ResolvedConfig } from '../../config.js'
 import type { Finding, Verdict } from '../../types.js'
 import { FALSIFICATION_PROMPT } from '../prompts/falsifier.js'
 import { VerdictResultSchema, verdictResultJsonSchema } from '../schemas/verdict.js'
 
-function createFalsifier(model: ModelName): AgentDefinition {
-  return {
-    description: 'Challenges review findings — goal is REJECT, not confirm',
-    prompt: FALSIFICATION_PROMPT,
-    tools: ['Read', 'Grep', 'Glob'],
-    model,
-    maxTurns: 3,
-  }
+const MODEL_MAP: Record<ModelName, string> = {
+  opus: 'claude-opus-4-6',
+  sonnet: 'claude-sonnet-4-6',
+  haiku: 'claude-haiku-4-5',
 }
 
 export async function runFalsification(params: {
@@ -21,53 +16,71 @@ export async function runFalsification(params: {
 }): Promise<Verdict[]> {
   if (params.findings.length === 0) return []
 
-  const agent = createFalsifier(params.config.model)
+  const client = new Anthropic()
+
   const findingsSummary = params.findings
     .map((f, i) => `[${i}] ${f.severity} | ${f.rule} | ${f.file}:${f.line ?? '?'} — ${f.issue}`)
     .join('\n')
 
-  const verdicts: Verdict[] = []
-
-  for await (const msg of query({
-    prompt: `Challenge each of the following ${params.findings.length} findings. Return verdicts as JSON.\n\nFINDINGS:\n${findingsSummary}`,
-    options: {
-      agents: { falsifier: agent },
-      agent: 'falsifier',
-      allowedTools: ['Read', 'Grep', 'Glob'],
-      // NOTE: permissionMode and allowDangerouslySkipPermissions are silently ignored
-      // when run inside a Claude Code plugin. This SDK is designed for CLI use only.
-      // Run via: npx tsx anvil-sdk/src/cli.ts review ...
-      permissionMode: 'bypassPermissions',
-      allowDangerouslySkipPermissions: true,
-      maxTurns: params.config.maxTurnsFalsification,
-      maxBudgetUsd: params.config.maxBudgetFalsification,
-      outputFormat: {
-        type: 'json_schema',
-        schema: verdictResultJsonSchema as Record<string, unknown>,
+  let response: Anthropic.Message
+  try {
+    response = await client.messages.create({
+      model: MODEL_MAP[params.config.model],
+      max_tokens: 2048,
+      // Stable system prompt cached after first call (~600+ tokens → 0.1x on repeat)
+      system: [
+        {
+          type: 'text',
+          text: FALSIFICATION_PROMPT,
+          cache_control: { type: 'ephemeral' },
+        },
+      ],
+      output_config: {
+        format: {
+          type: 'json_schema',
+          schema: verdictResultJsonSchema as Record<string, unknown>,
+        },
       },
-    },
-  })) {
-    if (msg.type === 'result') {
-      if (msg.subtype === 'success') {
-        const raw = msg.structured_output
-        if (raw === undefined || raw === null) {
-          console.warn('[sdk-review] falsifier returned no structured_output — skipping falsification')
-          return []
-        }
-        const parsed = VerdictResultSchema.safeParse(raw)
-        if (parsed.success) {
-          verdicts.push(...parsed.data.verdicts)
-        } else {
-          console.warn(`[sdk-review] verdicts failed schema validation, skipping: ${JSON.stringify(parsed.error.issues)}`)
-          return []
-        }
-      } else {
-        // Budget exceeded or other non-fatal error — degrade gracefully, return no verdicts
-        console.warn(`[sdk-review] falsifier ended with subtype: ${msg.subtype} — skipping, findings pass through unchanged`)
-        return []
-      }
-    }
+      messages: [
+        {
+          role: 'user',
+          content: `Challenge each of the following ${params.findings.length} findings. Return verdicts as JSON.\n\nFINDINGS:\n${findingsSummary}`,
+        },
+      ],
+    })
+  } catch (err) {
+    // Non-fatal: budget exceeded, rate limit, etc. — findings pass through unchanged
+    console.warn(`[sdk-review] falsifier API call failed — skipping: ${String(err)}`)
+    return []
   }
 
-  return verdicts
+  if (process.env.SDK_DEBUG) {
+    const usage = response.usage as unknown as Record<string, number>
+    console.error(
+      `[falsifier] tokens: input=${usage.input_tokens} cache_read=${usage.cache_read_input_tokens ?? 0} cache_write=${usage.cache_creation_input_tokens ?? 0}`,
+    )
+  }
+
+  const textBlock = response.content.find((b): b is Anthropic.TextBlock => b.type === 'text')
+  if (textBlock === undefined) {
+    console.warn('[sdk-review] falsifier returned no text block — skipping')
+    return []
+  }
+
+  let parsed: ReturnType<typeof VerdictResultSchema.safeParse>
+  try {
+    parsed = VerdictResultSchema.safeParse(JSON.parse(textBlock.text))
+  } catch {
+    console.warn('[sdk-review] falsifier returned invalid JSON — skipping')
+    return []
+  }
+
+  if (!parsed.success) {
+    console.warn(
+      `[sdk-review] verdicts failed schema validation — skipping: ${JSON.stringify(parsed.error.issues)}`,
+    )
+    return []
+  }
+
+  return parsed.data.verdicts
 }
