@@ -65,6 +65,17 @@ function parseFileBlock(block: string): FileDiff | null {
   return { path, hunks, language, diffLineCount }
 }
 
+function parseDiffOutput(output: string): FileDiff[] {
+  if (!output.trim()) return []
+  const blocks = output.split(/^diff --git /m).filter(b => b.trim().length > 0)
+  const results: FileDiff[] = []
+  for (const block of blocks) {
+    const parsed = parseFileBlock(block)
+    if (parsed !== null) results.push(parsed)
+  }
+  return results
+}
+
 const SAFE_REF = /^[\w/.-]+$/
 
 /**
@@ -81,7 +92,14 @@ export function readDiff(target: { branch?: string; baseBranch?: string }): File
   }
 
   const base = target.baseBranch ?? 'origin/main'
-  const mergeBase = execSync(`git merge-base HEAD ${base}`, { encoding: 'utf8' }).trim()
+
+  let mergeBase: string
+  try {
+    mergeBase = execSync(`git merge-base HEAD ${base}`, { encoding: 'utf8' }).trim()
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    throw new Error(`git merge-base failed: ${message}`)
+  }
 
   let output: string
   try {
@@ -91,20 +109,7 @@ export function readDiff(target: { branch?: string; baseBranch?: string }): File
     throw new Error(`git diff failed: ${message}`)
   }
 
-  if (!output.trim()) return []
-
-  // Split by "diff --git" to get per-file blocks (first element will be empty)
-  const blocks = output.split(/^diff --git /m).filter(b => b.trim().length > 0)
-
-  const results: FileDiff[] = []
-  for (const block of blocks) {
-    const parsed = parseFileBlock(block)
-    if (parsed !== null) {
-      results.push(parsed)
-    }
-  }
-
-  return results
+  return parseDiffOutput(output)
 }
 
 /**
@@ -124,19 +129,5 @@ export function readPrDiff(prNumber: number): FileDiff[] {
     throw new Error(`gh pr diff ${prNumber} failed: ${message}`)
   }
 
-  if (!output.trim()) return []
-
-  const blocks = output.split(/^diff --git /m).filter(b => b.trim().length > 0)
-
-  const results: FileDiff[] = []
-  for (const block of blocks) {
-    const parsed = parseFileBlock(block)
-    if (parsed !== null) {
-      results.push(parsed)
-    }
-  }
-
-  return results
+  return parseDiffOutput(output)
 }
-
-// Test with: npx tsx src/review/diff-reader.ts (manual)

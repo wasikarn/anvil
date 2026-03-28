@@ -14,11 +14,17 @@ export function triage(findings: Finding[], params?: {
 }): TriagedFindings {
   const autoPassAt = params?.autoPassThreshold ?? 90
   const autoDropAt = params?.autoDropThreshold ?? 79
-  return {
-    autoPass: findings.filter(f => f.isHardRule && f.confidence >= autoPassAt),
-    autoDrop: findings.filter(f => !f.isHardRule && f.severity === 'info' && f.confidence <= autoDropAt),
-    mustFalsify: findings.filter(
-      f => !(f.isHardRule && f.confidence >= autoPassAt) && !(!f.isHardRule && f.severity === 'info' && f.confidence <= autoDropAt)
-    ),
+  const autoPass: Finding[] = []
+  const autoDrop: Finding[] = []
+  const mustFalsify: Finding[] = []
+  for (const f of findings) {
+    if (f.isHardRule && f.confidence >= autoPassAt) {
+      autoPass.push(f)
+    } else if (!f.isHardRule && f.severity === 'info' && f.confidence <= autoDropAt) {
+      autoDrop.push(f)
+    } else {
+      mustFalsify.push(f)
+    }
   }
+  return { autoPass, autoDrop, mustFalsify }
 }

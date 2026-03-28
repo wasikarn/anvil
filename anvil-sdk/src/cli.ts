@@ -281,7 +281,6 @@ async function runReviewCommand(args: string[]): Promise<void> {
 interface ParsedPlanChallengeArgs {
   planFile: string | undefined
   researchFile: string | undefined
-  output: 'json'
   budget: number | undefined
 }
 
@@ -293,7 +292,6 @@ export function parsePlanChallengeArgs(args: string[]): ParsedPlanChallengeArgs 
   ], {
     planFile: undefined as string | undefined,
     researchFile: undefined as string | undefined,
-    output: 'json' as const,
     budget: undefined as number | undefined,
   })
 }
@@ -327,7 +325,6 @@ async function runPlanChallengeCommand(args: string[]): Promise<void> {
 interface ParsedInvestigateArgs {
   bug: string | undefined
   quick: boolean
-  output: 'json'
   budget: number | undefined
 }
 
@@ -339,7 +336,6 @@ export function parseInvestigateArgs(args: string[]): ParsedInvestigateArgs {
   ], {
     bug: undefined as string | undefined,
     quick: false as boolean,
-    output: 'json' as const,
     budget: undefined as number | undefined,
   })
 }
@@ -364,7 +360,6 @@ async function runInvestigateCommand(args: string[]): Promise<void> {
 
 interface ParsedFalsifyArgs {
   findingsFile: string | undefined
-  output: 'json'
   budget: number | undefined
 }
 
@@ -374,7 +369,6 @@ export function parseFalsifyArgs(args: string[]): ParsedFalsifyArgs {
     { flag: '--budget', field: 'budget', type: 'positiveFloat', errorPrefix: '[sdk-falsify]' },
   ], {
     findingsFile: undefined as string | undefined,
-    output: 'json' as const,
     budget: undefined as number | undefined,
   })
 }

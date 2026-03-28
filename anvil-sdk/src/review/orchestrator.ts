@@ -33,7 +33,7 @@ export async function runReview(params: {
 
   const results: ReviewerResult[] = settled.map(r => {
     if (r.status === 'rejected') {
-      console.warn(`[sdk-review] reviewer failed:`, r.reason)
+      console.warn(`[sdk-review] reviewer failed: ${String(r.reason)}`)
       return { findings: [], strengths: [], cost: 0, tokens: 0 }
     }
     return r.value

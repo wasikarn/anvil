@@ -1,6 +1,7 @@
 import { runClaudeSubprocess } from '../../claude-subprocess.js'
 import type { ResolvedConfig } from '../../config.js'
 import type { Finding, Verdict } from '../../types.js'
+import { findingKey } from '../consolidator.js'
 import { FALSIFICATION_PROMPT } from '../prompts/falsifier.js'
 import { VerdictResultSchema, verdictResultJsonSchema } from '../schemas/verdict.js'
 
@@ -12,7 +13,7 @@ export async function runFalsification(params: {
 
   const findingsSummary = params.findings
     .map((f, i) => {
-      const key = `${f.file}:${f.line ?? 'null'}:${f.rule}`
+      const key = findingKey(f)
       return `[${i}] ${f.severity} | ${f.rule} | ${f.file}:${f.line ?? '?'} — ${f.issue} [key:${key}]`
     })
     .join('\n')

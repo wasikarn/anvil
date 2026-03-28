@@ -90,21 +90,14 @@ export function mapToDomains(files: FileDiff[]): DiffBucket[] {
   for (const file of files) {
     const roles = getRolesForFile(file)
     for (const role of roles) {
-      const bucket = buckets[role] ?? []
-      bucket.push(file)
-      buckets[role] = bucket
+      buckets[role].push(file)
     }
   }
 
   const roles: ReviewRole[] = ['correctness', 'architecture', 'dx']
-  return roles.map(role => {
-    const files = buckets[role] ?? []
-    return {
-      role,
-      files,
-      totalLines: files.reduce((sum, f) => sum + f.diffLineCount, 0),
-    }
-  })
+  return roles.map(role => ({
+    role,
+    files: buckets[role],
+    totalLines: buckets[role].reduce((sum, f) => sum + f.diffLineCount, 0),
+  }))
 }
-
-// Test with: npx tsx src/review/domain-mapper.ts (manual)

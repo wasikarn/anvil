@@ -112,8 +112,13 @@ function patternCap(
 
   const result: ConsolidatedFinding[] = []
   for (const [, group] of byRule) {
+    if (group.length === 1) {
+      const only = group[0]
+      if (only !== undefined) result.push(only)
+      continue
+    }
     // Sort by severity within group so critical findings are kept over info
-    const sorted = [...group].sort((a, b) => severityRank(a.severity) - severityRank(b.severity))
+    const sorted = group.slice().sort((a, b) => severityRank(a.severity) - severityRank(b.severity))
     if (sorted.length <= capCount) {
       result.push(...sorted)
     } else {
@@ -140,7 +145,7 @@ function patternCap(
 }
 
 function sortBySeverity(findings: ConsolidatedFinding[]): ConsolidatedFinding[] {
-  return [...findings].sort((a, b) => severityRank(a.severity) - severityRank(b.severity))
+  return findings.sort((a, b) => severityRank(a.severity) - severityRank(b.severity))
 }
 
 /**
