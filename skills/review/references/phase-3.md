@@ -1,5 +1,49 @@
 # Phase 3: Create Team and Independent Review
 
+## SDK Fast-Path (try before spawning Agent Teams)
+
+**Try the SDK Review Engine first (faster, deterministic, lower token cost):**
+
+```bash
+SDK_DIR="${CLAUDE_SKILL_DIR}/../../anvil-sdk"
+
+# Auto-install dependencies on first use
+if [ ! -d "$SDK_DIR/node_modules" ]; then
+  (cd "$SDK_DIR" && npm install --silent 2>/dev/null)
+fi
+
+# Build CLI args
+SDK_ARGS="--pr $0 --output json"
+
+# Pass dismissed patterns if file exists
+DISMISSED_FILE="$(bash "${CLAUDE_SKILL_DIR}/../../scripts/artifact-dir.sh" review)/review-dismissed.md"
+if [ -f "$DISMISSED_FILE" ]; then
+  SDK_ARGS="$SDK_ARGS --dismissed $DISMISSED_FILE"
+fi
+
+# Pass hard rules if loaded in Phase 2
+if [ -f "{hard_rules_path}" ]; then
+  SDK_ARGS="$SDK_ARGS --hard-rules {hard_rules_path}"
+fi
+
+# Run SDK reviewer
+sdk_result=$(cd "$SDK_DIR" && node_modules/.bin/tsx src/cli.ts review $SDK_ARGS 2>&1)
+sdk_exit=$?
+```
+
+If `sdk_exit=0` and `sdk_result` is valid JSON (starts with `{`):
+
+**Use SDK output directly:**
+
+- Parse `sdk_result` as the review report JSON
+- Map `findings[]` to the standard findings table format per [review-output-format](../../review-output-format/SKILL.md)
+- Report: `SDK Review Engine: {critical} critical · {warning} warnings · {info} info · cost $X`
+- **Skip Agent Teams spawning (Phases 3-5)** — proceed directly to Phase 6 (action phase)
+
+**If `sdk_exit != 0` or result is not valid JSON**, log `SDK review failed (exit {sdk_exit}) — falling back to Agent Teams` and continue with the steps below.
+
+---
+
 ## Pre-spawn: Diff Scope Check
 
 Before spawning reviewers, count changed files from the already-loaded PR diff stat header:

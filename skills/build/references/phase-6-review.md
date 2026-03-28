@@ -26,7 +26,47 @@ Increment `iteration_count` in anvil-context.md before returning to Phase 4.
 
 ---
 
-## Stage 2: Code Quality (Conditional Dispatch)
+## Stage 2: Code Quality
+
+**Try the SDK Review Engine first (faster, deterministic, lower token cost):**
+
+```bash
+SDK_DIR="${CLAUDE_SKILL_DIR}/../../anvil-sdk"
+
+# Auto-install dependencies on first use
+if [ ! -d "$SDK_DIR/node_modules" ]; then
+  (cd "$SDK_DIR" && npm install --silent 2>/dev/null)
+fi
+
+# Build CLI args
+SDK_ARGS="--base-branch {base_branch} --output json"
+
+# Pass dismissed patterns if file exists
+DISMISSED_FILE="$(bash "${CLAUDE_SKILL_DIR}/../../scripts/artifact-dir.sh" review)/review-dismissed.md"
+if [ -f "$DISMISSED_FILE" ]; then
+  SDK_ARGS="$SDK_ARGS --dismissed $DISMISSED_FILE"
+fi
+
+# Run SDK reviewer
+sdk_result=$(cd "$SDK_DIR" && node_modules/.bin/tsx src/cli.ts review $SDK_ARGS 2>&1)
+sdk_exit=$?
+```
+
+If `sdk_exit=0` and `sdk_result` is valid JSON (starts with `{`):
+
+**Use SDK output directly:**
+
+- Parse `sdk_result` as the review report JSON
+- Map `findings[]` to the standard findings table format per [review-output-format](../../review-output-format/SKILL.md)
+- Write to `{artifacts_dir}/review-findings-{iteration}.md`
+- Report: `SDK Review Engine: {critical} critical · {warning} warnings · {info} info · cost $X`
+- **Skip the Agent Teams reviewer spawning below** — proceed directly to Phase 6 output section
+
+**If `sdk_exit != 0` or result is not valid JSON**, log `SDK review failed (exit {sdk_exit}) — falling back to Agent Teams` and continue with the Agent Teams workflow below.
+
+---
+
+**Fallback — Agent Teams:**
 
 Check diff before spawning reviewers (combine staged + unstaged to catch all changed files):
 
@@ -130,7 +170,9 @@ If agent errors → dedup, pattern-cap, sort, and signal-check inline per [revie
 
 **GATE:** Findings consolidated → update `Phase: review` in anvil-context.md → proceed to Assess.
 
-## Phase 7: Falsification Pass (Full mode iter 1 only)
+## Phase 7: Falsification Pass (Agent Teams fallback, Full mode iter 1 only)
+
+> Skip this phase if Stage 2 used the SDK Review Engine — falsification was already applied internally.
 
 After debate completes but **before** dispatching `review-consolidator`, spawn the `falsification-agent` (defined in `agents/falsification-agent.md`) with the raw pre-consolidation findings table inline.
 
