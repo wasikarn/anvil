@@ -2,6 +2,7 @@
  * Smoke test — validates non-LLM components of the SDK Review Engine.
  * Run with: node_modules/.bin/tsx smoke-test.ts
  */
+import { execSync } from 'node:child_process'
 import { readDiff } from './src/review/diff-reader.js'
 import { mapToDomains } from './src/review/domain-mapper.js'
 import { triage } from './src/review/triage.js'
@@ -333,6 +334,24 @@ test('parseFalsifyArgs returns findings file path', () => {
 test('parseFalsifyArgs defaults findingsFile to undefined', () => {
   const result = parseFalsifyArgs([])
   assert(result.findingsFile === undefined, 'expected undefined findingsFile')
+})
+
+// --- no SDK imports ---
+console.log('\nno-sdk-imports')
+const sdkDir = new URL('.', import.meta.url).pathname.replace(/\/$/, '')
+test('no @anthropic-ai/claude-agent-sdk imports remain', () => {
+  const result = execSync(
+    'grep -r "claude-agent-sdk" src/ --include="*.ts" -l 2>/dev/null || true',
+    { encoding: 'utf8', cwd: sdkDir },
+  ).trim()
+  assert(result === '', `Agent SDK imports found in: ${result}`)
+})
+test('no @anthropic-ai/sdk imports remain', () => {
+  const result = execSync(
+    "grep -rl \"@anthropic-ai/sdk\" src/ --include='*.ts' 2>/dev/null || true",
+    { encoding: 'utf8', cwd: sdkDir },
+  ).trim()
+  assert(result === '', `Anthropic SDK imports found in: ${result}`)
 })
 
 // --- summary ---

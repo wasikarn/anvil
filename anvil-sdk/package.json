@@ -7,8 +7,6 @@
     "review": "tsx src/cli.ts review"
   },
   "dependencies": {
-    "@anthropic-ai/claude-agent-sdk": "^0.2.85",
-    "@anthropic-ai/sdk": "^0.80.0",
     "zod": "^4.0.0"
   },
   "devDependencies": {

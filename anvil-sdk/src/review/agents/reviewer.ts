@@ -1,6 +1,6 @@
-import type { AgentDefinition } from '@anthropic-ai/claude-agent-sdk'
-import type { ModelName } from '../../config.js'
-import type { DiffBucket, ReviewRole } from '../../types.js'
+import { runClaudeSubprocess } from '../../claude-subprocess.js'
+import type { ResolvedConfig } from '../../config.js'
+import type { DiffBucket, ReviewRole, ReviewerResult } from '../../types.js'
 import { ADONISJS_LENS } from '../lenses/adonisjs.js'
 import { API_DESIGN_LENS } from '../lenses/api-design.js'
 import { DATABASE_LENS } from '../lenses/database.js'
@@ -14,6 +14,7 @@ import { buildReviewer1Prompt } from '../prompts/reviewer-1.js'
 import { buildReviewer2Prompt } from '../prompts/reviewer-2.js'
 import { buildReviewer3Prompt } from '../prompts/reviewer-3.js'
 import { SHARED_RULES } from '../prompts/shared-rules.js'
+import { FindingResultSchema, findingResultJsonSchema } from '../schemas/finding.js'
 
 // Lens assignment per role:
 // correctness: security, error-handling, typescript [+ adonisjs if detected]
@@ -38,16 +39,14 @@ function getLensesForRole(role: ReviewRole, isAdonisProject: boolean): string {
   return parts.join('\n\n')
 }
 
-export function createReviewer(params: {
+export async function runReviewer(params: {
   bucket: DiffBucket
   hardRules: string
   dismissedPatterns: string
   isAdonisProject: boolean
-  model: ModelName
-}): AgentDefinition {
+  config: ResolvedConfig
+}): Promise<ReviewerResult> {
   const lensContent = getLensesForRole(params.bucket.role, params.isAdonisProject)
-
-  // Build diff content from bucket files
   const diffContent = params.bucket.files
     .map(f => `### ${f.path}\n\`\`\`${f.language}\n${f.hunks}\n\`\`\``)
     .join('\n\n')
@@ -60,25 +59,50 @@ export function createReviewer(params: {
     dismissedPatterns: params.dismissedPatterns,
   }
 
-  // Pick prompt builder based on role
-  let prompt: string
+  let systemPrompt: string
   switch (params.bucket.role) {
     case 'correctness':
-      prompt = buildReviewer1Prompt(promptConfig)
+      systemPrompt = buildReviewer1Prompt(promptConfig)
       break
     case 'architecture':
-      prompt = buildReviewer2Prompt(promptConfig)
+      systemPrompt = buildReviewer2Prompt(promptConfig)
       break
     case 'dx':
-      prompt = buildReviewer3Prompt(promptConfig)
+      systemPrompt = buildReviewer3Prompt(promptConfig)
       break
   }
 
+  let result: Awaited<ReturnType<typeof runClaudeSubprocess>>
+  try {
+    result = await runClaudeSubprocess({
+      systemPrompt,
+      userMessage: 'Review the code changes in your context and return findings as JSON.',
+      allowedTools: ['Read', 'Grep', 'Glob'],
+      outputSchema: findingResultJsonSchema as Record<string, unknown>,
+      maxTurns: params.config.maxTurnsReviewer,
+      maxBudgetUsd: params.config.maxBudgetPerReviewer,
+    })
+  } catch (err) {
+    console.warn(`[sdk-review] reviewer (${params.bucket.role}) failed: ${String(err)}`)
+    return { findings: [], strengths: [], cost: 0, tokens: 0 }
+  }
+
+  const raw = result.structuredOutput
+  if (raw === undefined || raw === null) {
+    console.warn(`[sdk-review] reviewer (${params.bucket.role}) returned no structured output — skipping`)
+    return { findings: [], strengths: [], cost: 0, tokens: 0 }
+  }
+
+  const parsed = FindingResultSchema.safeParse(raw)
+  if (!parsed.success) {
+    console.warn(`[sdk-review] reviewer (${params.bucket.role}) schema failed — skipping`)
+    return { findings: [], strengths: [], cost: 0, tokens: 0 }
+  }
+
   return {
-    description: `Code reviewer: ${params.bucket.role}`,
-    prompt,
-    tools: ['Read', 'Grep', 'Glob'],
-    model: params.model,
-    maxTurns: 15,
+    findings: parsed.data.findings,
+    strengths: parsed.data.strengths ?? [],
+    cost: 0,
+    tokens: 0,
   }
 }
