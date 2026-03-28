@@ -56,6 +56,7 @@ skills/<name>/
 | `status` | Show active Anvil session artifacts and current phase |
 | `plugin-qa` | Run QA check suite to verify all hooks, skills, and plugin structure |
 | `analyze-claude-features` | Audit project against official Claude Code features and score adoption coverage |
+| `promote-hard-rule` | Review auto-detected Hard Rule candidates (from metrics-analyst) and approve/reject/defer each one — never auto-applies |
 | `review-rules` | _(background)_ 12-point review framework — preloaded into reviewer agents |
 | `review-conventions` | _(background)_ Comment labels, dedup protocol, PR size thresholds — preloaded into reviewer agents |
 | `review-output-format` | _(background)_ PR review output format templates — preloaded into reviewer agents |

@@ -145,39 +145,62 @@ scanning `review-findings-*.md` files for that session's date in the artifacts d
 are absent, count 0 hits for that session and note the limitation. A category needs ≥3 hits
 across the 5 sessions to trigger.
 
-**5c. If ANY category hits ≥3 of the last 5 Full-mode sessions:**
+**5c. If ANY category hits ≥3 of the last 5 Full-mode sessions — compute evidence score:**
 
-Write `{session_dir}/lens-update-suggestion.md`:
-
-````markdown
-## Lens Update Suggestion
-
-Generated: {ISO date}
-Pattern: [{category}] appeared in {count}/5 recent Full-mode sessions
-
-### Recurring Finding: {category}
-
-Sessions: {list of dates where it appeared}
-
-Sample finding from this session:
-> {quote one representative finding with file:line}
-
-### Suggested Action
-
-Review lens: {lens file that covers this category — e.g. `error-handling.md` for ERROR_HANDLING}
-Consider adding a Hard Rule or Warning pattern for this finding to:
-- `.claude/skills/review-rules/hard-rules.md` (project-wide), or
-- The relevant `review-lenses/*.md` file (category-specific)
-
-**This is a suggestion only — never auto-applied. Review and approve before any changes.**
-````
-
-Then output to conversation:
+For each triggering category, compute a score to decide how to route the suggestion:
 
 ```text
-⚠️  Recurring pattern: [{category}] found in {count}/5 recent Full-mode sessions.
-Suggestion saved to: {session_dir}/lens-update-suggestion.md
+score = base + bonuses + penalties
+
+base:
+  3/5 sessions = 40
+  4/5 sessions = 60
+  5/5 sessions = 80
+
+bonuses (cumulative):
+  distinct_tasks ≥ 3 in the matching sessions = +20   (not a single task inflating count)
+  category is SECURITY, NULL_CHECK, or DATA_LOSS = +20 (high-cost failure modes)
+  category is TYPE_SAFETY or ERROR_HANDLING = +10
+
+penalties (cumulative):
+  all matching sessions share the same task name = -30  (task repetition, not real pattern)
+  any session's entry has findings_reversed > 2 = -10 per session  (falsifier was rejecting
+    findings in those sessions — signal the reviewer was noisy, not category-specific)
+  category is STYLE, NAMING, or FORMATTING only = -15  (low signal, high variance)
 ```
+
+**Route based on score:**
+
+- **score ≥ 70 → candidate-rules.md** (quarantine for human review):
+
+  Append to `{project_root}/.claude/skills/review-rules/candidate-rules.md` (create if absent):
+
+  ````markdown
+  ## [PENDING] {category}: {one-line rule draft from sample finding}
+
+  <!-- candidate: {ISO date} | score: {N}/100 | evidence: {count}/5 sessions -->
+
+  **Evidence:**
+  - Sessions: {list of dates}
+  - Distinct tasks: {N} ({list of task names})
+  - Score breakdown: base={N} + bonuses={N} - penalties={N}
+
+  **Sample finding:**
+  > {quote one representative finding with file:line from current session}
+
+  **Suggested rule text:**
+  {draft a concrete, testable rule — "Always X" or "Never Y in context Z"}
+
+  **Status:** PENDING — run `/promote-hard-rule` to approve or reject
+  ````
+
+  Then output: `📋 Rule candidate added: [{category}] — {count}/5 sessions, score {N}/100. Run /promote-hard-rule to review.`
+
+- **score 40–69 → lens-update-suggestion.md** (weak signal, informational only):
+
+  Write `{session_dir}/lens-update-suggestion.md` with the existing format (category, sessions, sample finding, suggested action). Output: `⚠️ Recurring pattern: [{category}] found in {count}/5 sessions (score {N}/100 — below candidate threshold). Saved to lens-update-suggestion.md`
+
+- **score < 40 → silent pass** — noise, do not surface
 
 **5d. If fewer than 5 Full-mode entries in anvil-metrics.jsonl:**
 
