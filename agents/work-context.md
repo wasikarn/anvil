@@ -1,7 +1,7 @@
 ---
 name: work-context
 description: |
-  Session start work context digest — fetches active sprint tickets from Jira, open PRs awaiting your action, and recent unmerged local branches. Outputs a prioritized daily action table. Use proactively at session start or when resuming work after an interruption.
+  Fetches active sprint tickets from Jira, open PRs awaiting your action, and recent unmerged local branches into a prioritized daily action table. Use proactively at session start or when resuming work after an interruption.
 
   <example>
   Context: Developer starts a new Claude Code session and wants orientation.
@@ -20,7 +20,7 @@ description: |
   Any request for an overview of current work state, active tickets, or pending PRs triggers work-context. Sections are omitted if empty — no noise for clean states.
   </commentary>
   </example>
-tools: Bash, Read
+tools: Bash, Read, mcp__mcp-atlassian__jira_search
 model: haiku
 color: green
 effort: low

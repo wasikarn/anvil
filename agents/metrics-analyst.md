@@ -21,9 +21,9 @@ description: |
   </commentary>
   </example>
 tools: Bash, Read, Write
-model: haiku
+model: sonnet
 color: magenta
-effort: medium
+effort: low
 disallowedTools: Edit
 maxTurns: 5
 ---

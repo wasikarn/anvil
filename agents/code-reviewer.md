@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 description: |
-  General-purpose code reviewer with persistent memory. Reviews code, audits PRs, and checks recent changes in any project. Auto-detects stack and architecture from the codebase. Remembers patterns, conventions, and recurring issues across sessions.
+  Reviews code changes and PRs with persistent memory across sessions. Auto-detects stack and architecture from the codebase. Remembers patterns, conventions, and recurring issues to give context-aware feedback without re-explaining the same rules.
 
   <example>
   Context: User wants a code review of their current branch changes.

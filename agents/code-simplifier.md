@@ -1,7 +1,7 @@
 ---
 name: code-simplifier
 description: |
-  Use this agent when code has been written or modified and needs to be simplified for clarity, consistency, and maintainability while preserving all functionality. Invoke explicitly when asked to simplify or clean up code, or when build Phase 5 offers the optional simplification step. The agent focuses only on recently modified code (git diff HEAD) unless specific files are provided as $ARGUMENTS.
+  Simplifies changed code for clarity, consistency, and maintainability while preserving all functionality. Invoke explicitly when asked to simplify or clean up code, or when build Phase 5 offers the optional simplification step. Focuses only on recently modified code (git diff HEAD) unless specific files are provided as $ARGUMENTS.
 
   Examples:
 

@@ -20,7 +20,7 @@ description: |
   pr-review-bootstrap accepts either a PR number or a branch name. It extracts the Jira key from the branch name pattern (TP-NNN), fetches issue context, and writes review-context.md for downstream reviewer agents.
   </commentary>
   </example>
-tools: Bash, Read
+tools: Bash, Read, mcp__mcp-atlassian__jira_get_issue
 model: haiku
 color: green
 effort: low

@@ -1,7 +1,7 @@
 ---
 name: commit-finalizer
 description: |
-  Fast git commit agent using Haiku. Use after completing any code change to stage and commit with a well-formatted message. Cheaper than Sonnet for mechanical commit tasks. Accepts optional commit message hint as input. Follows conventional commits format. Does NOT push unless explicitly asked.
+  Stages and commits changes with a well-formatted conventional commit message. Use after completing any code change. Cheaper than Sonnet for mechanical commit tasks. Accepts optional commit message hint as input. Does NOT push unless explicitly asked.
 
   <example>
   Context: Developer has finished implementing a feature and wants to commit.

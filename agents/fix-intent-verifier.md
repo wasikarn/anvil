@@ -22,7 +22,7 @@ description: |
   </example>
 tools: Bash, Read, Grep
 model: sonnet
-color: yellow
+color: cyan
 effort: medium
 disallowedTools: Edit, Write
 maxTurns: 10
