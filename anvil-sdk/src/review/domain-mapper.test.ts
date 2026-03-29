@@ -66,6 +66,17 @@ describe('mapToDomains', () => {
     expect(buckets['dx']).toBeUndefined()
   })
 
+  it('Next.js App Router API route (.ts) → correctness (not dx)', () => {
+    const buckets = bucketsFor(['app/api/users/route.ts'])
+    expect(buckets['correctness']).toBeDefined()
+    expect(buckets['dx']).toBeUndefined()
+  })
+
+  it('Next.js App Router page (.tsx) → dx via extension', () => {
+    const buckets = bucketsFor(['app/products/page.tsx'])
+    expect(buckets['dx']).toBeDefined()
+  })
+
   it('config YAML → architecture', () => {
     const buckets = bucketsFor(['config/app.yaml'])
     expect(buckets['architecture']).toBeDefined()

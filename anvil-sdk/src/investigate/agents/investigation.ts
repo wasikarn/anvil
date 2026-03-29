@@ -6,6 +6,10 @@ import { INVESTIGATOR_PROMPT } from '../prompts/investigator.js'
 import type { DxFinding, InvestigationResult, RootCause } from '../schemas/investigation.js'
 import { InvestigationResultSchema, investigationResultJsonSchema } from '../schemas/investigation.js'
 
+// Turn budgets — separate from review config since investigation has different depth requirements
+const INVESTIGATOR_MAX_TURNS = 15
+const DX_ANALYST_MAX_TURNS = 10
+
 // Investigator returns root cause + fix plan items (no DX)
 const investigatorOutputSchema = {
   type: 'object',
@@ -34,7 +38,7 @@ async function runInvestigator(params: {
     userMessage: `Investigate this bug and return root cause + fix plan as JSON.\n\nBUG:\n${params.bugDescription}`,
     allowedTools: ['Read', 'Grep', 'Glob', 'Bash'],
     outputSchema: investigatorOutputSchema as Record<string, unknown>,
-    maxTurns: 15,
+    maxTurns: INVESTIGATOR_MAX_TURNS,
     maxBudgetUsd: params.config.maxBudgetPerReviewer,
     model: MODEL_ID[params.config.model],
   })
@@ -63,8 +67,8 @@ async function runDxAnalyst(params: {
       userMessage: `Audit the affected area of this bug for DX issues. Return findings as JSON.\n\nBUG:\n${params.bugDescription}`,
       allowedTools: ['Read', 'Grep', 'Glob'],
       outputSchema: dxAnalystOutputSchema as Record<string, unknown>,
-      maxTurns: 10,
-      maxBudgetUsd: params.config.maxBudgetFalsification,
+      maxTurns: DX_ANALYST_MAX_TURNS,
+      maxBudgetUsd: params.config.maxBudgetPerReviewer,
       model: MODEL_ID[params.config.model],
     })
   } catch (err) {

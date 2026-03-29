@@ -102,4 +102,25 @@ describe('formatMarkdown', () => {
     const md = formatMarkdown(report)
     expect(md).toContain('src/foo.ts\n')
   })
+
+  it('renders strengths section when strengths are present', () => {
+    const md = formatMarkdown(makeReport({ strengths: ['Good null guards at auth.ts:42'] }))
+    expect(md).toContain('## Strengths')
+    expect(md).toContain('- Good null guards at auth.ts:42')
+  })
+
+  it('omits strengths section when strengths is empty', () => {
+    const md = formatMarkdown(makeReport({ strengths: [] }))
+    expect(md).not.toContain('## Strengths')
+  })
+
+  it('renders noise warning when noiseWarning is true', () => {
+    const md = formatMarkdown(makeReport({ noiseWarning: true }))
+    expect(md).toContain('⚠️ High finding count detected')
+  })
+
+  it('omits noise warning when noiseWarning is false/undefined', () => {
+    const md = formatMarkdown(makeReport({ noiseWarning: false }))
+    expect(md).not.toContain('⚠️ High finding count detected')
+  })
 })

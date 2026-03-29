@@ -14,11 +14,12 @@ function getRolesForFile(file: FileDiff): Set<ReviewRole> {
   }
 
   // Frontend files → dx
+  // Note: app/ is intentionally excluded — Next.js App Router files are .tsx/.jsx
+  // (caught above) or server-side .ts files that belong in correctness/architecture.
   if (
     /\.(tsx|jsx)$/.test(p) ||
     p.includes('components/') ||
-    p.includes('pages/') ||
-    /(^|\/)app\//.test(p)
+    p.includes('pages/')
   ) {
     roles.add('dx')
   }

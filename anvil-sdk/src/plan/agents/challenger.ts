@@ -14,7 +14,7 @@ export async function runPlanChallenge(params: {
   const researchContent =
     params.researchPath !== undefined ? readFileSync(params.researchPath, 'utf8') : '(no research.md provided)'
 
-  const result = await runClaudeSubprocess({
+  const invoke = (): ReturnType<typeof runClaudeSubprocess> => runClaudeSubprocess({
     systemPrompt: PLAN_CHALLENGE_PROMPT,
     userMessage: `Challenge this implementation plan.\n\nPLAN:\n${planContent}\n\nRESEARCH:\n${researchContent}\n\nReturn verdicts as JSON.`,
     allowedTools: ['Read', 'Grep', 'Glob'],
@@ -23,6 +23,21 @@ export async function runPlanChallenge(params: {
     maxBudgetUsd: params.config.maxBudgetFalsification,
     model: MODEL_ID[params.config.model],
   })
+
+  let result: Awaited<ReturnType<typeof runClaudeSubprocess>>
+  try {
+    result = await invoke()
+  } catch (firstErr) {
+    const msg = String(firstErr)
+    if (msg.includes('rate_limit') || msg.includes('overload')) {
+      // One retry on transient server errors — 5s backoff is sufficient for rate limit windows
+      console.warn(`[sdk-plan-challenge] transient error — retrying once in 5s: ${msg}`)
+      await new Promise(res => setTimeout(res, 5_000))
+      result = await invoke()
+    } else {
+      throw firstErr
+    }
+  }
 
   const raw = result.structuredOutput
   if (raw === undefined || raw === null) {

@@ -34,7 +34,7 @@ function getLensesForRole(role: ReviewRole, isAdonisProject: boolean, diffConten
         parts.push(SECURITY_LENS)
       if (/try|catch|async|\.catch\(|Promise|new Error|throw/i.test(diffContent))
         parts.push(ERROR_HANDLING_LENS)
-      if (/\.ts|\.tsx|interface|type |as any|generic|<T>|extends/i.test(diffContent))
+      if (/\.tsx?|interface\b|as any|<[A-Z]\w*>|extends\b/i.test(diffContent))
         parts.push(TYPESCRIPT_LENS)
       // Fallback: TypeScript lens is always relevant for TS projects
       if (parts.length === 0) parts.push(TYPESCRIPT_LENS)
@@ -56,7 +56,7 @@ function getLensesForRole(role: ReviewRole, isAdonisProject: boolean, diffConten
     case 'dx':
       if (/\.tsx|\.jsx|useState|useEffect|component|render|style|css/i.test(diffContent))
         parts.push(FRONTEND_LENS)
-      if (/\.ts|\.tsx|interface|type |as any|generic|<T>|extends/i.test(diffContent))
+      if (/\.tsx?|interface\b|as any|<[A-Z]\w*>|extends\b/i.test(diffContent))
         parts.push(TYPESCRIPT_LENS)
       if (/try|catch|async|\.catch\(|Promise|new Error|throw/i.test(diffContent))
         parts.push(ERROR_HANDLING_LENS)

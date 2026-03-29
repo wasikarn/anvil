@@ -72,21 +72,34 @@ export function formatMarkdown(report: ReviewReport): string {
     ? '\n> ⚡ Trivial PR — single reviewer (< 50 diff lines, 1 domain). Findings show 1/1 consensus.'
     : ''
 
+  const noiseNote = report.noiseWarning
+    ? '\n> ⚠️ High finding count detected — review for false positives before acting on all items.'
+    : ''
+
+  const strengthsSection = report.strengths.length > 0
+    ? ['## Strengths', '', ...report.strengths.map(s => `- ${s}`), ''].join('\n')
+    : ''
+
   const sections = [
     `# PR Review — ${report.pr}${complexityNote}`,
     '',
     '## Summary',
     summaryTable,
     '',
-    `**Verdict:** ${verdictLabel}`,
+    `**Verdict:** ${verdictLabel}${noiseNote}`,
     '',
     '## Findings',
     '',
     findingsSections,
     '',
+  ]
+
+  if (strengthsSection) sections.push(strengthsSection)
+
+  sections.push(
     '## Cost',
     `Reviewers: $${(report.cost.total_usd - report.cost.falsification_usd).toFixed(4)} | Falsification: $${report.cost.falsification_usd.toFixed(4)} | Total: $${report.cost.total_usd.toFixed(4)} | Tokens: ${report.tokens.total.toLocaleString()}`,
-  ]
+  )
 
   return sections.join('\n')
 }
