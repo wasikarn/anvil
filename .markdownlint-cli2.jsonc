@@ -6,7 +6,7 @@
     "docs/superpowers/**/*.md",
     "docs/specs/**/*.md",
     "docs/eval/*.local.md",
-    "anvil-sdk/node_modules/**/*.md",
+    "devflow-sdk/node_modules/**/*.md",
     "node_modules/**/*.md"
   ]
 }
