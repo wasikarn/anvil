@@ -92,7 +92,7 @@ Hooks live at `hooks/`. All hooks are registered in `hooks/hooks.json` and distr
 | `PostToolUse` | `Edit\|Write` | _(inline markdownlint)_ |
 | `SubagentStop` | reviewer agent names | `subagent-stop-gate.sh` |
 
-> Full hook list: see [hooks/hooks.json](hooks/hooks.json) — 16 hooks total.
+> Full hook list: see [hooks/hooks.json](hooks/hooks.json) — 23 hooks total.
 
 </important>
 
