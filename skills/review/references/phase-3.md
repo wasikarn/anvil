@@ -31,62 +31,58 @@
 2. ถ้า SDK สำเร็จ → แสดงผลและ skip Phase 4 (ไม่มี debate) → proceed to Phase 5 (falsification)
 3. ถ้า SDK ล้มเหลว → spawn Teammate 1 (Correctness & Security) + Teammate 2 (Architecture & Performance) เท่านั้น → skip Phase 4 → proceed to Phase 5
 
-**Otherwise, try the SDK Review Engine first (faster, deterministic, lower token cost):**
+**Otherwise, try the devflow-engine resolve first (determines review mode from PR signals):**
 
 ```bash
 ENGINE_DIR="${CLAUDE_SKILL_DIR}/../../devflow-engine"
 
 if [ -d "$ENGINE_DIR" ] && [ -d "$ENGINE_DIR/node_modules" ]; then
-
-  # Build CLI args
-  SDK_ARGS="--pr $0 --output json"
-
-  # Pass dismissed patterns if file exists
+  # Build resolve args — note: $0 is skill template substitution for PR number (not shell $0)
+  RESOLVE_ARGS="--pr $0"
   DISMISSED_FILE="$(bash "${CLAUDE_SKILL_DIR}/../../scripts/artifact-dir.sh" review)/review-dismissed.md"
   if [ -f "$DISMISSED_FILE" ]; then
-    SDK_ARGS="$SDK_ARGS --dismissed $DISMISSED_FILE"
+    RESOLVE_ARGS="$RESOLVE_ARGS --dismissed $DISMISSED_FILE"
   fi
+  # Check for Jira key in arguments
+  echo "$ARGUMENTS" | grep -qE '[A-Z]+-[0-9]+' && RESOLVE_ARGS="$RESOLVE_ARGS --jira"
+  # Pass explicit mode flags from user args
+  echo "$ARGUMENTS" | grep -q '\-\-micro' && RESOLVE_ARGS="$RESOLVE_ARGS --micro"
+  echo "$ARGUMENTS" | grep -q '\-\-quick' && RESOLVE_ARGS="$RESOLVE_ARGS --quick"
+  echo "$ARGUMENTS" | grep -q '\-\-full'  && RESOLVE_ARGS="$RESOLVE_ARGS --full"
+  # Extract --focused area using perl (portable; grep -oP is macOS-incompatible)
+  focused_area=$(echo "$ARGUMENTS" | perl -ne 'if (/--focused\s+(\S+)/) { print $1; exit }')
+  [ -n "$focused_area" ] && RESOLVE_ARGS="$RESOLVE_ARGS --focused $focused_area"
 
-  # Pass hard rules if loaded in Phase 2
-  if [ -f "{hard_rules_path}" ]; then
-    SDK_ARGS="$SDK_ARGS --hard-rules {hard_rules_path}"
-  fi
+  # Capture stdout only; redirect stderr to /dev/null to prevent tsx warnings corrupting JSON
+  resolve_result=$(cd "$ENGINE_DIR" && node_modules/.bin/tsx src/cli.ts resolve $RESOLVE_ARGS 2>/dev/null)
+  resolve_exit=$?
 
-  # Run SDK reviewer
-  sdk_result=$(cd "$ENGINE_DIR" && node_modules/.bin/tsx src/cli.ts review $SDK_ARGS 2>&1)
-  sdk_exit=$?
-
-  # Validate: must be JSON with findings array (not just any {})
-  _is_valid_json() {
+  _extract_mode() {
     if command -v jq >/dev/null 2>&1; then
-      echo "$1" | jq -e '.findings' >/dev/null 2>&1
+      echo "$1" | jq -r '.mode' 2>/dev/null
     else
-      echo "$1" | node -e "const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')); process.exit(Array.isArray(d.findings)?0:1)" 2>/dev/null
+      echo "$1" | node -e "process.stdout.write(JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')).mode)" 2>/dev/null
     fi
   }
 
+  if [ "$resolve_exit" -eq 0 ]; then
+    resolved_mode=$(_extract_mode "$resolve_result")
+    echo "Review Engine: mode=$resolved_mode score=$(echo "$resolve_result" | jq -r '.score // "?"' 2>/dev/null)"
+  else
+    echo "devflow-engine resolve failed (exit $resolve_exit) — falling back to rule-based escalation"
+    resolve_exit=1
+  fi
 else
-  echo "devflow-engine not available — skipping SDK-enhanced analysis"
-  sdk_exit=1
+  echo "devflow-engine not available — falling back to rule-based escalation"
+  resolve_exit=1
 fi
+
+# Fallback: if engine unavailable or failed, use rule-based prose escalation (existing logic below)
 ```
 
-If `sdk_exit=0` and `_is_valid_json "$sdk_result"` succeeds:
+**If `$resolve_exit` = 0:** Use `$resolved_mode` directly as the review mode — skip the rule-based escalation below.
 
-**Use SDK output directly:**
-
-- Parse `sdk_result` as the review report JSON
-- Map `findings[]` to the standard findings table format per [review-output-format](../../review-output-format/SKILL.md):
-  - `isHardRule: true` → append `[HR]` badge to finding row
-  - `confidence` → display as `C:{value}` (e.g., `C:85`)
-  - `consensus` → use N/M format directly (e.g., `"2/3"`)
-- Map `strengths[]` → Strengths section
-- Use `verdict` field (`"APPROVE"` | `"REQUEST_CHANGES"`) for final decision
-- If `noiseWarning: true` → prepend `⚠ Low signal` notice per review-conventions
-- Report: `SDK Review Engine: {summary.critical} critical · {summary.warning} warnings · {summary.info} info · cost $X`
-- **Skip Agent Teams spawning (Phases 3-5)** — proceed directly to Phase 6 (action phase)
-
-**If `sdk_exit != 0` or result is not valid JSON**, log `SDK review failed (exit {sdk_exit}) — falling back to Agent Teams` and continue with the steps below.
+**If `$resolve_exit` ≠ 0:** Apply rule-based escalation:
 
 ---
 
