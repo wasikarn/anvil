@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] — 2026-03-30
+
+### Enable auto-triggering for all skills
+
+- fix: resolve QA failures before v1.4.0 release
+- docs: update CONTRIBUTING.md to current state
+- docs: update README badges and fix stale anvil reference
+- refactor: remove disable-model-invocation from all skills
+- docs: update README and CLAUDE.md to current state (v1.3.2)
 ## [1.3.2] — 2026-03-30
 
 ### Token optimization — reduce per-build cost by 30-35%
