@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
 - fix(agents): resolve 2 critical + 8 warning issues from deep verification
 - fix(agents): rename '## Output' to '## Output Format' in commit-finalizer
 - feat(agents): spec compliance, safety guardrails, and intelligence improvements
+
 ## [1.3.0] — 2026-03-29
 
 ### feat(sdk): two-phase triage, per-phase cost visibility, reviewer calibration
