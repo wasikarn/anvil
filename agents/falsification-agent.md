@@ -90,6 +90,12 @@ Finding: `critical | missing-auth | src/api/admin.ts:12 — admin endpoint has n
 Finding: `warning | missing-test | src/payments/processor.ts:34 — no unit test for processPayment`
 → If `processor.spec.ts` exists with coverage for `processPayment` → `REJECTED` (reviewer scoped to diff only, not codebase state)
 
+Finding: `critical | god-object | src/core/AppContext.ts:1 — AppContext has 40+ methods, violates SRP`
+→ `AppContext.ts` not present in diff; reviewer flagged pre-existing architecture in unchanged file → `REJECTED` (scope creep — out-of-scope unchanged file)
+
+Finding: `critical | missing-null-check | src/orders/OrderService.ts:78 — order not validated before access`
+→ Diff shows guard clause added on line 75: `if (!order) throw new NotFoundError()` — finding misreads updated control flow → `REJECTED` (diff directly contradicts; case is handled)
+
 > REJECTED is appropriate only when evidence directly contradicts the finding. When uncertain, use DOWNGRADED.
 
 ## Error Handling
