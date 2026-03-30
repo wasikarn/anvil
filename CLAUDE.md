@@ -25,15 +25,7 @@ Prefer reading source before editing — key references:
 
 ## Skill Structure
 
-Each skill lives at `skills/<skill-name>/` with this layout:
-
-```text
-skills/<name>/
-  SKILL.md          # Agent entry point — required; loaded when skill is invoked
-  CLAUDE.md         # Contributor context — read by Claude when editing this repo
-  references/       # Supporting docs loaded into agent context from SKILL.md
-  scripts/          # Helper scripts referenced from SKILL.md or CLAUDE.md
-```
+`skills/<name>/SKILL.md` (entry point) · `CLAUDE.md` (contributor context) · `references/` (on-demand docs) · `scripts/` (helpers)
 
 </important>
 
@@ -126,11 +118,7 @@ Hooks live at `hooks/`. All hooks are registered in `hooks/hooks.json` and distr
 | `SubagentStart` | reviewer agent names | `subagent-start-context.sh` |
 | `SessionEnd` | — | `session-end-cleanup.sh` (async) |
 
-Notes:
-
-- `task-gate.sh` and `idle-nudge.sh` use `GATE_PATTERN`/`NUDGE_PATTERN` env vars for filtering. `TaskCompleted`/`TeammateIdle` matchers may be unsupported — scripts self-filter as fallback.
-- `stop-failure-log.sh` — file logging is opt-in via `LOG=1` env var; macOS notification via `NOTIFY=1`
-- `shellcheck-written-scripts.sh` and the inline markdownlint hook both degrade gracefully — they `exit 0` silently if `shellcheck`/`markdownlint-cli2` are not installed. No noise for end-users who skip these optional tools.
+Notes: `task-gate.sh`/`idle-nudge.sh` use `GATE_PATTERN`/`NUDGE_PATTERN` env vars. `stop-failure-log.sh`: file logging via `LOG=1`, macOS notify via `NOTIFY=1`. Markdownlint + shellcheck hooks degrade gracefully if tools missing.
 
 </important>
 
