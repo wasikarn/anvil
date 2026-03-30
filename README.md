@@ -4,11 +4,11 @@
 
 **A Claude Code plugin for structured development, PR review, and debugging — powered by Agent Teams.**
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue?style=flat-square)](https://github.com/wasikarn/devflow/releases)
+[![Version](https://img.shields.io/badge/version-1.3.2-blue?style=flat-square)](https://github.com/wasikarn/devflow/releases)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
-[![Skills](https://img.shields.io/badge/skills-12-blue?style=flat-square)](#skills)
-[![Agents](https://img.shields.io/badge/agents-23-purple?style=flat-square)](#agents)
-[![Hooks](https://img.shields.io/badge/hooks-14-orange?style=flat-square)](#hooks)
+[![Skills](https://img.shields.io/badge/skills-16-blue?style=flat-square)](#skills)
+[![Agents](https://img.shields.io/badge/agents-24-purple?style=flat-square)](#agents)
+[![Hooks](https://img.shields.io/badge/hooks-17-orange?style=flat-square)](#hooks)
 
 <p>
   <a href="#installation">Installation</a> •
@@ -33,11 +33,11 @@
 
 | Component | Count | Purpose |
 | --- | --- | --- |
-| **Skills** | 12 | Workflow automation — dev loop, PR review, debugging, utilities |
-| **Agents** | 23 | Specialized subagents for bootstrapping, reviewing, and committing |
-| **Hooks** | 14 | Lifecycle automation — dependency checks, skill routing, quality gates |
+| **Skills** | 16 | Workflow automation — dev loop, PR review, debugging, utilities |
+| **Agents** | 24 | Specialized subagents for bootstrapping, reviewing, and committing |
+| **Hooks** | 17 | Lifecycle automation — dependency checks, skill routing, quality gates |
 | **Output Styles** | 2 | Senior Software Engineer, Coding Mentor |
-| **Commands** | 1 | `analyze-claude-features` |
+| **SDK** | 1 | `devflow-sdk` — TypeScript SDK for programmatic PR review |
 
 ---
 
@@ -533,6 +533,50 @@ Locks edits to a specific directory for the session. Claude will refuse to edit 
 
 ---
 
+#### `status` — Session Artifact Browser
+
+Shows active Devflow workflow artifacts from the current session — artifact directories, current phase, and pending actions.
+
+```bash
+/devflow:status
+```
+
+---
+
+#### `plugin-qa` — Plugin QA Suite
+
+Runs the full QA check suite to verify hooks, skills, and plugin structure are healthy. Runs shellcheck, markdownlint, bats tests, and `claude plugin validate`.
+
+```bash
+/devflow:plugin-qa
+```
+
+**When to use:** Before releasing a new version of devflow.
+
+---
+
+#### `analyze-claude-features` — Claude Feature Adoption Audit
+
+Audits the current project against all official Claude Code features and scores adoption coverage. Reports which features are used, unused, or partially adopted.
+
+```bash
+/devflow:analyze-claude-features
+```
+
+---
+
+#### `promote-hard-rule` — Hard Rule Promotion
+
+Reviews auto-detected Hard Rule candidates from `metrics-analyst` and walks through approve / reject / defer for each candidate. Never auto-applies rules.
+
+```bash
+/devflow:promote-hard-rule
+```
+
+**When to use:** After running `/devflow:metrics` when candidates are flagged.
+
+---
+
 ### Skill Guides
 
 Detailed contributor docs for each skill live in `skills/<name>/CLAUDE.md`. For skill creation guidelines and best practices, see [`docs/references/`](docs/references/).
@@ -547,6 +591,7 @@ Specialized subagents spawned automatically by Devflow skills. Can also be invok
 | --- | --- | --- | --- |
 | `commit-finalizer` | Haiku | Manually | Fast git commit with conventional commit formatting |
 | `devflow-build-bootstrap` | Haiku | `build` Phase 2 | Pre-gathers project structure and type definitions |
+| `build-research-summarizer` | Haiku | `build` Phase 2→3 gate | Compresses research.md into a compact JSON summary — eliminates re-reads at later phases |
 | `devflow-debug-bootstrap` | Haiku | `debug` Phase 1 | Pre-gathers stack trace context and affected files |
 | `devflow-respond-bootstrap` | Haiku | `respond` Phase 1 | Pre-gathers open PR threads and affected files |
 | `pr-review-bootstrap` | Haiku | `review` Phase 1 | Fetches PR diff, Jira AC, and groups changed files |
@@ -579,6 +624,7 @@ Distributed automatically with the plugin — no manual configuration required.
 | --- | --- | --- |
 | `check-deps.sh` | `SessionStart` | Warns in context if `jq`, `git`, or `gh` are missing |
 | `session-start-context.sh` | `SessionStart` | Injects current git branch and uncommitted file count |
+| `cleanup-artifacts.sh` | `SessionStart` (async) | Purges stale artifact directories from prior sessions |
 | `skill-routing.sh` | `UserPromptSubmit` | Detects workflow keywords and suggests the matching skill |
 | `protect-files.sh` | `PreToolUse[Edit\|Write]` | Blocks Claude from editing `.claude/settings.json` directly |
 | `skill-usage-tracker.sh` | `PreToolUse[Skill]` | Logs skill invocations for analytics and usage tracking |
@@ -587,10 +633,13 @@ Distributed automatically with the plugin — no manual configuration required.
 | `shellcheck-written-scripts.sh` | `PostToolUse[Write]` | Auto-validates `.sh` files Claude writes |
 | `task-gate.sh` | `TaskCompleted` | Requires `file:line` evidence before agent tasks are marked complete |
 | `idle-nudge.sh` | `TeammateIdle` | Nudges idle Agent Teams teammates back on task |
+| `pre-compact-save.sh` | `PreCompact` | Saves session state before context compaction |
 | `post-compact-context.sh` | `PostCompact` | Re-injects session context after compaction |
 | `bash-failure-hint.sh` | `PostToolUseFailure[Bash]` | Injects diagnostic hints after Bash tool failures |
 | `stop-failure-log.sh` | `StopFailure` | Logs API errors (rate limit, token overflow) to session log |
+| `subagent-start-context.sh` | `SubagentStart` | Injects branch/project context into reviewer agents at spawn |
 | `subagent-stop-gate.sh` | `SubagentStop` | Blocks reviewer agents that finish without `file:line` evidence |
+| `session-end-cleanup.sh` | `SessionEnd` (async) | Cleans up temporary session files after session ends |
 
 ### Skill Routing Keywords
 
@@ -734,15 +783,56 @@ devflow/
 │   ├── metrics/
 │   ├── onboard/
 │   ├── careful/
-│   └── freeze/
+│   ├── freeze/
+│   ├── status/
+│   ├── plugin-qa/
+│   ├── analyze-claude-features/
+│   ├── promote-hard-rule/
+│   └── ...                   # background skills (review-rules, debate-protocol, etc.)
 ├── agents/                   # Custom subagent definitions (.md files)
 ├── hooks/                    # Plugin-distributed lifecycle hook scripts
 │   └── hooks.json            # Plugin hook registry (auto-loaded on install)
 ├── output-styles/            # Custom output styles
-├── scripts/                  # Dev tooling (link-assets.sh, fix-tables.sh, detect-project.sh)
+├── devflow-sdk/              # TypeScript SDK for programmatic PR review
+│   └── src/                  # Orchestrator, consolidator, triage, falsifier, CLI
+├── scripts/                  # Dev tooling (link-assets.sh, bump-version.sh, qa-check.sh)
+├── tests/
+│   └── hooks/                # bats test suite for hook scripts
 └── docs/
     └── references/           # Contributor reference docs (best practices, creation guides)
 ```
+
+---
+
+## devflow-sdk
+
+`devflow-sdk/` is a TypeScript SDK for running the Devflow PR review pipeline programmatically — outside of Claude Code. It implements the same multi-reviewer debate loop as the `review` skill, but as a Node.js CLI you can call from scripts or CI.
+
+```bash
+cd devflow-sdk
+npm install
+
+# Review a PR by number (requires GH_TOKEN or gh CLI)
+npm run review -- --pr 42
+
+# Review a local diff file
+npm run review -- --diff path/to/changes.diff
+
+# Run the test suite
+npm test
+```
+
+**Key modules:**
+
+| Module | Purpose |
+| --- | --- |
+| `src/orchestrator.ts` | Spawns reviewers, collects findings, runs falsification |
+| `src/review/triage.ts` | Classifies PR complexity — trivial (<50 lines) runs 1 reviewer |
+| `src/review/consolidator.ts` | Deduplicates and ranks findings from all reviewers |
+| `src/review/output.ts` | Formats output as Markdown or JSON; includes per-phase cost breakdown |
+| `src/cli.ts` | CLI entry point; appends reviewer calibration stats to `~/.claude/anvil-reviewer-calibration.jsonl` |
+
+> The SDK is `private: true` — it ships as part of this repo for contributors, not as an npm package.
 
 ---
 

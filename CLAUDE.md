@@ -174,12 +174,24 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full step-by-step guide. Key rule
 
 All four require `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` (degrades gracefully). One team per session; team cleanup by lead; Hard Rules cannot be dropped via debate.
 
+## devflow-sdk
+
+TypeScript SDK at `devflow-sdk/` — programmatic PR review pipeline (orchestrator, triage, consolidator, falsifier, CLI). `private: true`; not published to npm. Uses `vitest` for tests.
+
+| Task | Command |
+| --- | --- |
+| Run SDK tests | `cd devflow-sdk && npm test` |
+| Watch tests | `cd devflow-sdk && npm run test:watch` |
+| Run CLI review | `cd devflow-sdk && npm run review -- --pr <number>` |
+
 ## Repo Commands
 
 | Task | Command |
 | --- | --- |
 | Lint all markdown | `npx markdownlint-cli2 "**/*.md"` |
 | Validate plugin | `claude plugin validate` (checks plugin.json, frontmatter, hooks.json) |
+| Run full QA | `bash scripts/qa-check.sh` (13 gates: shellcheck, markdownlint, bats, plugin validate) |
+| Bump version | `bash scripts/bump-version.sh <patch\|minor\|major>` (runs QA gates before release) |
 
 **Contributor dev mode only** (do not use if plugin is installed — will conflict):
 
