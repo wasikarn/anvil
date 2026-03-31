@@ -77,8 +77,10 @@ check_2() {
   if ! command -v markdownlint-cli2 > /dev/null 2>&1; then
     skip "markdownlint-cli2 not installed — skipping"
   else
-    # shellcheck disable=SC2015
-    MD_OUTPUT=$(cd "$PLUGIN_DIR" && markdownlint-cli2 "**/*.md" 2>&1 || true)
+    MD_OUTPUT=$(
+      cd "$PLUGIN_DIR" || exit 0
+      markdownlint-cli2 "**/*.md" 2>&1 || true
+    )
     MD_ERRORS=$(echo "$MD_OUTPUT" | grep "^Summary:" | grep -oE '[0-9]+' | head -1 || true)
     MD_FILES=$(echo "$MD_OUTPUT" | grep "^Linting:" | grep -oE '[0-9]+' | head -1 || true)
     if [ "${MD_ERRORS:-0}" -eq 0 ]; then
