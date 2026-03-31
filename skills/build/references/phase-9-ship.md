@@ -103,3 +103,17 @@ wc -l < {artifacts_dir}/devflow-metrics.jsonl
 Wait for agent completion. The agent checks current session's `review-findings-*.md` for patterns that recur in the last 5 Full-mode sessions. If it finds a recurring pattern (≥3 of 5 sessions), it creates `lens-update-suggestion.md` and notifies.
 
 **Never block shipping:** If `metrics-analyst` errors or times out, proceed to Done. Log `metrics-analyst skipped — error` in `devflow-context.md`. This step is informational only.
+
+## Step 9: Post-Ship Health Check
+
+After writing metrics, check the last entry in `~/.claude/devflow-metrics.jsonl`:
+
+```bash
+tail -1 ~/.claude/devflow-metrics.jsonl 2>/dev/null | jq -r 'if (.iterations >= 4 or .final_critical > 0) then "⚠ High iterations or critical findings — run /dashboard to review trends." else "" end' 2>/dev/null || true
+```
+
+Display the output if non-empty:
+
+- If `iterations >= 4` or `final_critical > 0`: emit this warning to the user:
+  > Warning: This session had high iteration count or shipped with critical findings. Run `/dashboard` to review trends.
+- Otherwise: proceed silently.
