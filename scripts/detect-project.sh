@@ -21,8 +21,24 @@ REPO_SLUG=$(echo "$REMOTE_URL" | sed 's/.*[:/]\([^/]*\/[^.]*\).*/\1/' 2>/dev/nul
 PROJECT="unknown"
 REPO=""
 VALIDATE=""
-BASE_BRANCH="main"
+BASE_BRANCH=""
 HINTS=""
+
+# Detect base branch from hard-rules.md if present
+if [ -z "$BASE_BRANCH" ]; then
+  HARD_RULES=".claude/skills/review-rules/hard-rules.md"
+  if [ -f "$HARD_RULES" ]; then
+    BASE_BRANCH=$(grep -oE '\| Base branch \| `[^`]+`' "$HARD_RULES" 2>/dev/null | grep -oE '`[^`]+`' | tr -d '`' | head -1)
+  fi
+fi
+
+# Fall back to git remote default branch, then "main"
+if [ -z "$BASE_BRANCH" ]; then
+  BASE_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|refs/remotes/origin/||')
+fi
+if [ -z "$BASE_BRANCH" ]; then
+  BASE_BRANCH="main"
+fi
 
 # Auto-detection for all projects
 if [ -z "$VALIDATE" ]; then
