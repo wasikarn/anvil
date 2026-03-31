@@ -155,24 +155,25 @@ describe('parseDiffOutput — single file', () => {
   it('parses file path correctly', () => {
     const result = parseDiffOutput(SINGLE_TS_DIFF)
     expect(result).toHaveLength(1)
-    expect(result[0].path).toBe('src/utils.ts')
+    const [file] = result
+    expect(file?.path).toBe('src/utils.ts')
   })
 
   it('detects language from extension', () => {
-    const result = parseDiffOutput(SINGLE_TS_DIFF)
-    expect(result[0].language).toBe('typescript')
+    const [file] = parseDiffOutput(SINGLE_TS_DIFF)
+    expect(file?.language).toBe('typescript')
   })
 
   it('counts added and removed lines', () => {
-    const result = parseDiffOutput(SINGLE_TS_DIFF)
+    const [file] = parseDiffOutput(SINGLE_TS_DIFF)
     // +import, +blank line (empty +), +return 2, -return 1 → 4 changed lines
     // (blank line "+" still starts with "+" and is not "+++")
-    expect(result[0].diffLineCount).toBeGreaterThan(0)
+    expect(file?.diffLineCount).toBeGreaterThan(0)
   })
 
   it('hunks string contains @@ marker', () => {
-    const result = parseDiffOutput(SINGLE_TS_DIFF)
-    expect(result[0].hunks).toContain('@@')
+    const [file] = parseDiffOutput(SINGLE_TS_DIFF)
+    expect(file?.hunks).toContain('@@')
   })
 })
 
@@ -203,17 +204,18 @@ describe('parseDiffOutput — binary files', () => {
   it('mixed diff with binary → only text files returned', () => {
     const result = parseDiffOutput(MIXED_DIFF)
     expect(result).toHaveLength(1)
-    expect(result[0].path).toBe('src/utils.ts')
+    const [file] = result
+    expect(file?.path).toBe('src/utils.ts')
   })
 })
 
 describe('parseDiffOutput — line counting edge cases', () => {
   it('+++ and --- header lines are not counted as diff lines', () => {
     // The SINGLE_TS_DIFF has +++ and --- headers — these should not add to diffLineCount
-    const result = parseDiffOutput(SINGLE_TS_DIFF)
     // 3 added (+import, + blank, +return 2) + 1 removed (-return 1) = 4
     // If +++ were counted it would be 5+
-    expect(result[0].diffLineCount).toBe(4)
+    const [file] = parseDiffOutput(SINGLE_TS_DIFF)
+    expect(file?.diffLineCount).toBe(4)
   })
 
   it('file with no hunks (no @@ marker) → diffLineCount=0', () => {
@@ -224,6 +226,7 @@ index 000..111 100644
 `
     const result = parseDiffOutput(noHunkDiff)
     expect(result).toHaveLength(1)
-    expect(result[0].diffLineCount).toBe(0)
+    const [file] = result
+    expect(file?.diffLineCount).toBe(0)
   })
 })

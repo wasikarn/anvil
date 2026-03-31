@@ -114,7 +114,8 @@ describe('FindingArraySchema', () => {
     const findings = [validFinding(), validFinding({ severity: 'critical', rule: 'NO_SECRETS' })]
     const result = FindingArraySchema.parse(findings)
     expect(result).toHaveLength(2)
-    expect(result[1].rule).toBe('NO_SECRETS')
+    const second = result[1]
+    expect(second?.rule).toBe('NO_SECRETS')
   })
 
   it('empty array is valid', () => {
