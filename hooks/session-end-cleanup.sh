@@ -21,4 +21,7 @@ if [ "$DELETED" -gt 0 ]; then
   echo "devflow: session-end cleaned up $DELETED temp file(s) from $PLUGIN_DATA_BASE/"
 fi
 
+# Clean up freeze state file
+rm -f "${TMPDIR:-/tmp}/.devflow-freeze-path" 2>/dev/null || true
+
 exit 0

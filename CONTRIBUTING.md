@@ -111,6 +111,14 @@ See [`docs/references/skills-best-practices.md`](docs/references/skills-best-pra
 
 ---
 
+## Adding a New Agent
+
+Agents live at `agents/<name>.md` with YAML frontmatter. Key constraint: when distributed via the plugin, the `hooks:`, `mcpServers:`, and `permissionMode:` frontmatter fields are **silently ignored** — use `hooks/hooks.json` with `SubagentStart`/`SubagentStop` matchers for agent-specific hook behavior instead.
+
+See [`docs/references/agent-hook-pattern.md`](docs/references/agent-hook-pattern.md) for the full pattern, examples, and the contrast with inline skill hooks.
+
+---
+
 ## Linting & Validation
 
 ```bash

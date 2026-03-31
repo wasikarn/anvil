@@ -1,13 +1,14 @@
 # freeze skill
 
-Locks edits to a specific directory for the current session via model-enforced constraint (not a hard hook block).
+Locks edits to a specific directory for the current session via temp file + inline PreToolUse hook.
 
 ## Skill Architecture
 
-- `SKILL.md` only — minimal (~37 lines), no `references/` directory
-- Enforcement is manual: Claude checks file paths before Edit/Write calls based on the announced constraint
+- `SKILL.md` only — minimal, no `references/` directory
+- Enforcement is real: inline `hooks` frontmatter registers a PreToolUse `Edit|Write` hook that reads `${TMPDIR:-/tmp}/.devflow-freeze-path` and blocks matching paths with `exit 2`
+- Skill body writes the frozen path to the state file; session-end-cleanup.sh removes it on SessionEnd
 - Uses `$ARGUMENTS` for the target directory path; falls back to `AskUserQuestion` if empty
-- Unlike `/careful`, there is no inline `hooks` frontmatter — enforcement is model-compliance only
+- Like `/careful`, uses inline hooks frontmatter — enforcement is hook-based, not model-compliance only
 
 ## Validate After Changes
 
@@ -17,7 +18,8 @@ npx markdownlint-cli2 "skills/freeze/SKILL.md"
 
 ## Gotchas
 
-- No real enforcement mechanism — the SKILL.md itself documents this limitation: "True enforcement needs dynamic hook path injection (not yet supported)." If the Claude Code skill runtime gains support for `$ARGUMENTS` in hook matchers, this skill should be upgraded to a real PreToolUse Edit|Write hook.
-- Unlike `/careful` (which has an inline hook), freeze relies on model attention — it can be bypassed if Claude context grows large and the constraint fades.
+- **Implementation note:** uses temp file + inline hook for real enforcement. Upgrade to native hook path injection when Claude Code supports it.
+- The inline hook reads `${TMPDIR:-/tmp}/.devflow-freeze-path` — if the file is missing or empty, the hook exits 0 (no freeze active). This is intentional: no state file = no freeze.
 - `argument-hint: "[directory-path]"` drives the CLI prompt; if the argument format changes in the skill runtime, update this field.
 - Absolute or repo-relative paths work; bare directory names without path context (e.g., `freeze auth`) may be ambiguous — the SKILL.md guidance tells users to use `src/auth` not just `auth`.
+- The hook uses `case "$FILE" in "$FREEZE_PATH"*)` for prefix matching — this means `/freeze src` will also block `src-other/`. Use specific paths like `src/auth` when precision matters.

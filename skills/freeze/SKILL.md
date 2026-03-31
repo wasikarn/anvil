@@ -2,30 +2,40 @@
 name: freeze
 description: "Lock edits to a specific directory or file for this session — blocks Edit and Write tools on matching paths."
 argument-hint: "[directory-path]"
+hooks:
+  PreToolUse:
+    - matcher: Edit|Write
+      hooks:
+        - type: command
+          command: |
+            FREEZE_PATH=$(cat "${TMPDIR:-/tmp}/.devflow-freeze-path" 2>/dev/null || echo "")
+            if [ -z "$FREEZE_PATH" ]; then exit 0; fi
+            INPUT=$(cat)
+            FILE=$(echo "$INPUT" | jq -r '.tool_input.file_path // .tool_input.path // empty' 2>/dev/null || echo "")
+            if [ -z "$FILE" ]; then exit 0; fi
+            case "$FILE" in
+              "$FREEZE_PATH"*) echo "Blocked: '$FILE' is inside frozen path '$FREEZE_PATH'. Unfreeze first." >&2; exit 2 ;;
+              *) exit 0 ;;
+            esac
 ---
 
 # /freeze — Directory Lock
 
-`$ARGUMENTS` will be used as the locked directory. If no argument given, ask the user
-which directory to lock edits to using the AskUserQuestion tool.
+If `$ARGUMENTS` is empty, ask the user which directory to lock using the AskUserQuestion tool.
 
-Announce: "Edits are now locked to `[directory]`. I will not edit files outside this path
-for the rest of this session."
+Write the frozen path to `${TMPDIR:-/tmp}/.devflow-freeze-path`:
 
-Then register a mental constraint for this session: before any Edit or Write tool call,
-verify the target file path starts with the locked directory. If it doesn't, stop and
-explain why you're refusing, then ask for explicit confirmation to override.
+```bash
+echo "$ARGUMENTS" > "${TMPDIR:-/tmp}/.devflow-freeze-path"
+```
 
-> **Note:** True hook-based enforcement requires the `hooks` frontmatter field with
-> `$ARGUMENTS` substitution — use this manual approach until the skill runtime supports
-> dynamic hook arguments. Track this limitation in the Gotchas section.
+Then announce: "Frozen: edits to `$ARGUMENTS` are now blocked for this session."
 
 ## Gotchas
 
 - **Argument required** — `/freeze` with no path is ambiguous. Always ask via AskUserQuestion
   if `$ARGUMENTS` is empty.
-- **Hook enforcement is manual** — unlike `/careful`, freeze relies on Claude's judgment,
-  not a hard block. It can be overridden if Claude forgets. True enforcement needs dynamic
-  hook path injection (not yet supported).
 - **Subdirectory paths** — use absolute or repo-relative paths: `/freeze src/auth` not
   `freeze auth`.
+- **Implementation note** — uses temp file + inline hook for real enforcement. Upgrade to
+  native hook path injection when Claude Code supports it.
