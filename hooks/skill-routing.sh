@@ -13,7 +13,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib/common.sh"
 require_jq
 
 INPUT=$(cat)
-PROMPT=$(echo "$INPUT" | jq -r '.user_prompt // empty' 2>/dev/null) || exit 0
+PROMPT=$(echo "$INPUT" | jq -r '.prompt // empty' 2>/dev/null) || exit 0
 [ -z "$PROMPT" ] && exit 0
 
 # Lowercase once for case-insensitive matching (Thai chars unaffected)
@@ -90,7 +90,7 @@ fi
 
 # --- emit all accumulated hints (empty = no match = no output) ---
 if [ -n "$HINTS" ]; then
-  jq -n --arg ctx "$HINTS" '{"hookSpecificOutput": {"additionalContext": $ctx}}'
+  jq -n --arg ctx "$HINTS" '{"hookSpecificOutput": {"hookEventName": "UserPromptSubmit", "additionalContext": $ctx}}'
 fi
 
 exit 0
