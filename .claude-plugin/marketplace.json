@@ -11,7 +11,7 @@
       "name": "devflow",
       "source": "./",
       "description": "A Claude Code plugin powering structured development workflows \u2014 skills for building, reviewing, responding, and debugging. Includes core workflow skills (build, review, respond, debug), utility skills, custom agents, workflow automation hooks, and output styles.",
-      "version": "1.6.0",
+      "version": "1.6.1",
       "author": {
         "name": "kobig"
       },

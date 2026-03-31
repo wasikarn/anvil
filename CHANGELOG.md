@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.1] — 2026-03-31
+
+### docs: update version badge and tree refs to v1.6.1
+
+- docs: update version badge and tree refs to v1.6.1
+- fix(devflow-engine): add missing fields to mockReport in smoke tests
+- docs: update README, CLAUDE.md, CONTRIBUTING.md for v1.6.0
 ## [1.6.0] — 2026-03-31
 
 ### Cross-session memory, new skills, expanded test coverage, CI, and engine v0.2.0
