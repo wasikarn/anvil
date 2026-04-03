@@ -106,7 +106,7 @@ For PRs with >100 files, auto-exclude common noise:
 
 In Phase 1, after getting PR number:
 
-**Phase 1: Diff Retrieval**
+#### Phase 1: Diff Retrieval
 
 - Get PR number from $0
 - Detect file count: `gh pr diff $0 --name-only | wc -l`

@@ -6,7 +6,7 @@ Injection points allow skills to execute custom logic at specific phases without
 
 Skills call injection point handlers at phase boundaries:
 
-```
+```text
 before_bootstrap → bootstrap → after_bootstrap →
 before_plan → plan → after_plan →
 before_review → review → after_review →

@@ -362,5 +362,5 @@ before_review → review → after_review →
 
 - [skills-best-practices.md](../../references/skills-best-practices.md) — Skill authoring guidelines
 - [agent-hook-pattern.md](../../references/agent-hook-pattern.md) — Agent architecture
-- [jira-integration/SKILL.md](../../skills/jira-integration/SKILL.md) — Current Jira integration
+- [jira-integration/SKILL.md](../../../skills/jira-integration/SKILL.md) — Current Jira integration
 - [atlassian-pm plugin docs](https://github.com/wasikarn/atlassian-pm) — MCP field filtering verification
