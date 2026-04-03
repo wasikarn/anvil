@@ -26,13 +26,23 @@ Scan all `$ARGUMENTS` for standard Jira key pattern `[A-Z]+-\d+` (e.g. `PROJ-123
 Try in order (stop at first success):
 
 1. **`issue-bootstrap` agent** (atlassian-pm plugin — optional) — if available, delegate entirely:
-   pass the issue key, capture the structured `{bootstrap_context}` output block.
-   Provides: issue + parent epic + all subtasks + linked issues in one pass — no further extraction needed.
-2. **`mcp-atlassian`** → `mcp__mcp-atlassian__jira_get_issue` with the detected key (direct API fallback)
-3. **Neither available** → warn user "Jira MCP not configured, skipping ticket context" → skip Jira sections
+   pass the issue key and preset, capture the structured `{bootstrap_context}` output.
 
-> **atlassian-pm detection:** `issue-bootstrap` is available when the `atlassian-pm` plugin is installed
-> (it bundles `jira-cache-server` MCP server). If `issue-bootstrap` is not in the agent list, fall through to option 2.
+   **Presets:**
+   - `--preset=review` for review skill (key, status, assignee, summary, description)
+   - `--preset=build` for build skill (key, summary, customfield_10015, subtasks)
+   - `--preset=debug` for debug skill (key, summary, priority, issuelinks)
+
+2. **`mcp-atlassian`** → `mcp__mcp-atlassian__jira_get_issue` with fields parameter:
+
+   ```markdown
+   mcp__mcp-atlassian__jira_get_issue(
+     key="PROJ-123",
+     fields="summary,status,assignee,description"
+   )
+   ```
+
+3. **Neither available** → warn user "Jira MCP not configured, skipping ticket context" → skip Jira sections
 
 If fetch fails (API error, ticket not found) → warn → skip Jira sections → proceed normally. Jira context is never blocking.
 
@@ -52,6 +62,64 @@ When using `mcp-atlassian` fallback (option 2), extract and summarize manually:
 | `linked_issues` | Issue links | Type (blocks, relates-to) + key + summary |
 
 When using `issue-bootstrap` (option 1), all fields above are already extracted and structured in the output block — skip manual extraction.
+
+---
+
+## Field Presets
+
+Use field presets to reduce MCP response size by 30-50%. Full issue content is 3-8K tokens; filtered content is 1-2K tokens.
+
+### Available Presets
+
+| Preset | Fields | Use Case |
+|--------|--------|----------|
+| `review` | key, status, assignee, summary, description | PR review context |
+| `build` | key, summary, customfield_10015, subtasks | Build planning |
+| `debug` | key, summary, priority, issuelinks | Bug investigation |
+
+### Usage
+
+Add `--preset=<name>` to skill invocation:
+
+```markdown
+**Jira Context (Phase 0.05):**
+- Fetch ticket using `issue-bootstrap` agent with `--preset=review`
+- Or use MCP directly with `fields` parameter
+```
+
+### Fallback
+
+If preset misses required data:
+
+1. Agent outputs warning: "Field X not in preset, additional data needed"
+2. Subsequent MCP call fetches missing field
+3. Session continues with full context
+
+### Implementation
+
+In bootstrap agents, pass preset to issue-bootstrap:
+
+```markdown
+### Jira Fetch
+
+Use issue-bootstrap agent with preset:
+
+**Bootstrap Jira:**
+- Detect Jira key from $ARGUMENTS
+- If detected: invoke issue-bootstrap agent with `--preset=<skill_preset>`
+- Fields: review→build→debug mapping defined in jira-integration skill
+```
+
+### Custom Fields
+
+For custom fields not in presets:
+
+```markdown
+**Custom Fields:**
+- START_DATE_FIELD (customfield_10015) — Sprint start
+- SPRINT_FIELD (customfield_10020) — Sprint assignment
+- Include in build preset by default
+```
 
 ---
 
