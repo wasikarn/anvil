@@ -29,15 +29,53 @@
 
 ---
 
+## Concept
+
+**Devflow = Agent Teams + Structured Workflows**
+
+Traditional AI assistants work solo — one agent handles everything from research to implementation to review. Devflow takes a different approach: **parallel agents that specialize and debate**.
+
+**Core ideas:**
+
+1. **Parallel Agents** — Multiple specialized agents work concurrently (3 reviewers debate findings, investigator + DX analyst debug together)
+2. **Debate Protocol** — Agents challenge each other's findings to eliminate false positives before consolidating results
+3. **Workflow Automation** — Skills chain together: build → review → respond → merge, with context carried through each phase
+4. **Evidence Gates** — Every finding requires file:line citations; agents can't claim "done" without proof
+
+**Benefits:**
+
+- ⚡ **Faster cycles** — Agents run in parallel, not sequentially
+- 🎯 **Higher accuracy** — Debate filters false positives
+- 📊 **Audit trails** — All findings cite specific code locations
+- 🔄 **Context persistence** — Jira AC, PR diffs, and previous findings flow through phases
+
+**How it works:**
+
+```
+User: /devflow:build PROJ-123
+  ↓
+Lead Agent fetches Jira AC → spawns Explorer agents (parallel)
+  ↓
+Planner creates implementation.md → spawns Coder agents
+  ↓
+Review Team (3 agents) debates findings → consolidates
+  ↓
+Fixer applies changes → creates PR
+  ↓
+Done (or review cycle if issues found)
+```
+
+---
+
 ## What's Inside
 
 | Component | Count | Purpose |
 | --- | --- | --- |
-| **Skills** | 26 | Workflow automation — dev loop, PR review, debugging, utilities (all auto-triggerable) |
-| **Agents** | 27 | Specialized subagents for bootstrapping, reviewing, and committing |
+| **Skills** | 29 | Workflow automation — dev loop, PR review, debugging, utilities |
+| **Agents** | 27 | Specialized subagents for bootstrapping, reviewing, committing |
 | **Hooks** | 25 | Lifecycle automation — dependency checks, skill routing, quality gates |
-| **Output Styles** | 4 | Senior Software Engineer, Coding Mentor (Thai + English variants) |
-| **SDK** | 1 | `devflow-engine` — TypeScript SDK for programmatic PR review and security audit |
+| **Output Styles** | 4 | Senior Software Engineer, Coding Mentor (Thai + English) |
+| **SDK** | 1 | `devflow-engine` — TypeScript SDK for programmatic PR review |
 
 ---
 
