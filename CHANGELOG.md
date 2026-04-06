@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.7.6] — 2026-04-06
+
+### Update agent skill references
+
+- fix: update skill references in agents to use df- prefix
+
 ## [1.7.5] — 2026-04-06
 
 ### Namespace all skills with df- prefix
