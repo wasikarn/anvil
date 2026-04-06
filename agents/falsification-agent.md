@@ -8,7 +8,7 @@ color: cyan
 memory: user
 disallowedTools: Edit, Write, Bash
 maxTurns: 3
-skills: [review-conventions, debate-protocol, review-output-format]
+skills: [df-review-conventions, df-debate, df-review-output]
 ---
 
 # Falsification Agent

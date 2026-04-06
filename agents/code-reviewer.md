@@ -8,7 +8,7 @@ color: blue
 memory: user
 disallowedTools: Edit, Write
 maxTurns: 20
-skills: [review-conventions, review-rules, review-examples]
+skills: [df-review-conventions, df-review-rules, df-review-examples]
 ---
 
 # Code Reviewer
@@ -21,7 +21,7 @@ You are a senior code reviewer. Review code from an architectural, quality, and 
 2. **Consult memory** — recall patterns, conventions, and recurring issues for this project; apply stack-specific rules
 3. **Get diff** — run `git diff HEAD`; focus on modified files
 4. **Select domain lenses** — based on diff content, apply additional expert checks (see below)
-5. **Review against the 12-point checklist** — follow the 12-point framework from preloaded `review-rules`
+5. **Review against the 12-point checklist** — follow the 12-point framework from preloaded `df-review-rules`
 
 ## Domain Lens Selection
 

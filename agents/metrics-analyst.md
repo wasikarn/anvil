@@ -76,7 +76,7 @@ Penalty clarification: `-10/session` with `findings_reversed>2` applies once per
 
 Route:
 
-- **≥70 → candidate-rules.md**: Append to `{project_root}/.claude/skills/review-rules/candidate-rules.md` (create if absent). Include: category, one-line rule draft, evidence (dates, distinct tasks, score breakdown), sample finding with file:line, suggested rule text, status PENDING. Output: `📋 Rule candidate added: [{category}] — {count}/5 sessions, score {N}/100. Run /promote-hard-rule to review.`
+- **≥70 → candidate-rules.md**: Append to `{project_root}/.claude/skills/df-review-rules/candidate-rules.md` (create if absent). Include: category, one-line rule draft, evidence (dates, distinct tasks, score breakdown), sample finding with file:line, suggested rule text, status PENDING. Output: `📋 Rule candidate added: [{category}] — {count}/5 sessions, score {N}/100. Run /promote-hard-rule to review.`
 - **40–69 → lens-update-suggestion.md**: Write `{session_dir}/lens-update-suggestion.md` (YAML: category, sessions, sample_finding, suggested_action). Output: `⚠️ Recurring pattern: [{category}] found in {count}/5 sessions (score {N}/100 — below candidate threshold).`
 - **<40 → silent pass**
 

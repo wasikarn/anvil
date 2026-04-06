@@ -1,6 +1,6 @@
 ---
 name: project-onboarder
-description: "Bootstraps a new project into the devflow ecosystem. Detects the project stack, scaffolds .claude/skills/review-rules/hard-rules.md with stack-appropriate starter rules, and writes .claude/build/validate-command.md as project config. Artifact paths are managed by scripts/artifact-dir.sh. Run once on a new project before the first build or review invocation."
+description: "Bootstraps a new project into the devflow ecosystem. Detects the project stack, scaffolds .claude/skills/df-review-rules/hard-rules.md with stack-appropriate starter rules, and writes .claude/build/validate-command.md as project config. Artifact paths are managed by scripts/artifact-dir.sh. Run once on a new project before the first build or review invocation."
 tools: Read, Glob, Grep, Bash, Write
 model: sonnet
 color: green
@@ -39,7 +39,7 @@ rtk tree --gitignore -L 3 --dirsfirst --prune
 
 ```bash
 ls -la .claude/ 2>/dev/null
-ls -la .claude/skills/review-rules/ 2>/dev/null
+ls -la .claude/skills/df-review-rules/ 2>/dev/null
 ls -la .claude/build/validate-command.md 2>/dev/null
 ```
 
@@ -50,7 +50,7 @@ Note what already exists — do not overwrite existing files.
 Create required directories if they do not exist:
 
 ```bash
-mkdir -p .claude/skills/review-rules
+mkdir -p .claude/skills/df-review-rules
 mkdir -p .claude/build
 ```
 
@@ -60,7 +60,7 @@ returned by `scripts/artifact-dir.sh <skill-name>` — created automatically on 
 
 ### 4. Write Hard Rules
 
-If `.claude/skills/review-rules/hard-rules.md` does not exist, create it with stack-appropriate
+If `.claude/skills/df-review-rules/hard-rules.md` does not exist, create it with stack-appropriate
 starter rules.
 
 **Base rules (all stacks):**
@@ -141,14 +141,14 @@ Replace this file content with the actual validate command if auto-detection is 
 **Architecture:** {detected pattern}
 
 ### Files Created
-- `.claude/skills/review-rules/hard-rules.md` — {created | already existed}
+- `.claude/skills/df-review-rules/hard-rules.md` — {created | already existed}
 - `.claude/build/validate-command.md` — {created | already existed}
 
 ### Validate Command
 `{command}` — verify this is correct before running build
 
 ### Next Steps
-1. Review and customize `.claude/skills/review-rules/hard-rules.md` for your project's conventions
+1. Review and customize `.claude/skills/df-review-rules/hard-rules.md` for your project's conventions
 2. Run `/build` with a simple task to verify the setup works end-to-end
 3. Run `/review` on your next PR to verify review pipeline loads Hard Rules correctly
 

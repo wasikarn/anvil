@@ -7,7 +7,7 @@ color: magenta
 effort: medium
 background: true
 maxTurns: 15
-skills: [jira-integration]
+skills: [df-jira]
 ---
 
 # Jira Summary Poster

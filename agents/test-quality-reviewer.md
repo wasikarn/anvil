@@ -9,7 +9,7 @@ effort: high
 paths: ["**/*.spec.ts", "**/*.test.ts", "**/*.spec.tsx", "**/*.test.tsx", "**/__tests__/**"]
 disallowedTools: Edit, Write
 maxTurns: 10
-skills: [review-conventions, review-rules, review-examples]
+skills: [df-review-conventions, df-review-rules, df-review-examples]
 ---
 
 # Test Quality Reviewer

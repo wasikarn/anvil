@@ -10,7 +10,7 @@ disallowedTools: Edit, Write
 maxTurns: 15
 skills:
   - review-conventions
-  - review-rules
+  - df-review-rules
 ---
 
 # Security Reviewer

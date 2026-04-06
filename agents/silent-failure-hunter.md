@@ -8,7 +8,7 @@ color: orange
 memory: user
 disallowedTools: Edit, Write, Bash
 maxTurns: 15
-skills: [review-conventions, review-rules]
+skills: [df-review-conventions, df-review-rules]
 ---
 
 # Silent Failure Hunter

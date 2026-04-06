@@ -9,7 +9,7 @@ memory: project
 paths: ["**/migrations/**", "**/*migration*.{ts,js,sql}", "**/*.sql", "**/db/**/*.ts"]
 disallowedTools: Edit, Write
 maxTurns: 10
-skills: [review-conventions, review-rules]
+skills: [df-review-conventions, df-review-rules]
 ---
 
 # Migration Reviewer

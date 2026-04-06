@@ -7,7 +7,7 @@ effort: low
 tools: Read
 disallowedTools: Edit, Write, Bash, Grep, Glob
 maxTurns: 5
-skills: [review-conventions, review-output-format]
+skills: [df-review-conventions, df-review-output]
 ---
 
 # Review Findings Consolidator

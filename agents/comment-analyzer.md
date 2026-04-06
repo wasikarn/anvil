@@ -8,7 +8,7 @@ color: blue
 memory: project
 disallowedTools: Edit, Write
 maxTurns: 10
-skills: [review-conventions]
+skills: [df-review-conventions]
 ---
 
 # Comment Analyzer
