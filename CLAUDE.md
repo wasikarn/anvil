@@ -158,6 +158,8 @@ All four require `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` (degrades gracefully).
 
 TypeScript SDK at `devflow-engine/` — programmatic PR review pipeline (orchestrator, triage, consolidator, falsifier, CLI). `private: true`; not published to npm. Uses `bun test` (built-in).
 
+**Resilience (v1.8.1):** `runClaudeSubprocess` retries transient API errors (rate_limit_exceeded, server_error, overloaded_error) up to 3× with exponential backoff (1s/2s). Returns `budgetExceeded: true` signal instead of throwing — caller can skip re-run. Override delay via `DEVFLOW_RETRY_DELAY_MS=0` in tests.
+
 | Task | Command |
 | --- | --- |
 | Run SDK tests | `cd devflow-engine && bun test` |

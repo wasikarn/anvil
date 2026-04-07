@@ -4,7 +4,7 @@
 
 **A Claude Code plugin for structured development, PR review, and debugging — powered by Agent Teams.**
 
-[![Version](https://img.shields.io/badge/version-1.7.2-blue?style=flat-square)](https://github.com/wasikarn/devflow/releases)
+[![Version](https://img.shields.io/badge/version-1.8.1-blue?style=flat-square)](https://github.com/wasikarn/devflow/releases)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 [![Skills](https://img.shields.io/badge/skills-29-blue?style=flat-square)](#skills)
 [![Agents](https://img.shields.io/badge/agents-27-purple?style=flat-square)](#agents)
@@ -73,9 +73,9 @@ Done (or review cycle if issues found)
 | --- | --- | --- |
 | **Skills** | 29 | Workflow automation — dev loop, PR review, debugging, utilities |
 | **Agents** | 27 | Specialized subagents for bootstrapping, reviewing, committing |
-| **Hooks** | 17 | Lifecycle automation — dependency checks, context injection, quality gates |
+| **Hooks** | 16 | Lifecycle automation — dependency checks, context injection, quality gates |
 | **Output Styles** | 4 | Senior Software Engineer, Coding Mentor (Thai + English) |
-| **SDK** | 1 | `devflow-engine` — TypeScript SDK for programmatic PR review |
+| **SDK** | 1 | `devflow-engine` — TypeScript SDK for programmatic PR review with retry resilience |
 
 ---
 
