@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.1] — 2026-04-07
+
+### devflow-engine resilience improvements
+
+- feat: retry with exponential backoff (1s/2s, max 3 attempts) for transient API errors (rate_limit_exceeded, server_error, overloaded_error)
+- feat: budgetExceeded signal in SubprocessResult — reviewer returns cost/tokens without throwing
+- feat: stderr captured in error messages for easier subprocess debugging
+- feat: warnIfLargeDiff — logs warnings when diff exceeds 300 files, 10k lines, or 50MB raw
+- fix: maxBuffer increased 100MB → 250MB to handle monorepo PRs
+- fix: preserve cost/tokens in reviewer error paths (no-output, schema-fail)
+- test: 11 new tests for subprocess retry, budgetExceeded, and stderr capture
+
 ## [1.8.0] — 2026-04-06
 
 ### Skill namespace prefix (df-) + hooks cleanup
