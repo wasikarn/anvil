@@ -1,7 +1,7 @@
 ---
 name: df-merge
 description: "Automated git-flow merge and deploy — feature, hotfix, and release modes with pre-merge safety checks. Use to merge a branch to main/develop."
-argument-hint: "[pr-number?] [--hotfix?] [--release?] [jira-key?]"
+argument-hint: "[pr-number?] [--hotfix?] [--release?] [--yes?] [jira-key?]"
 effort: medium
 compatibility: "Requires gh CLI (authenticated) and a git repository with a GitHub remote."
 allowed-tools: Bash(git *), Bash(gh *), Read, Edit, Grep, AskUserQuestion, mcp__mcp-atlassian__jira_add_comment
@@ -44,6 +44,18 @@ Parse args for position-independent flags:
 
 PR number: extract non-flag token from $ARGUMENTS, else auto-detect with `gh pr view --json number --jq '.number'`.
 
+### Auto-confirm (`--yes` / `-y`)
+
+Set `{auto_confirm}=true` when `--yes` or `-y` is present in `$ARGUMENTS`. When true:
+
+- Confirmation Gate → print the summary block but **do not** call `AskUserQuestion`; proceed directly
+- CI-failing warning → print a warning line and proceed (relies on `--admin` bypass)
+- Concurrent-hotfix warning → print a warning line and proceed
+
+When `{auto_confirm}` is false (default), every AskUserQuestion in this skill still fires as before.
+
+`--yes` does **not** bypass hard aborts (dirty tree, draft PR, rebase conflict, tag exists, etc.) — those still stop the run.
+
 ---
 
 ## Pre-execution Safety Checks
@@ -56,9 +68,9 @@ Run all checks before any merge operation. Abort immediately on failure unless n
 | 1 | Clean working tree | `git status --porcelain` | output non-empty — uncommitted changes break rebase |
 | 2 | Fetch remote | `git fetch origin` | fails — stale state causes wrong rebase decisions |
 | 3 | PR status | `gh pr view --json isDraft,state,mergeable --jq '{isDraft,state,mergeable}'` | isDraft=true, state=MERGED, or mergeable=CONFLICTING |
-| 4 | CI checks | `gh pr checks` | any failing → **warn** via `AskUserQuestion` ("CI failing — --admin will bypass. Continue?") |
+| 4 | CI checks | `gh pr checks` | any failing → **warn** via `AskUserQuestion` ("CI failing — --admin will bypass. Continue?"). If `{auto_confirm}` → print warning line and proceed. |
 | 5 | No PR found | (if auto-detect returns empty) | prompt user for PR number |
-| 6 | Mode 2/3: concurrent hotfix | see command below table | any result → **warn** via `AskUserQuestion` ("Found open hotfix PR. Proceed anyway?") |
+| 6 | Mode 2/3: concurrent hotfix | see command below table | any result → **warn** via `AskUserQuestion` ("Found open hotfix PR. Proceed anyway?"). If `{auto_confirm}` → print warning line and proceed. |
 
 Check 6 command (concurrent hotfix detection):
 
@@ -96,7 +108,7 @@ concurrent hotfixes). Review the report before proceeding to the Confirmation Ga
 
 ## Confirmation Gate
 
-Before any merge, tag, or delete operation, show this summary then use `AskUserQuestion` with Yes/No options:
+Before any merge, tag, or delete operation, show this summary:
 
 ```text
 === merge-pr: Ready to execute ===
@@ -108,7 +120,9 @@ Backport: {backport_target} (Mode 2/3 only)
 PR:      #{pr_number}
 ```
 
-Call `AskUserQuestion` with:
+**If `{auto_confirm}` is true** (user passed `--yes`/`-y`): append `Auto-confirm: on — proceeding without prompt.` and proceed. Do **not** call `AskUserQuestion`.
+
+**Otherwise** call `AskUserQuestion` with:
 
 - question: "Proceed with merge?"
 - header: "Confirm"
@@ -160,11 +174,11 @@ Done
 | Dirty working tree | Abort: "Uncommitted changes. Commit or stash first." |
 | Draft PR | Abort: "PR is still draft. Mark ready for review first." |
 | PR already merged | Abort: "PR already merged. Nothing to do." |
-| CI checks failing | Warn via `AskUserQuestion`: "CI failing — --admin will bypass. Continue?" (Yes/No) |
+| CI checks failing | Warn via `AskUserQuestion`: "CI failing — --admin will bypass. Continue?" (Yes/No). With `--yes` → print warning and proceed. |
 | No PR found for branch | Prompt user for PR number or offer `gh pr list` |
 | Rebase conflict | Abort: "Rebase conflict. Resolve manually then re-run /merge-pr" |
 | Tag already exists | Abort: "Tag v{version} already exists. Bump version manually first." |
-| Concurrent open hotfix PR | Warn via `AskUserQuestion`: "Found open hotfix PR #{n}. Proceed anyway?" (Yes/No) |
+| Concurrent open hotfix PR | Warn via `AskUserQuestion`: "Found open hotfix PR #{n}. Proceed anyway?" (Yes/No). With `--yes` → print warning and proceed. |
 | Active release branch during hotfix | Auto-detect and backport to release branch instead of develop |
 | Backport cherry-pick conflict | Create PR but don't auto-merge: "Backport has conflicts — manual resolution needed." |
 | No GitHub remote | Abort: "No GitHub remote found. Cannot use gh CLI." |

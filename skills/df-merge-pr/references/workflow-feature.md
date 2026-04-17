@@ -49,8 +49,9 @@ Branch: {branch} → develop
 PR:     #{pr_number}
 ```
 
-Call `AskUserQuestion` (question: "Proceed with merge?", header: "Confirm",
-options: Yes/No as defined in SKILL.md § Confirmation Gate). Abort if "No, abort".
+Follow SKILL.md § Confirmation Gate. If `{auto_confirm}` (`--yes`/`-y` in `$ARGUMENTS`), append
+`Auto-confirm: on — proceeding without prompt.` and skip `AskUserQuestion`. Otherwise call
+`AskUserQuestion` (question: "Proceed with merge?", header: "Confirm", Yes/No). Abort if "No, abort".
 
 **[5/6] Merge PR**
 

@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.10.0] — 2026-04-17
+
+### df-merge-pr auto-confirm + docs
+
+- feat: `--yes` / `-y` flag on `/df-merge-pr` — skips the Confirmation Gate, CI-failing prompt, and concurrent-hotfix prompt; hard aborts (dirty tree, draft PR, rebase conflict, tag exists) still fire
+- docs: SKILL.md documents `{auto_confirm}` behavior explicitly; workflow-feature.md and workflow-deploy.md gates follow the same bypass
+- docs: deploy workflow notes that `--yes` does not bypass tag-exists / rebase-conflict aborts — only the confirmation prompt
+
 ## [1.9.0] — 2026-04-14
 
 ### Advisor Strategy mode for df-review

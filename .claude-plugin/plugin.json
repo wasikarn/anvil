@@ -1,22 +1,22 @@
 {
-  "name": "devflow",
-  "description": "A Claude Code plugin powering structured development workflows \u2014 skills for building, reviewing, responding, and debugging. Includes core workflow skills (build, review, respond, debug), utility skills, custom agents, workflow automation hooks, and output styles.",
-  "version": "1.9.0",
-  "license": "MIT",
-  "keywords": [
-    "skills",
-    "devflow",
-    "multi-agent",
-    "agent-teams",
-    "pr-review",
-    "debug",
-    "productivity",
-    "workflow"
-  ],
-  "author": {
-    "name": "kobig",
-    "url": "https://github.com/wasikarn"
-  },
-  "homepage": "https://github.com/wasikarn/devflow#readme",
-  "repository": "https://github.com/wasikarn/devflow"
+	"name": "devflow",
+	"description": "A Claude Code plugin powering structured development workflows \u2014 skills for building, reviewing, responding, and debugging. Includes core workflow skills (build, review, respond, debug), utility skills, custom agents, workflow automation hooks, and output styles.",
+	"version": "1.10.0",
+	"license": "MIT",
+	"keywords": [
+		"skills",
+		"devflow",
+		"multi-agent",
+		"agent-teams",
+		"pr-review",
+		"debug",
+		"productivity",
+		"workflow"
+	],
+	"author": {
+		"name": "kobig",
+		"url": "https://github.com/wasikarn"
+	},
+	"homepage": "https://github.com/wasikarn/devflow#readme",
+	"repository": "https://github.com/wasikarn/devflow"
 }

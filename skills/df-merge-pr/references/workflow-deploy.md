@@ -116,8 +116,13 @@ Backport: {backport_target}
 PR:      #{pr_number}
 ```
 
-Call `AskUserQuestion` (question: "Proceed with merge?", header: "Confirm",
-options: Yes/No as defined in SKILL.md § Confirmation Gate). Abort if "No, abort".
+Follow SKILL.md § Confirmation Gate. If `{auto_confirm}` (`--yes`/`-y` in `$ARGUMENTS`), append
+`Auto-confirm: on — proceeding without prompt.` and skip `AskUserQuestion`. Otherwise call
+`AskUserQuestion` (question: "Proceed with merge?", header: "Confirm", Yes/No). Abort if "No, abort".
+
+**Safety note:** `--yes` skips only the confirmation prompt — it does **not** bypass tag-exists,
+rebase-conflict, or dirty-tree aborts. Mode 2/3 tag a release that cannot be easily undone, so
+only use `--yes` when the version bump and CHANGELOG have already been reviewed.
 
 ---
 
