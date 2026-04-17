@@ -166,11 +166,13 @@ Evaluate in priority order — spawn the **first matching condition only** from 
 | conservative | Sonnet | 0.8 | Any confidence < 0.8 |
 
 **Auto-escalate patterns (always to advisor):**
+
 - Security: `sql-injection`, `xss`, `auth-bypass`, `secrets`
 - Architecture: `breaking-change`, `api-contract`, `circular-dependency`
 - Complexity: Files with >500 changed lines
 
 **Cost impact:**
+
 - Escalation rate typically 10-30%
 - Cost savings 35-80% vs standard 3×Opus review
 - Latency +10-20% due to advisor round-trip

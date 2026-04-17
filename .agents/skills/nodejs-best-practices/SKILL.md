@@ -12,6 +12,7 @@ date_added: "2026-02-27"
 > **Learn to THINK, not memorize code patterns.**
 
 ## When to Use
+
 Use this skill when making Node.js architecture decisions, choosing frameworks, designing async patterns, or applying security and deployment best practices.
 
 ---
@@ -30,7 +31,7 @@ This skill teaches **decision-making principles**, not fixed code to copy.
 
 ### Decision Tree
 
-```
+```text
 What are you building?
 │
 ├── Edge/Serverless (Cloudflare, Vercel)
@@ -59,7 +60,8 @@ What are you building?
 | **TypeScript** | Native | Excellent | Good |
 | **Learning curve** | Low | Medium | Low |
 
-### Selection Questions to Ask:
+### Selection Questions to Ask
+
 1. What's the deployment target?
 2. Is cold start time critical?
 3. Does team have existing experience?
@@ -71,7 +73,7 @@ What are you building?
 
 ### Native TypeScript
 
-```
+```text
 Node.js 22+: --experimental-strip-types
 ├── Run .ts files directly
 ├── No build step needed for simple projects
@@ -80,7 +82,7 @@ Node.js 22+: --experimental-strip-types
 
 ### Module System Decision
 
-```
+```text
 ESM (import/export)
 ├── Modern standard
 ├── Better tree-shaking
@@ -107,7 +109,7 @@ CommonJS (require)
 
 ### Layered Structure Concept
 
-```
+```text
 Request Flow:
 │
 ├── Controller/Route Layer
@@ -126,12 +128,14 @@ Request Flow:
     └── ORM interactions
 ```
 
-### Why This Matters:
+### Why This Matters
+
 - **Testability**: Mock layers independently
 - **Flexibility**: Swap database without touching business logic
 - **Clarity**: Each layer has single responsibility
 
-### When to Simplify:
+### When to Simplify
+
 - Small scripts → Single file OK
 - Prototypes → Less structure acceptable
 - Always ask: "Will this grow?"
@@ -142,7 +146,7 @@ Request Flow:
 
 ### Centralized Error Handling
 
-```
+```text
 Pattern:
 ├── Create custom error classes
 ├── Throw from any layer
@@ -152,7 +156,7 @@ Pattern:
 
 ### Error Response Philosophy
 
-```
+```text
 Client gets:
 ├── Appropriate HTTP status
 ├── Error code for programmatic handling
@@ -193,7 +197,7 @@ Logs get:
 
 ### Event Loop Awareness
 
-```
+```text
 I/O-bound (async helps):
 ├── Database queries
 ├── HTTP requests
@@ -219,7 +223,7 @@ CPU-bound (async doesn't help):
 
 ### Validate at Boundaries
 
-```
+```text
 Where to validate:
 ├── API entry point (request body/params)
 ├── Before database operations
@@ -261,7 +265,7 @@ Where to validate:
 
 ### Security Mindset
 
-```
+```text
 Trust nothing:
 ├── Query params → validate
 ├── Request body → validate
@@ -292,7 +296,7 @@ Trust nothing:
 
 ### Built-in Test Runner (Node.js 22+)
 
-```
+```text
 node --test src/**/*.test.ts
 ├── No external dependency
 ├── Good coverage reporting
@@ -303,7 +307,8 @@ node --test src/**/*.test.ts
 
 ## 10. Anti-Patterns to Avoid
 
-### ❌ DON'T:
+### ❌ DON'T
+
 - Use Express for new edge projects (use Hono)
 - Use sync methods in production code
 - Put business logic in controllers
@@ -312,7 +317,8 @@ node --test src/**/*.test.ts
 - Trust external data without validation
 - Block event loop with CPU work
 
-### ✅ DO:
+### ✅ DO
+
 - Choose framework based on context
 - Ask user for preferences when unclear
 - Use layered architecture for growing projects

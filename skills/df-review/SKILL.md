@@ -81,23 +81,27 @@ Cost-intelligent review using the Advisor Strategy pattern from Anthropic.
 **Pattern:** Fast executor (Sonnet/Haiku) → Confidence Gate → Opus advisor → Final report
 
 **Usage:**
+
 ```bash
 /review 123 --advisor              # Balanced: Sonnet + Opus on uncertainty
 /review 123 --advisor --mode=fast  # Fast: Haiku + Opus on security only
 ```
 
 **When to use:**
+
 - Large PRs (30+ files) — executor parallel dispatch is faster
 - Budget-conscious review cycles — 35-80% cost savings
 - Clear separation expected between obvious and complex findings
 
 **How it works:**
+
 1. **Executor pass** — Fast reviewers (Sonnet or Haiku) score confidence on each finding
 2. **Escalation gate** — Findings with confidence < threshold OR security/arch patterns → advisor
 3. **Advisor consultation** — Opus provides deep analysis for uncertain items
 4. **Synthesis** — Executor combines findings + advisor guidance into final report
 
 **Cost comparison:**
+
 | PR Size | Standard | Advisor | Savings |
 |---------|----------|---------|---------|
 | 10 files | ~$4.50 | ~$1.50 | 67% |

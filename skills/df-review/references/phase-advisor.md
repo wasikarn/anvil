@@ -5,6 +5,7 @@ Advisor Strategy implementation for df-review. Uses fast executor (Sonnet/Haiku)
 **Pattern:** Haiku/Sonnet (Executor) → Confidence Gate → Opus (Advisor) → Final Report
 
 **When to Use:**
+
 - Large PRs (30+ files) where cost matters
 - Budget-conscious review cycles
 - Clear separation between "obvious" and "uncertain" findings
@@ -29,6 +30,7 @@ The `--advisor` flag triggers this mode:
 Instead of spawning 3 standard reviewers, spawn:
 
 **Executor Reviewers (Haiku or Sonnet depending on mode):**
+
 - T1-Fast: Correctness & Security focus
 - T2-Fast: Architecture & Performance focus
 - T3-Fast: DX & Testing focus
@@ -62,6 +64,7 @@ interface ReviewResult {
 | conservative | Sonnet | 0.8 | Any finding with confidence < 0.8 |
 
 **Auto-escalate patterns (always go to advisor):**
+
 - Security: `sql-injection`, `xss`, `auth-bypass`, `secrets`, `unsafe-eval`
 - Architecture: `breaking-change`, `api-contract`, `circular-dependency`
 - Complexity: Files with >500 lines changed
@@ -81,12 +84,14 @@ disallowedTools: Edit, Write
 ```
 
 **Advisor receives compressed context:**
+
 - File path and line numbers
 - Original finding (low confidence)
 - Code snippet (summarized)
 - Specific question requiring frontier reasoning
 
 **Advisor returns:**
+
 ```typescript
 interface AdvisorGuidance {
   verdict: "ACCEPT" | "REJECT" | "NEEDS_DISCUSSION";
@@ -100,6 +105,7 @@ interface AdvisorGuidance {
 ### Phase 5-Advisor: Synthesis
 
 **review-consolidator** (Haiku) combines:
+
 1. Executor findings with confidence >= threshold
 2. Advisor guidance for escalated items
 3. Formats final report per review-output-format
@@ -168,7 +174,7 @@ Respond with JSON only:
 | 30 files | ~$13.50 | ~$4.20 | 69% |
 | 50 files | ~$22.50 | ~$4.50 | 80% |
 
-*Based on 20% escalation rate (typical)*
+Based on 20% escalation rate (typical)
 
 ## Integration with Existing Modes
 
@@ -194,12 +200,14 @@ Respond with JSON only:
 ## Fallback
 
 If advisor-consultant unavailable:
+
 1. Log warning: "Advisor mode unavailable, falling back to standard review"
 2. Continue with standard 3-reviewer debate (Phase 3 normal flow)
 
 ## Success Metrics
 
 Track in review artifacts:
+
 - Escalation rate (target: 10-30%)
 - Advisor verdict distribution (ACCEPT/REJECT/NEEDS_DISCUSSION)
 - Cost savings vs standard review

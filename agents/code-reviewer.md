@@ -98,6 +98,7 @@ When `--advisor` flag is active, assign confidence 0.0-1.0 to each finding:
 | <0.50 | Too uncertain | Do not report |
 
 **Escalate to advisor when:**
+
 - Confidence < 0.7 (balanced mode) or < 0.8 (conservative mode)
 - Security category detected (any confidence)
 - Breaking change or API contract concern

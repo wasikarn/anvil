@@ -111,7 +111,7 @@ await fastify.listen({ port: 3000, host: "0.0.0.0" });
 
 **Structure:**
 
-```
+```text
 src/
 ├── controllers/     # Handle HTTP requests/responses
 ├── services/        # Business logic
@@ -600,6 +600,7 @@ export const asyncHandler = (
 Node.js supports both SQL and NoSQL databases. Use connection pooling for all production databases.
 
 Key patterns covered in [references/advanced-patterns.md](references/advanced-patterns.md):
+
 - **PostgreSQL with connection pool** — `pg` Pool configuration and graceful shutdown
 - **MongoDB with Mongoose** — connection management and schema definition
 - **Transaction pattern** — `BEGIN`/`COMMIT`/`ROLLBACK` with `pg` client
