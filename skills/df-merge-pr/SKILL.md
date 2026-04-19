@@ -1,5 +1,5 @@
 ---
-name: df-merge
+name: df-merge-pr
 description: "Automated git-flow merge and deploy — feature, hotfix, and release modes with pre-merge safety checks. Use to merge a branch to main/develop."
 argument-hint: "[pr-number?] [--hotfix?] [--release?] [--yes?] [jira-key?]"
 effort: medium
